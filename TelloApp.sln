@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2037
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelloApp", "TelloApp\TelloApp.csproj", "{939A0652-8FE0-45B2-9342-535B63B23B94}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{939A0652-8FE0-45B2-9342-535B63B23B94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{939A0652-8FE0-45B2-9342-535B63B23B94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{939A0652-8FE0-45B2-9342-535B63B23B94}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{939A0652-8FE0-45B2-9342-535B63B23B94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{939A0652-8FE0-45B2-9342-535B63B23B94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{939A0652-8FE0-45B2-9342-535B63B23B94}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {30C3D4AB-41AD-4804-8728-3689204C2FB6}
+	EndGlobalSection
+EndGlobal
