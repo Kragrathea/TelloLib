@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -46,11 +47,18 @@ namespace TelloApp
             var landPacket = new byte[] { 0xcc, 0x60, 0x00, 0x27, 0x68, 0x55, 0x00, 0xe5, 0x01, 0x00, 0xba, 0xc7 };
             client.Send(landPacket);
         }
+        public static void requestIframe()
+        {
+            var iframePacket = new byte[] { 0xcc, 0x58, 0x00, 0x7c, 0x60, 0x25, 0x00, 0x00, 0x00, 0x6c, 0x95 };
+            client.Send(iframePacket);
+        }
         public static void setAxis(float[] axis)
         {
             joyAxis = axis.Take(5).ToArray(); ;
-            joyAxis[2] = axis[10];
-            joyAxis[3] = axis[11];
+
+
+            //joyAxis[2] = axis[10];
+            //joyAxis[3] = axis[11];
         }
 
         public static void disconnect()
@@ -83,10 +91,20 @@ namespace TelloApp
             connectPacket[connectPacket.Length - 1] = 0x17;
             client.Send(connectPacket);
         }
+
+        public static void AppendAllBytes(string path, byte[] bytes)
+        {
+            using (var stream = new FileStream(path, FileMode.Append))
+            {
+                stream.Write(bytes, 0, bytes.Length);
+            }
+        }
+
         public static void startListeners()
         {
             cancelTokens = new CancellationTokenSource();
             CancellationToken token = cancelTokens.Token;
+
 
             //wait for reply messages from the tello and process. 
             Task.Factory.StartNew(async () =>
@@ -110,6 +128,7 @@ namespace TelloApp
                                 onConnection(connectionState);
 
                                 startHeartbeat();
+                                requestIframe();
                                 Console.WriteLine("Tello connected!");
                                 continue;
                             }
@@ -146,6 +165,41 @@ namespace TelloApp
                     }
                 }
             }, token);
+            //video server
+            var videoServer = new UdpListener(6038);
+            //var videoServer = new UdpListener(new IPEndPoint(IPAddress.Parse("192.168.10.2"), 6038));
+            //var videoClient = UdpUser.ConnectTo("127.0.0.1", 7038);//send video data to: ffplay rtp://127.0.0.1:7038
+
+            Task.Factory.StartNew(async () => {
+                //Console.WriteLine("video:1");
+                var started = false;
+                var filePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, "out.h264");
+
+                while (true)
+                {
+                    try
+                    {
+                        if (token.IsCancellationRequested)//handle canceling thread.
+                            break;
+                        var received = await videoServer.Receive();
+                        var skip = 2;
+                        if (received.bytes[2] == 0 && received.bytes[3] == 0)
+                        {
+                            started = true;
+                        }
+                        if (started)
+                            AppendAllBytes(filePath, received.bytes.Skip(skip).ToArray());
+                        //videoClient.Send(received.bytes.Skip(2).ToArray());//Skip 2 byte header and send along. 
+
+                        //var dataStr = BitConverter.ToString(received.bytes.Skip(0).Take(20).ToArray()).Replace("-", " ");
+                        //Console.WriteLine("video:" + dataStr);
+                        //Console.WriteLine("video:" + received.bytes.Length);
+                    }catch (Exception ex)
+                    {
+
+                    }
+                }
+            }, token);
 
         }
         public static void startHeartbeat()
@@ -155,6 +209,7 @@ namespace TelloApp
             //heartbeat.
             Task.Factory.StartNew(async () =>
             {
+                int tick = 0;
                 while (true)
                 {
                     var rx = joyAxis[2];//Axis[0]((float)joyState.RotationX / 0x8000) - 1;
@@ -171,17 +226,21 @@ namespace TelloApp
                     var boost = 0.0f;
                     if (joyAxis[4] > 0.5)
                         boost = 1.0f;
-                    var limit = 0.5f;//Slow down while testing.
+                    var limit = 1.0f;//Slow down while testing.
                     rx = rx * limit;
                     ry = ry * limit;
 
-                    var packet = createJoyPacket(rx, ry, lx, ly, boost);
                     //Console.WriteLine(rx + " " + ry + " " + lx + " " + ly);
+                    var packet = createJoyPacket(rx, ry, lx, ly, boost);
                     try
                     {
                         if (token.IsCancellationRequested)
                             break;
                         client.Send(packet);
+                        tick++;
+                        if (tick % 10 == 0)
+                            requestIframe();
+
                         Thread.Sleep(50);//Often enough?
                     }
                     catch (Exception ex)
@@ -248,7 +307,7 @@ namespace TelloApp
         //Center = 0.0. 
         //Up/Right =1.0. 
         //Down/Left=-1.0. 
-        public static byte[] createJoyPacket(float fRx, float fRy, float fLx, float fLy, float unk)
+        public static byte[] createJoyPacket(float fRx, float fRy, float fLx, float fLy, float speed)
         {
             //template joy packet.
             var packet = new byte[] { 0xcc, 0xb0, 0x00, 0x7f, 0x60, 0x50, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x16, 0x01, 0x0e, 0x00, 0x25, 0x54 };
@@ -257,9 +316,9 @@ namespace TelloApp
             short axis2 = (short)(660.0F * fRy + 1024.0F);//RightY down =364 up =-364
             short axis3 = (short)(660.0F * fLy + 1024.0F);//LeftY down =364 up =-364
             short axis4 = (short)(660.0F * fLx + 1024.0F);//LeftX left =364 right =-364
-            short axis5 = (short)(660.0F * unk + 1024.0F);//Unknown. Possibly camera controls. 
+            short axis5 = (short)(660.0F * speed + 1024.0F);//Speed. 
 
-            if (unk > 0.1f)
+            if (speed > 0.1f)
                 axis5 = 0x7fff;
 
             long packedAxis = ((long)axis1 & 0x7FF) | (((long)axis2 & 0x7FF) << 11) | ((0x7FF & (long)axis3) << 22) | ((0x7FF & (long)axis4) << 33) | ((long)axis5 << 44);
@@ -287,61 +346,65 @@ namespace TelloApp
         }
         public class FlyData
         {
-            public int batteryLow;
-            public int batteryLower;
+            public int flyMode;
+            public int height;
+            public int verticalSpeed;
+            public int flySpeed;
+            public int eastSpeed;
+            public int northSpeed;
+            public int flyTime;
+
+            public bool downVisualState;
+            public bool droneHover;
+            public bool eMOpen;
+            public bool flying;
+            public bool onGround;
+            public bool pressureState;
+
             public int batteryPercentage;
-            public int batteryState;
-            public int cameraState;
-            public int downVisualState;
+            public bool batteryLow;
+            public bool batteryLower;
+            public bool batteryState;
+            public bool powerState;
             public int droneBatteryLeft;
             public int droneFlyTimeLeft;
-            public int droneHover;
-            public int eMOpen;
-            public int eMSky;
-            public int eMground;
-            public int eastSpeed;
+
+
+            public int cameraState;
             public int electricalMachineryState;
-            public int factoryMode;
-            public int flyMode;
-            public int flySpeed;
-            public int flyTime;
-            public int frontIn;
-            public int frontLSC;
-            public int frontOut;
-            public int gravityState;
-            public int groundSpeed;
-            public int height;
+            public bool factoryMode;
+            public bool frontIn;
+            public bool frontLSC;
+            public bool frontOut;
+            public bool gravityState;
             public int imuCalibrationState;
-            public int imuState;
+            public bool imuState;
             public int lightStrength;
-            public int northSpeed;
-            public int outageRecording;
-            public int powerState;
-            public int pressureState;
+            public bool outageRecording;
             public int smartVideoExitMode;
             public int temperatureHeight;
             public int throwFlyTimer;
             public int wifiDisturb;
             public int wifiStrength = 100;
-            public int windState;
+            public bool windState;
 
             public void set(byte[] data)
             {
                 var index = 0;
                 height = data[index] | (data[index + 1] << 8); index += 2;
-                northSpeed = data[index] | (data[index + 1] << 8); index += 2;
-                eastSpeed = data[index] | (data[index + 1] << 8); index += 2;
+                northSpeed = (Int16)(data[index] | (data[index + 1] << 8)); index += 2;
+                eastSpeed = (Int16)(data[index] | (data[index + 1] << 8)); index += 2;
                 flySpeed = ((int)Math.Sqrt(Math.Pow(northSpeed, 2.0D) + Math.Pow(eastSpeed, 2.0D)));
-                groundSpeed = data[index] | (data[index + 1] << 8); index += 2;// ah.a(paramArrayOfByte[6], paramArrayOfByte[7]);
+                verticalSpeed = (Int16)(data[index] | (data[index + 1] << 8)); index += 2;// ah.a(paramArrayOfByte[6], paramArrayOfByte[7]);
                 flyTime = data[index] | (data[index + 1] << 8); index += 2;// ah.a(paramArrayOfByte[8], paramArrayOfByte[9]);
 
-                imuState = (data[index] >> 0 & 0x1);
-                pressureState = (data[index] >> 1 & 0x1);
-                downVisualState = (data[index] >> 2 & 0x1);
-                powerState = (data[index] >> 3 & 0x1);
-                batteryState = (data[index] >> 4 & 0x1);
-                gravityState = (data[index] >> 5 & 0x1);
-                windState = (data[index] >> 7 & 0x1);
+                imuState = (data[index] >> 0 & 0x1) == 1 ? true : false;
+                pressureState = (data[index] >> 1 & 0x1) == 1 ? true : false;
+                downVisualState = (data[index] >> 2 & 0x1) == 1 ? true : false;
+                powerState = (data[index] >> 3 & 0x1) == 1 ? true : false;
+                batteryState = (data[index] >> 4 & 0x1) == 1 ? true : false;
+                gravityState = (data[index] >> 5 & 0x1) == 1 ? true : false;
+                windState = (data[index] >> 7 & 0x1) == 1 ? true : false;
                 index += 1;
 
                 //if (paramArrayOfByte.length < 19) { }
@@ -351,14 +414,14 @@ namespace TelloApp
                 droneBatteryLeft = data[index] | (data[index + 1] << 8); index += 2;
 
                 //index 17
-                eMSky = (data[index] >> 0 & 0x1);
-                eMground = (data[index] >> 1 & 0x1);
-                eMOpen = (data[index] >> 2 & 0x1);
-                droneHover = (data[index] >> 3 & 0x1);
-                outageRecording = (data[index] >> 4 & 0x1);
-                batteryLow = (data[index] >> 5 & 0x1);
-                batteryLower = (data[index] >> 6 & 0x1);
-                factoryMode = (data[index] >> 7 & 0x1);
+                flying = (data[index] >> 0 & 0x1)==1?true:false;
+                onGround = (data[index] >> 1 & 0x1) == 1 ? true : false;
+                eMOpen = (data[index] >> 2 & 0x1) == 1 ? true : false;
+                droneHover = (data[index] >> 3 & 0x1) == 1 ? true : false;
+                outageRecording = (data[index] >> 4 & 0x1) == 1 ? true : false;
+                batteryLow = (data[index] >> 5 & 0x1) == 1 ? true : false;
+                batteryLower = (data[index] >> 6 & 0x1) == 1 ? true : false;
+                factoryMode = (data[index] >> 7 & 0x1) == 1 ? true : false;
                 index += 1;
 
                 flyMode = data[index]; index += 1;
@@ -369,11 +432,30 @@ namespace TelloApp
                 electricalMachineryState = data[index]; index += 1; //(paramArrayOfByte[21] & 0xFF);
 
                 //if (paramArrayOfByte.length >= 23)
-                frontIn = (data[index] >> 0 & 0x1);//22
-                frontOut = (data[index] >> 1 & 0x1);
-                frontLSC = (data[index] >> 2 & 0x1);
+                frontIn = (data[index] >> 0 & 0x1) == 1 ? true : false;//22
+                frontOut = (data[index] >> 1 & 0x1) == 1 ? true : false;
+                frontLSC = (data[index] >> 2 & 0x1) == 1 ? true : false;
                 index += 1;
                 temperatureHeight = (data[index] >> 0 & 0x1);//23
+            }
+
+            public override string ToString()
+            {
+                StringBuilder sb = new StringBuilder();
+                var count = 0;
+                foreach (System.Reflection.FieldInfo property in this.GetType().GetFields())
+                {
+                    sb.Append(property.Name);
+                    sb.Append(": ");
+                    sb.Append(property.GetValue(this));
+                    if(count++%2==1)
+                        sb.Append(System.Environment.NewLine);
+                    else
+                        sb.Append("      ");
+
+                }
+
+                return sb.ToString();
             }
         }
 

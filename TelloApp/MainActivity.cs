@@ -67,9 +67,11 @@ namespace TelloApp
             Tello.onUpdate += () =>
             {
                 //Update state on screen
-                EditText acstat = FindViewById<EditText>(Resource.Id.ac_state);
-                var str = string.Format("Height {0:000} {1:000} {2:000} {3:000} {4:000}", Tello.state.height, Tello.state.groundSpeed,
-                    Tello.state.flyMode, Tello.state.batteryPercentage, Tello.state.flyTime);
+                var acstat = FindViewById<TextView>(Resource.Id.ac_state);
+
+                var str = Tello.state.ToString();
+                //var str = string.Format("Hei {0:000} HS {1:000} FlyMode{2:000} Bat%{3:000} Time:{4:000}", Tello.state.height, Tello.state.groundSpeed,
+                //    Tello.state.flyMode, Tello.state.batteryPercentage, Tello.state.flyTime);
 
                 RunOnUiThread(() => acstat.Text = str);
 

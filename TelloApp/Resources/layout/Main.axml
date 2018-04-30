@@ -13,8 +13,10 @@
         android:layout_height="wrap_content"
         android:id="@+id/joystick_state"
         android:text="joy" />
-    <EditText
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/ac_state" />
+        android:id="@+id/ac_state"
+        android:text="Status Area"
+        android:textSize="10sp" />
 </LinearLayout>
