@@ -69,11 +69,16 @@ namespace TelloApp
                 //Update state on screen
                 var acstat = FindViewById<TextView>(Resource.Id.ac_state);
 
-                var str = Tello.state.ToString();
-                //var str = string.Format("Hei {0:000} HS {1:000} FlyMode{2:000} Bat%{3:000} Time:{4:000}", Tello.state.height, Tello.state.groundSpeed,
-                //    Tello.state.flyMode, Tello.state.batteryPercentage, Tello.state.flyTime);
+                var str = Tello.state.ToString();//ToString() = Formated state
 
-                RunOnUiThread(() => acstat.Text = str);
+                RunOnUiThread(() => acstat.Text = str);//Update text view.
+
+            };
+
+            //subscribe to Tello video data
+            Tello.onVideoData += (byte[] data) =>
+            {
+                //process video data
 
             };
 
@@ -84,16 +89,22 @@ namespace TelloApp
             button.Click += delegate {
                 WifiManager wifiManager = (WifiManager)Application.Context.GetSystemService(Context.WifiService);
                 string ip = Formatter.FormatIpAddress(wifiManager.ConnectionInfo.IpAddress);
-                if(!ip.StartsWith("192.168.10."))
+                if(!ip.StartsWith("192.168.10."))//Already connected to network?
                     StartActivity(new Intent(Android.Net.Wifi.WifiManager.ActionPickWifiNetwork));
 
             };
 
+            //Settings button
+            Button settingsButton = FindViewById<Button>(Resource.Id.button1);
+            settingsButton.Click += delegate {
+                StartActivity(typeof(SettingsActivity));
+            };
 
             //Init joysticks.
             input_manager = (InputManager)GetSystemService(Context.InputService);
             CheckGameControllers();
         }
+        //Handle joystick axis events.
         public override bool OnGenericMotionEvent(MotionEvent e)
         {
             InputDevice device = e.Device;

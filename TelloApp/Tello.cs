@@ -24,6 +24,8 @@ namespace TelloApp
         public static event updateDeligate onUpdate;
         public delegate void connectionDeligate(ConnectionState newState);
         public static event connectionDeligate onConnection;
+        public delegate void videoUpdateDeligate(byte[] data);
+        public static event videoUpdateDeligate onVideoData;
         public static FlyData state= new FlyData();
 
         public enum ConnectionState
@@ -52,6 +54,19 @@ namespace TelloApp
             var iframePacket = new byte[] { 0xcc, 0x58, 0x00, 0x7c, 0x60, 0x25, 0x00, 0x00, 0x00, 0x6c, 0x95 };
             client.Send(iframePacket);
         }
+        public static void setMaxHeight(int height)
+        {
+        }
+        public static void setEV(int ev)
+        {
+        }
+        public static void setAttAngle(int angle)
+        {
+        }
+        public static void setEIS(int eis)
+        {
+        }
+
         public static void setAxis(float[] axis)
         {
             joyAxis = axis.Take(5).ToArray(); ;
@@ -182,13 +197,15 @@ namespace TelloApp
                         if (token.IsCancellationRequested)//handle canceling thread.
                             break;
                         var received = await videoServer.Receive();
-                        var skip = 2;
-                        if (received.bytes[2] == 0 && received.bytes[3] == 0)
+                        if (received.bytes[2] == 0 && received.bytes[3] == 0)//Wait for first NAL
                         {
                             started = true;
                         }
                         if (started)
-                            AppendAllBytes(filePath, received.bytes.Skip(skip).ToArray());
+                        {
+                            onVideoData(received.bytes);
+                            AppendAllBytes(filePath, received.bytes.Skip(2).ToArray());//Save raw data minus sequence.
+                        }
                         //videoClient.Send(received.bytes.Skip(2).ToArray());//Skip 2 byte header and send along. 
 
                         //var dataStr = BitConverter.ToString(received.bytes.Skip(0).Take(20).ToArray()).Replace("-", " ");
