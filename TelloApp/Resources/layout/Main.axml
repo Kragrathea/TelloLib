@@ -9,6 +9,11 @@
         android:layout_height="wrap_content"
         android:text="@string/connect_status" />
     <Button
+        android:text="Takeoff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/takeoffButton" />
+    <Button
         android:text="Settings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

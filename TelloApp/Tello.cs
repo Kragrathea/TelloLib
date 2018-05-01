@@ -149,28 +149,24 @@ namespace TelloApp
                             }
                         }
 
-
                         int cmdId = ((int)received.bytes[5] | ((int)received.bytes[6] << 8));
                         if (cmdId == 86)//state command
                         {
-                            //update
-                            state.set(received.bytes.Skip(9).ToArray());
+                            try
+                            {
+                                //update
+                                state.set(received.bytes.Skip(9).ToArray());
 
-                            //fire update event.
-                            onUpdate();
+                                //fire update event.
+                                onUpdate();
+                            }
+                            catch (Exception ex)
+                            {
+                                //Fixed. Update errors do not cause disconnect.
+                                Console.WriteLine("onUpdate error:" + ex.Message);
+                                break;
+                            }
                         }
-
-                        var cmdName = "unknown";
-                        //if (cmdIdLookup.ContainsKey(cmdId))
-                        //    cmdName = cmdIdLookup[cmdId];
-
-                        var dataStr = BitConverter.ToString(received.bytes.Skip(9).Take(30).ToArray()).Replace("-", " ");
-
-                        //Debug printing of select command messages.
-                        if (cmdId != 26 && cmdId != 86 && cmdId != 53 && cmdId != 4176 && cmdId != 4177 && cmdId != 4178)
-                            //    if (cmdId == 86)
-                            Console.WriteLine("cmdId:" + cmdId + "(0x" + cmdId.ToString("X2") + ")" + cmdName + " " + dataStr);
-
                     }
                     catch (Exception ex)
                     {
@@ -188,7 +184,6 @@ namespace TelloApp
             Task.Factory.StartNew(async () => {
                 //Console.WriteLine("video:1");
                 var started = false;
-                var filePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, "out.h264");
 
                 while (true)
                 {
@@ -204,16 +199,15 @@ namespace TelloApp
                         if (started)
                         {
                             onVideoData(received.bytes);
-                            AppendAllBytes(filePath, received.bytes.Skip(2).ToArray());//Save raw data minus sequence.
                         }
                         //videoClient.Send(received.bytes.Skip(2).ToArray());//Skip 2 byte header and send along. 
 
-                        //var dataStr = BitConverter.ToString(received.bytes.Skip(0).Take(20).ToArray()).Replace("-", " ");
-                        //Console.WriteLine("video:" + dataStr);
-                        //Console.WriteLine("video:" + received.bytes.Length);
                     }catch (Exception ex)
                     {
-
+                        Console.WriteLine("Video receive thread error:" + ex.Message);
+                        
+                        //dont disconnect();
+                        break;
                     }
                 }
             }, token);
@@ -276,7 +270,7 @@ namespace TelloApp
             //Thread to handle connecting.
             Task.Factory.StartNew(async () =>
             {
-                var timeout = new TimeSpan(2000);//2 second connection timeout
+                var timeout = new TimeSpan(3000);//2 second connection timeout
                 while (true)
                 {
                     try

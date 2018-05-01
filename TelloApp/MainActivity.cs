@@ -10,6 +10,8 @@ using Android.Content.PM;
 using System;
 using Android.Net.Wifi;
 using Android.Text.Format;
+using System.IO;
+using System.Linq;
 
 namespace TelloApp
 {
@@ -25,10 +27,19 @@ namespace TelloApp
         private List<int> connected_devices = new List<int>();
         private int current_device_id = -1;
 
+        Button takeoffButton;
+        string videoFilePath;//file to save raw h264 to. 
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.Main);
+
+            takeoffButton = FindViewById<Button>(Resource.Id.takeoffButton);
+
+            var path = "TelloApp/video/";
+            System.IO.Directory.CreateDirectory(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path));
+            videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + ".h264");
 
             //subscribe to Tello connection events
             Tello.onConnection += (Tello.ConnectionState newState) =>
@@ -37,7 +48,7 @@ namespace TelloApp
                 Button cbutton = FindViewById<Button>(Resource.Id.connectButton);
 
                 //If not connected check to see if connected to tello network.
-                if(newState!=Tello.ConnectionState.Connected)
+                if (newState != Tello.ConnectionState.Connected)
                 {
                     WifiManager wifiManager = (WifiManager)Application.Context.GetSystemService(Context.WifiService);
                     string ip = Formatter.FormatIpAddress(wifiManager.ConnectionInfo.IpAddress);
@@ -50,6 +61,13 @@ namespace TelloApp
                         });
                         return;
                     }
+                }
+                if (newState == Tello.ConnectionState.Connected)
+                {
+                    //Set new video file name based on date. 
+                    //var path = "TelloApp/video/";
+                    //System.IO.Directory.CreateDirectory(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path));
+                    //videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + ".h264");
                 }
                 //update connection state button.
                 RunOnUiThread(() => {
@@ -71,16 +89,32 @@ namespace TelloApp
 
                 var str = Tello.state.ToString();//ToString() = Formated state
 
-                RunOnUiThread(() => acstat.Text = str);//Update text view.
+                RunOnUiThread(() => {
+                    acstat.Text = str;
+                    if (Tello.state.flying && takeoffButton.Text != "Land")
+                        takeoffButton.Text = "Land";
+                    else if (!Tello.state.flying && takeoffButton.Text != "Takeoff")
+                        takeoffButton.Text = "Takeoff";
+                });//Update view.
 
             };
+
 
             //subscribe to Tello video data
             Tello.onVideoData += (byte[] data) =>
             {
-                //process video data
+                if (videoFilePath != null)
+                {
+                    //Save raw data minus sequence.
+                    using (var stream = new FileStream(videoFilePath, FileMode.Append))
+                    {
+                        stream.Write(data, 2, data.Length-2);//Note remove 2 byte seq when saving. 
+                    }
+                }
 
             };
+
+            
 
             Tello.init();//Start trying to connect.
 
@@ -91,6 +125,20 @@ namespace TelloApp
                 string ip = Formatter.FormatIpAddress(wifiManager.ConnectionInfo.IpAddress);
                 if(!ip.StartsWith("192.168.10."))//Already connected to network?
                     StartActivity(new Intent(Android.Net.Wifi.WifiManager.ActionPickWifiNetwork));
+
+            };
+
+            
+            takeoffButton.Click += delegate {
+                if (Tello.connected && !Tello.state.flying)
+                {
+                    Tello.takeOff();
+                }
+                else if (Tello.connected && Tello.state.flying)
+                {
+                    Tello.land();
+                }
+
 
             };
 
