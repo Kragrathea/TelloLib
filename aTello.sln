@@ -5,6 +5,10 @@ VisualStudioVersion = 15.0.27428.2037
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aTello", "aTello\aTello.csproj", "{939A0652-8FE0-45B2-9342-535B63B23B94}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelloLib", "TelloLib\TelloLib.csproj", "{FC69241F-8C76-45DE-A2D4-B2A5CD984014}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelloConsole", "TelloConsole\TelloConsole.csproj", "{6E71816D-0976-4806-955F-D90E14CFC1A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,6 +21,14 @@ Global
 		{939A0652-8FE0-45B2-9342-535B63B23B94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{939A0652-8FE0-45B2-9342-535B63B23B94}.Release|Any CPU.Build.0 = Release|Any CPU
 		{939A0652-8FE0-45B2-9342-535B63B23B94}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{FC69241F-8C76-45DE-A2D4-B2A5CD984014}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC69241F-8C76-45DE-A2D4-B2A5CD984014}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC69241F-8C76-45DE-A2D4-B2A5CD984014}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC69241F-8C76-45DE-A2D4-B2A5CD984014}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E71816D-0976-4806-955F-D90E14CFC1A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E71816D-0976-4806-955F-D90E14CFC1A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E71816D-0976-4806-955F-D90E14CFC1A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E71816D-0976-4806-955F-D90E14CFC1A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

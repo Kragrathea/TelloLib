@@ -5,28 +5,24 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 
-namespace aTello
+namespace TelloLib
 {
-    class Tello
+    public class Tello
     {
         private static UdpUser client;
         private static float[] joyAxis = new float[] { 0, 0, 0, 0, 0 };
         private static DateTime lastMessageTime;//for connection timeouts.
 
-        public delegate void updateDeligate();
+        public static FlyData state = new FlyData();
+        public static bool connected = false;
+
+        public delegate void updateDeligate(FlyData state);
         public static event updateDeligate onUpdate;
         public delegate void connectionDeligate(ConnectionState newState);
         public static event connectionDeligate onConnection;
         public delegate void videoUpdateDeligate(byte[] data);
         public static event videoUpdateDeligate onVideoData;
-        public static FlyData state= new FlyData();
 
         public enum ConnectionState
         {
@@ -36,8 +32,7 @@ namespace aTello
         }
         public static ConnectionState connectionState = ConnectionState.Disconnected;
 
-        public static CancellationTokenSource cancelTokens = new CancellationTokenSource();//used to cancel listeners
-
+        private static CancellationTokenSource cancelTokens = new CancellationTokenSource();//used to cancel listeners
 
         public static void takeOff()
         {
@@ -74,7 +69,7 @@ namespace aTello
             //joyAxis[3] = axis[11];
         }
 
-        public static void disconnect()
+        private static void disconnect()
         {
             //kill listeners
             cancelTokens.Cancel();
@@ -90,7 +85,7 @@ namespace aTello
             connectionState = ConnectionState.Disconnected;
             
         }
-        public static void connect()
+        private static void connect()
         {
             Console.WriteLine("Connecting to tello.");
             client = UdpUser.ConnectTo("192.168.10.1", 8889);
@@ -105,19 +100,10 @@ namespace aTello
             client.Send(connectPacket);
         }
 
-        public static void AppendAllBytes(string path, byte[] bytes)
-        {
-            using (var stream = new FileStream(path, FileMode.Append))
-            {
-                stream.Write(bytes, 0, bytes.Length);
-            }
-        }
-
-        public static void startListeners()
+        private static void startListeners()
         {
             cancelTokens = new CancellationTokenSource();
             CancellationToken token = cancelTokens.Token;
-
 
             //wait for reply messages from the tello and process. 
             Task.Factory.StartNew(async () =>
@@ -150,13 +136,13 @@ namespace aTello
                         int cmdId = ((int)received.bytes[5] | ((int)received.bytes[6] << 8));
                         if (cmdId == 86)//state command
                         {
+                            //update
+                            var newState = new FlyData();
+                            newState.set(received.bytes.Skip(9).ToArray());
                             try
                             {
-                                //update
-                                state.set(received.bytes.Skip(9).ToArray());
-
                                 //fire update event.
-                                onUpdate();
+                                onUpdate(newState);
                             }
                             catch (Exception ex)
                             {
@@ -164,6 +150,8 @@ namespace aTello
                                 Console.WriteLine("onUpdate error:" + ex.Message);
                                 break;
                             }
+                            //update current state.
+                            state = newState;
                         }
                     }
                     catch (Exception ex)
@@ -211,7 +199,7 @@ namespace aTello
             }, token);
 
         }
-        public static void startHeartbeat()
+        private static void startHeartbeat()
         {
             CancellationToken token = cancelTokens.Token;
 
@@ -262,13 +250,12 @@ namespace aTello
             }, token);
 
         }
-        public static bool connected = false;
-        public static void init()
+        public static void startConnecting()
         {
             //Thread to handle connecting.
             Task.Factory.StartNew(async () =>
             {
-                var timeout = new TimeSpan(3000);//2 second connection timeout
+                var timeout = new TimeSpan(3000);//3 second connection timeout
                 while (true)
                 {
                     try
@@ -316,7 +303,7 @@ namespace aTello
         //Center = 0.0. 
         //Up/Right =1.0. 
         //Down/Left=-1.0. 
-        public static byte[] createJoyPacket(float fRx, float fRy, float fLx, float fLy, float speed)
+        private static byte[] createJoyPacket(float fRx, float fRy, float fLx, float fLy, float speed)
         {
             //template joy packet.
             var packet = new byte[] { 0xcc, 0xb0, 0x00, 0x7f, 0x60, 0x50, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x12, 0x16, 0x01, 0x0e, 0x00, 0x25, 0x54 };

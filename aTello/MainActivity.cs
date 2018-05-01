@@ -12,6 +12,7 @@ using Android.Net.Wifi;
 using Android.Text.Format;
 using System.IO;
 using System.Linq;
+using TelloLib;
 
 namespace aTello
 {
@@ -82,20 +83,20 @@ namespace aTello
 
             };
             //subscribe to Tello update events
-            Tello.onUpdate += () =>
+            Tello.onUpdate += (Tello.FlyData newState) =>
             {
-                //Update state on screen
-                var acstat = FindViewById<TextView>(Resource.Id.ac_state);
-
-                var str = Tello.state.ToString();//ToString() = Formated state
+                var str = newState.ToString();//ToString() = Formated state
 
                 RunOnUiThread(() => {
+                    //Update state on screen
+                    var acstat = FindViewById<TextView>(Resource.Id.ac_state);
+
                     acstat.Text = str;
                     if (Tello.state.flying && takeoffButton.Text != "Land")
                         takeoffButton.Text = "Land";
                     else if (!Tello.state.flying && takeoffButton.Text != "Takeoff")
                         takeoffButton.Text = "Takeoff";
-                });//Update view.
+                });
 
             };
 
@@ -116,7 +117,7 @@ namespace aTello
 
             
 
-            Tello.init();//Start trying to connect.
+            Tello.startConnecting();//Start trying to connect.
 
             //Clicking on network state button will show wifi connection page. 
             Button button = FindViewById<Button>(Resource.Id.connectButton);

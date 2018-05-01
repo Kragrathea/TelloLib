@@ -5,14 +5,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 
-namespace aTello
+namespace TelloLib
 {
     //Simple UDP client/server
     public struct Received
