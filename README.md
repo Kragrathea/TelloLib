@@ -1,4 +1,4 @@
-# TelloAndroid
+# aTello an Android Tello App
 Android client for Ryze/DJI Tello. Written in C# using Xarmin.
 
 https://docs.microsoft.com/en-us/xamarin/cross-platform/get-started/installation/windows
