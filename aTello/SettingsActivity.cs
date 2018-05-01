@@ -10,7 +10,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
-namespace TelloApp
+namespace aTello
 {
     [Activity(Label = "Settings")]
     public class SettingsActivity : Activity

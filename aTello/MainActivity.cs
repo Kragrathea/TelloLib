@@ -5,7 +5,7 @@ using Android.Hardware.Input;
 using System.Collections.Generic;
 using Android.Content;
 using Android.Views;
-using static TelloApp.GameController;
+using static aTello.GameController;
 using Android.Content.PM;
 using System;
 using Android.Net.Wifi;
@@ -13,9 +13,9 @@ using Android.Text.Format;
 using System.IO;
 using System.Linq;
 
-namespace TelloApp
+namespace aTello
 {
-    [Activity(ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.KeyboardHidden | ConfigChanges.ScreenSize, Label = "TelloApp",
+    [Activity(ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.KeyboardHidden | ConfigChanges.ScreenSize, Label = "aTello",
     MainLauncher = true, Icon = "@mipmap/icon", Theme = "@android:style/Theme.NoTitleBar.Fullscreen", ScreenOrientation = ScreenOrientation.Portrait)]
     public class MainActivity : Activity, InputManager.IInputDeviceListener
     {
@@ -37,7 +37,7 @@ namespace TelloApp
 
             takeoffButton = FindViewById<Button>(Resource.Id.takeoffButton);
 
-            var path = "TelloApp/video/";
+            var path = "aTello/video/";
             System.IO.Directory.CreateDirectory(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path));
             videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + ".h264");
 
@@ -56,7 +56,7 @@ namespace TelloApp
                     {
                         //Not connected to network.
                         RunOnUiThread(() => {
-                            cbutton.Text = "No Network";
+                            cbutton.Text = "Not Connected. Touch Here.";
                             cbutton.SetBackgroundColor(Android.Graphics.Color.DarkSalmon);
                         });
                         return;
@@ -65,7 +65,7 @@ namespace TelloApp
                 if (newState == Tello.ConnectionState.Connected)
                 {
                     //Set new video file name based on date. 
-                    //var path = "TelloApp/video/";
+                    //var path = "aTello/video/";
                     //System.IO.Directory.CreateDirectory(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path));
                     //videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + ".h264");
                 }
@@ -165,10 +165,10 @@ namespace TelloApp
                         axes[i] = GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(i));
                     }
                     Tello.setAxis(axes);
-                    EditText joystat = FindViewById<EditText>(Resource.Id.joystick_state);
+                    TextView joystat = FindViewById<TextView>(Resource.Id.joystick_state);
                     
-                    var dataStr = string.Join(" ", axes);
-                    joystat.Text = dataStr;//string.Format("JOY {0:0.00} {1:0.00} {2:0.00} {3:0.00} {4:0.00}", axes[0], axes[1], axes[2], axes[3], axes[4]);
+                    //var dataStr = string.Join(" ", axes);
+                    joystat.Text = string.Format("JOY {0: 0.00;-0.00} {1: 0.00;-0.00} {2: 0.00;-0.00} {3: 0.00;-0.00} {4: 0.00;-0.00}", axes[0], axes[1], axes[2], axes[3], axes[4]);
 
                     //controller_view.Invalidate();
                     return true;

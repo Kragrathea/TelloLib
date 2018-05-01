@@ -12,7 +12,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
-namespace TelloApp
+namespace aTello
 {
     //Simple UDP client/server
     public struct Received

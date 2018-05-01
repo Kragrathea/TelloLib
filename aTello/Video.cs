@@ -13,7 +13,7 @@ using Android.Media;
 using Java.Nio;
 using Java.Util.Concurrent.Atomic;
 
-namespace TelloApp
+namespace aTello
 {
     class Video
     {

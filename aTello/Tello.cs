@@ -12,7 +12,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
-namespace TelloApp
+namespace aTello
 {
     class Tello
     {
@@ -70,8 +70,6 @@ namespace TelloApp
         public static void setAxis(float[] axis)
         {
             joyAxis = axis.Take(5).ToArray(); ;
-
-
             //joyAxis[2] = axis[10];
             //joyAxis[3] = axis[11];
         }
