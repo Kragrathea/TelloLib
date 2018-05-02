@@ -87,7 +87,7 @@ namespace TelloLib
         }
         private static void connect()
         {
-            Console.WriteLine("Connecting to tello.");
+            //Console.WriteLine("Connecting to tello.");
             client = UdpUser.ConnectTo("192.168.10.1", 8889);
 
             connectionState = ConnectionState.Connecting;
@@ -128,7 +128,7 @@ namespace TelloLib
 
                                 startHeartbeat();
                                 requestIframe();
-                                Console.WriteLine("Tello connected!");
+                                //Console.WriteLine("Tello connected!");
                                 continue;
                             }
                         }
