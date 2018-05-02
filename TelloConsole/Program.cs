@@ -19,6 +19,9 @@ namespace TelloConsole
                 }
                 if (newState == Tello.ConnectionState.Connected)
                 {
+                    Tello.queryAttAngle();
+                    Tello.setMaxHeight(50);
+
                     clearConsole();
                 }
                 printAt(0,0,"Tello " + newState.ToString());

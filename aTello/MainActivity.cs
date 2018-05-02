@@ -65,6 +65,9 @@ namespace aTello
                 }
                 if (newState == Tello.ConnectionState.Connected)
                 {
+                    //Override max hei on connect.
+                    Tello.setMaxHeight(30);//meters
+
                     //Set new video file name based on date. 
                     //var path = "aTello/video/";
                     //System.IO.Directory.CreateDirectory(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path));

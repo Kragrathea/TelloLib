@@ -24,6 +24,8 @@ namespace TelloLib
         public delegate void videoUpdateDeligate(byte[] data);
         public static event videoUpdateDeligate onVideoData;
 
+        private static ushort sequence = 1;
+
         public enum ConnectionState
         {
             Disconnected,
@@ -36,13 +38,20 @@ namespace TelloLib
 
         public static void takeOff()
         {
-            var takeOffPacket = new byte[] { 0xcc, 0x58, 0x00, 0x7c, 0x68, 0x54, 0x00, 0xe4, 0x01, 0xc2, 0x16 };
-            client.Send(takeOffPacket);
+            var packet = new byte[] { 0xcc, 0x58, 0x00, 0x7c, 0x68, 0x54, 0x00, 0xe4, 0x01, 0xc2, 0x16 };
+            setPacketSequence(packet);
+            setPacketCRCs(packet);
+            client.Send(packet);
         }
         public static void land()
         {
-            var landPacket = new byte[] { 0xcc, 0x60, 0x00, 0x27, 0x68, 0x55, 0x00, 0xe5, 0x01, 0x00, 0xba, 0xc7 };
-            client.Send(landPacket);
+            var packet = new byte[] { 0xcc, 0x60, 0x00, 0x27, 0x68, 0x55, 0x00, 0xe5, 0x01, 0x00, 0xba, 0xc7 };
+
+            //payload
+            packet[9] = 0x00;//todo. Find out what this is for.
+            setPacketSequence(packet);
+            setPacketCRCs(packet);
+            client.Send(packet);
         }
         public static void requestIframe()
         {
@@ -51,6 +60,67 @@ namespace TelloLib
         }
         public static void setMaxHeight(int height)
         {
+            //                                          crc    typ  cmdL  cmdH  seqL  seqH  heiL  heiH  crc   crc
+            var packet = new byte[] { 0xcc, 0x68, 0x00, 0x27, 0x68, 0x58, 0x00, 0x00, 0x00, 0x00, 0x00, 0x5b, 0xc5 };
+
+            //payload
+            packet[9] = (byte)(height & 0xff);
+            packet[10] = (byte)((height >> 8) & 0xff);
+
+            setPacketSequence(packet);
+            setPacketCRCs(packet);
+
+            client.Send(packet);
+        }
+        public static void queryAttAngle()
+        {
+            var packet = new byte[] { 0xcc, 0x58, 0x00, 0x7c, 0x48, 0x59, 0x10, 0x06, 0x00, 0xe9, 0xb3 };
+            setPacketSequence(packet);
+            setPacketCRCs(packet);
+            client.Send(packet);
+        }
+        public static void setAttAngle(float angle)
+        {
+            //                                          crc    typ  cmdL  cmdH  seqL  seqH  ang1  ang2 ang3  ang4  crc   crc
+            var packet = new byte[] { 0xcc, 0x68, 0x00, 0x27, 0x68, 0x58, 0x00, 0x00, 0x00, 0x00, 0x00,0x00, 0x00, 0x5b, 0xc5 };
+
+            //payload
+            byte[] bytes = BitConverter.GetBytes(angle);
+            packet[9] = bytes[0];
+            packet[10] = bytes[1];
+            packet[11] = bytes[2];
+            packet[12] = bytes[3];
+
+            setPacketSequence(packet);
+            setPacketCRCs(packet);
+
+            client.Send(packet);
+
+            Tello.queryAttAngle();//refresh
+        }
+        public static void setJpgQuality(int quality)
+        {
+            var packet = new byte[] { 0xcc, 0x60, 0x00, 0x27, 0x68, 0x37, 0x00, 0x09, 0x00, 0x00, 0x5b, 0xc5 };
+
+            //payload
+            packet[9] = (byte)(quality & 0xff);
+
+            setPacketSequence(packet);
+            setPacketCRCs(packet);
+
+            client.Send(packet);
+        }
+        private static void setPacketSequence(byte[] packet)
+        {
+            packet[7] = (byte)(sequence & 0xff);
+            packet[8] = (byte)((sequence >> 8) & 0xff);
+            sequence++;
+        }
+        private static void setPacketCRCs(byte[] packet)
+        {
+            packet[7] = (byte)(sequence & 0xff);
+            packet[8] = (byte)((sequence >> 8) & 0xff);
+            sequence++;
         }
         public static void setEV(int ev)
         {
@@ -152,6 +222,12 @@ namespace TelloLib
                             }
                             //update current state.
                             state = newState;
+                        }
+                        if (cmdId == 4185)//att angle response
+                        {
+                            //var array = received.bytes.Skip(9).Take(4).Reverse().ToArray();
+                            //float f = BitConverter.ToSingle(array, 0);
+                            //Console.WriteLine(f);
                         }
                     }
                     catch (Exception ex)
