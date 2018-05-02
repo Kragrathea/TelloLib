@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelloLib", "TelloLib\TelloL
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelloConsole", "TelloConsole\TelloConsole.csproj", "{6E71816D-0976-4806-955F-D90E14CFC1A2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloTello", "HelloTello\HelloTello.csproj", "{A9F06754-2853-4CBF-9BC4-030A0FCC1B2C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{6E71816D-0976-4806-955F-D90E14CFC1A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E71816D-0976-4806-955F-D90E14CFC1A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E71816D-0976-4806-955F-D90E14CFC1A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9F06754-2853-4CBF-9BC4-030A0FCC1B2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9F06754-2853-4CBF-9BC4-030A0FCC1B2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9F06754-2853-4CBF-9BC4-030A0FCC1B2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9F06754-2853-4CBF-9BC4-030A0FCC1B2C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
