@@ -16,7 +16,7 @@ namespace TelloLib
         public byte[] bytes;
     }
 
-    abstract class UdpBase
+    public abstract class UdpBase
     {
         public UdpClient Client;
 
@@ -39,7 +39,7 @@ namespace TelloLib
     }
 
     //Server
-    class UdpListener : UdpBase
+    public class UdpListener : UdpBase
     {
         private IPEndPoint _listenOn;
 
@@ -62,7 +62,7 @@ namespace TelloLib
     }
 
     //Client
-    class UdpUser : UdpBase
+    public class UdpUser : UdpBase
     {
         private UdpUser() { }
 
@@ -82,8 +82,5 @@ namespace TelloLib
         {
             Client.Send(message, message.Length);
         }
-    }
-    class UDP
-    {
     }
 }

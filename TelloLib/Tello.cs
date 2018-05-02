@@ -125,9 +125,6 @@ namespace TelloLib
         public static void setEV(int ev)
         {
         }
-        public static void setAttAngle(int angle)
-        {
-        }
         public static void setEIS(int eis)
         {
         }

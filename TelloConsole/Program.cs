@@ -26,17 +26,29 @@ namespace TelloConsole
                 }
                 printAt(0,0,"Tello " + newState.ToString());
             };
-            //subscribe to Tello update events
+
+            //subscribe to Tello update events.
             Tello.onUpdate += (Tello.FlyData newState) =>
             {
                 var outStr = newState.ToString();//ToString() = Formated state
                 printAt(0, 2, outStr);
             };
 
+            //Connection to send raw video data to local udp port.
+            //To play: ffplay -probesize 32 -sync ext udp://127.0.0.1:7038
+            var videoClient = UdpUser.ConnectTo("127.0.0.1", 7038);
 
             //subscribe to Tello video data
             Tello.onVideoData += (byte[] data) =>
             {
+                try
+                {
+                    videoClient.Send(data.Skip(2).ToArray());//Skip 2 byte header and send to ffplay. 
+                    //Console.WriteLine("Video size:" + data.Length);
+                }catch (Exception ex)
+                {
+
+                }
             };
 
             Tello.startConnecting();//Start trying to connect.
