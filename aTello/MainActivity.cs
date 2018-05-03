@@ -122,9 +122,14 @@ namespace aTello
                 {
                     if (data[2] == 0 && data[3] == 0 && data[4] == 0 && data[5] == 1)//if nal
                     {
+                        var nalType = data[6] & 0x1f;
+                        if (nalType == 7|| nalType == 8)
+                        {
+
+                        }
                         if (videoOffset > 0)
                         {
-                            //aTello.Video.Decoder.decode(videoFrame);
+                            aTello.Video.Decoder.decode(videoFrame.Take(videoOffset).ToArray());
                             videoOffset = 0;
                         }
                         //var nal = (received.bytes[6] & 0x1f);

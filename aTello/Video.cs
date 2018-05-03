@@ -12,6 +12,7 @@ using Android.Widget;
 using Android.Media;
 using Java.Nio;
 using Java.Util.Concurrent.Atomic;
+using System.IO;
 
 namespace aTello
 {
@@ -22,11 +23,31 @@ namespace aTello
             static byte[] buffer;
             static private MediaCodec codec;
             static private bool bConfigured;
-            static private ByteBuffer sps=null;
-            static private ByteBuffer pps = null;
+            static private byte[] sps=null;
+            static private byte[] pps = null;
             static private int width=960;
-            static private int height=-720;
+            static private int height=720;
             static private Surface surface=null;//todo.
+
+            static string path = "aTello/video/";
+            static string videoFilePath ;
+
+
+            static private void drawBuffer(ByteBuffer buffer, byte[] data)
+            {
+                if(videoFilePath==null)
+                {
+                    System.IO.Directory.CreateDirectory(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path));
+                    videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("processed") + ".bin");
+                }
+                using (var stream = new FileStream(videoFilePath, FileMode.Append))
+                {
+                    //var bytes = new byte[buffer.Remaining()];
+                   // buffer.Get(bytes, 0, bytes.Length);
+
+                    stream.Write(data, 0, data.Length);//
+                }
+            }
 
             static public void decode(byte[] array)
             {
@@ -34,12 +55,12 @@ namespace aTello
                 var nalType = array[4] & 0x1f;
                 if(nalType==7)
                 {
-                    sps = ByteBuffer.Wrap(array);
+                    sps = array.ToArray();
                     return;
                 }
                 if (nalType == 8)
                 {
-                    pps = ByteBuffer.Wrap(array);
+                    pps = array.ToArray();
                     return;
                 }
                 int ret;
@@ -72,6 +93,7 @@ namespace aTello
                                 buffer = new byte[BufferInfo.Size];
                             }
                             byteBuffer2.Get(buffer);
+                            drawBuffer(byteBuffer2,buffer);
                             //d.a(BufferInfo.Flags, false, buffer);
                             //                           drawBuffer(buffer);
                             codec.ReleaseOutputBuffer(i, true);
@@ -103,7 +125,7 @@ namespace aTello
                 }
             }
 
-            static public void config(Surface surface,int width, int height, ByteBuffer sps, ByteBuffer pps)
+            static public void config(Surface surface,int width, int height, byte[] sps, byte[] pps)
             {
                 if (sps == null || pps == null)//not ready.
                     return;
@@ -121,8 +143,8 @@ namespace aTello
                 Decoder.sps = sps;
                 Decoder.pps = pps;
                 MediaFormat videoFormat = MediaFormat.CreateVideoFormat("video/avc", width, height);
-                videoFormat.SetByteBuffer("csd-0", sps);
-                videoFormat.SetByteBuffer("csd-1", pps);
+                videoFormat.SetByteBuffer("csd-0",ByteBuffer.Wrap(sps));
+                videoFormat.SetByteBuffer("csd-1", ByteBuffer.Wrap(pps));
                 videoFormat.SetInteger("color-format", 19);
 
                 string str = videoFormat.GetString("mime");
