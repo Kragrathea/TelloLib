@@ -103,10 +103,13 @@ namespace aTello
 
             };
 
+            var videoFrame = new byte[100 * 1024];
+            var videoOffset = 0;
 
             //subscribe to Tello video data
             Tello.onVideoData += (byte[] data) =>
             {
+
                 if (videoFilePath != null)
                 {
                     //Save raw data minus sequence.
@@ -115,10 +118,23 @@ namespace aTello
                         stream.Write(data, 2, data.Length-2);//Note remove 2 byte seq when saving. 
                     }
                 }
-
+                if (false)//video decoder tests.
+                {
+                    if (data[2] == 0 && data[3] == 0 && data[4] == 0 && data[5] == 1)//if nal
+                    {
+                        if (videoOffset > 0)
+                        {
+                            //aTello.Video.Decoder.decode(videoFrame);
+                            videoOffset = 0;
+                        }
+                        //var nal = (received.bytes[6] & 0x1f);
+                        //if (nal != 0x01 && nal != 0x07 && nal != 0x08 && nal != 0x05)
+                        //    Console.WriteLine("NAL type:" + nal);
+                    }
+                    Array.Copy(data, 2, videoFrame, videoOffset, data.Length - 2);
+                    videoOffset += (data.Length - 2);
+                }
             };
-
-            
 
             Tello.startConnecting();//Start trying to connect.
 
@@ -168,11 +184,12 @@ namespace aTello
                     {
                         axes[i] = GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(i));
                     }
+                    axes[4] = buttons[5];
                     Tello.setAxis(axes);
                     TextView joystat = FindViewById<TextView>(Resource.Id.joystick_state);
                     
-                    //var dataStr = string.Join(" ", axes);
-                    joystat.Text = string.Format("JOY {0: 0.00;-0.00} {1: 0.00;-0.00} {2: 0.00;-0.00} {3: 0.00;-0.00} {4: 0.00;-0.00}", axes[0], axes[1], axes[2], axes[3], axes[4]);
+                    var dataStr = string.Join(" ", buttons);
+                    joystat.Text = string.Format(dataStr+"\nJOY {0: 0.00;-0.00} {1: 0.00;-0.00} {2: 0.00;-0.00} {3: 0.00;-0.00} {4: 0.00;-0.00}", axes[0], axes[1], axes[2], axes[3], axes[4]);
 
                     //controller_view.Invalidate();
                     return true;
@@ -190,10 +207,12 @@ namespace aTello
                 if (index >= 0)
                 {
                     buttons[index] = 0;
-                    if (index == 3)
+                    if (index == 7)
                         Tello.takeOff();
-                    if (index == 0)
+                    if (index == 6)
                         Tello.land();
+                    axes[4] = buttons[5];
+                    Tello.setAxis(axes);
 
                     //controller_view.Invalidate();
                 }
@@ -214,6 +233,8 @@ namespace aTello
                     {
                         buttons[index] = 1;
                         //controller_view.Invalidate();
+                        axes[4] = buttons[5];
+                        Tello.setAxis(axes);
                     }
                     return true;
                 }

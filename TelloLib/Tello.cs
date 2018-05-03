@@ -132,7 +132,7 @@ namespace TelloLib
         public static void setAxis(float[] axis)
         {
             joyAxis = axis.Take(5).ToArray(); ;
-            //joyAxis[2] = axis[10];
+            //joyAxis[4] = axis[7];
             //joyAxis[3] = axis[11];
         }
 
@@ -238,7 +238,6 @@ namespace TelloLib
             //video server
             var videoServer = new UdpListener(6038);
             //var videoServer = new UdpListener(new IPEndPoint(IPAddress.Parse("192.168.10.2"), 6038));
-            //var videoClient = UdpUser.ConnectTo("127.0.0.1", 7038);//send video data to: ffplay rtp://127.0.0.1:7038
 
             Task.Factory.StartNew(async () => {
                 //Console.WriteLine("video:1");
@@ -251,15 +250,17 @@ namespace TelloLib
                         if (token.IsCancellationRequested)//handle canceling thread.
                             break;
                         var received = await videoServer.Receive();
-                        if (received.bytes[2] == 0 && received.bytes[3] == 0)//Wait for first NAL
+                        if (received.bytes[2] == 0 && received.bytes[3] == 0 && received.bytes[4] == 0 && received.bytes[5] == 1)//Wait for first NAL
                         {
+                            var nal = (received.bytes[6] & 0x1f);
+                            //if (nal != 0x01 && nal!=0x07 && nal != 0x08 && nal != 0x05)
+                            //    Console.WriteLine("NAL type:" +nal);
                             started = true;
                         }
                         if (started)
                         {
                             onVideoData(received.bytes);
                         }
-                        //videoClient.Send(received.bytes.Skip(2).ToArray());//Skip 2 byte header and send along. 
 
                     }catch (Exception ex)
                     {

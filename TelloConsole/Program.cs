@@ -36,6 +36,7 @@ namespace TelloConsole
 
             //Connection to send raw video data to local udp port.
             //To play: ffplay -probesize 32 -sync ext udp://127.0.0.1:7038
+            //To play with minimum latency:ffmpeg -i udp://127.0.0.1:7038 -f sdl "Tello"
             var videoClient = UdpUser.ConnectTo("127.0.0.1", 7038);
 
             //subscribe to Tello video data

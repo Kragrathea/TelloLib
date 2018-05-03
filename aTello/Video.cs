@@ -15,25 +15,37 @@ using Java.Util.Concurrent.Atomic;
 
 namespace aTello
 {
-    class Video
+    public class Video
     {
         public class Decoder
         {
-            byte[] buffer;
-            private MediaCodec codec;
-            private bool bConfigured;
-            private ByteBuffer csd0;
-            private ByteBuffer csd1;
-            private int width;
-            private int height;
-            private Surface surface;//todo.
+            static byte[] buffer;
+            static private MediaCodec codec;
+            static private bool bConfigured;
+            static private ByteBuffer sps=null;
+            static private ByteBuffer pps = null;
+            static private int width=960;
+            static private int height=-720;
+            static private Surface surface=null;//todo.
 
-            public int decode(byte[] array)
+            static public void decode(byte[] array)
             {
+
+                var nalType = array[4] & 0x1f;
+                if(nalType==7)
+                {
+                    sps = ByteBuffer.Wrap(array);
+                    return;
+                }
+                if (nalType == 8)
+                {
+                    pps = ByteBuffer.Wrap(array);
+                    return;
+                }
                 int ret;
                 if (codec == null)
                 {
-                    config(surface,width, height, csd0, csd1);
+                    config(surface,width, height, sps, pps);
                     ret = -1;
                 }
                 else
@@ -71,10 +83,10 @@ namespace aTello
                     }
                     ret = 0;
                 }
-                return ret;
+                return;// ret;
             }
 
-            public void stop()
+            static public void stop()
             {
                 if (codec == null)
                 {
@@ -91,8 +103,11 @@ namespace aTello
                 }
             }
 
-            public void config(Surface surface,int width, int height, ByteBuffer csd0, ByteBuffer csd1)
+            static public void config(Surface surface,int width, int height, ByteBuffer sps, ByteBuffer pps)
             {
+                if (sps == null || pps == null)//not ready.
+                    return;
+
                 if (bConfigured)
                 {
                     return;
@@ -101,23 +116,26 @@ namespace aTello
                 {
                     stop();
                 }
-                width = width;
-                height = height;
-                csd0 = csd0;
-                csd1 = csd1;
+                Decoder.width = width;
+                Decoder.height = height;
+                Decoder.sps = sps;
+                Decoder.pps = pps;
                 MediaFormat videoFormat = MediaFormat.CreateVideoFormat("video/avc", width, height);
-                videoFormat.SetByteBuffer("csd-0", csd0);
-                videoFormat.SetByteBuffer("csd-1", csd1);
+                videoFormat.SetByteBuffer("csd-0", sps);
+                videoFormat.SetByteBuffer("csd-1", pps);
                 videoFormat.SetInteger("color-format", 19);
+
                 string str = videoFormat.GetString("mime");
                 try
                 {
-                    (codec = MediaCodec.CreateDecoderByType(str)).Configure(videoFormat, surface, (MediaCrypto)null, 0);
+                    codec = MediaCodec.CreateDecoderByType(str);
+                    codec.Configure(videoFormat, surface, (MediaCrypto)null, 0);
                     codec.Start();
                     bConfigured = true;
                 }
                 catch (Exception ex)
                 {
+                    var xstr = ex.Message.ToString();
                 }
             }
 
