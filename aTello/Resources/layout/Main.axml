@@ -8,6 +8,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/connect_status" />
+    <SurfaceView
+        android:layout_width="match_parent"
+        android:layout_height="272.5dp"
+        android:id="@+id/surfaceView" />
     <Button
         android:text="Takeoff"
         android:layout_width="match_parent"

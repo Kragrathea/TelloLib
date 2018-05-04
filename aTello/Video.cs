@@ -1,18 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
 using Android.Views;
-using Android.Widget;
 using Android.Media;
 using Java.Nio;
-using Java.Util.Concurrent.Atomic;
-using System.IO;
 
 namespace aTello
 {
@@ -27,31 +19,10 @@ namespace aTello
             static private byte[] pps = null;
             static private int width=960;
             static private int height=720;
-            static private Surface surface=null;//todo.
-
-            static string path = "aTello/video/";
-            static string videoFilePath ;
-
-
-            static private void drawBuffer(ByteBuffer buffer, byte[] data)
-            {
-                if(videoFilePath==null)
-                {
-                    System.IO.Directory.CreateDirectory(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path));
-                    videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("processed") + ".bin");
-                }
-                using (var stream = new FileStream(videoFilePath, FileMode.Append))
-                {
-                    //var bytes = new byte[buffer.Remaining()];
-                   // buffer.Get(bytes, 0, bytes.Length);
-
-                    stream.Write(data, 0, data.Length);//
-                }
-            }
+            static public Surface surface=null;
 
             static public void decode(byte[] array)
             {
-
                 var nalType = array[4] & 0x1f;
                 if(nalType==7)
                 {
@@ -75,27 +46,32 @@ namespace aTello
                     {
                         ByteBuffer[] inputBuffers = codec.GetInputBuffers();
                         ByteBuffer[] outputBuffers = codec.GetOutputBuffers();
+
                         int dequeueInputBuffer = codec.DequeueInputBuffer(-1L);
                         if (dequeueInputBuffer >= 0)
                         {
+                            //Send data to decoder. 
                             ByteBuffer byteBuffer = inputBuffers[dequeueInputBuffer];
                             byteBuffer.Clear();
                             byteBuffer.Put(array);
                             codec.QueueInputBuffer(dequeueInputBuffer, 0, array.Length, 0L, 0);
                         }
+
+                        //Show decoded frame
                         MediaCodec.BufferInfo BufferInfo = new MediaCodec.BufferInfo();
                         int i = codec.DequeueOutputBuffer(BufferInfo, 0L);
                         while (i >= 0)
                         {
-                            ByteBuffer byteBuffer2 = outputBuffers[i];
-                            if (buffer == null || buffer.Length != BufferInfo.Size)
+                            if (surface == null)//Only if not using display surface. 
                             {
-                                buffer = new byte[BufferInfo.Size];
+                                ByteBuffer byteBuffer2 = outputBuffers[i];
+                                if (buffer == null || buffer.Length != BufferInfo.Size)
+                                {
+                                    buffer = new byte[BufferInfo.Size];
+                                }
+                                byteBuffer2.Get(buffer);
+                                //do something with raw frame in buffer. 
                             }
-                            byteBuffer2.Get(buffer);
-                            drawBuffer(byteBuffer2,buffer);
-                            //d.a(BufferInfo.Flags, false, buffer);
-                            //                           drawBuffer(buffer);
                             codec.ReleaseOutputBuffer(i, true);
                             i = codec.DequeueOutputBuffer(BufferInfo, 0L);
                         }
@@ -111,9 +87,8 @@ namespace aTello
             static public void stop()
             {
                 if (codec == null)
-                {
                     return;
-                }
+
                 try
                 {
                     codec.Stop();
@@ -131,13 +106,11 @@ namespace aTello
                     return;
 
                 if (bConfigured)
-                {
                     return;
-                }
+
                 if (codec != null)
-                {
                     stop();
-                }
+
                 Decoder.width = width;
                 Decoder.height = height;
                 Decoder.sps = sps;
@@ -157,7 +130,7 @@ namespace aTello
                 }
                 catch (Exception ex)
                 {
-                    var xstr = ex.Message.ToString();
+                    var errstr = ex.Message.ToString();
                 }
             }
 

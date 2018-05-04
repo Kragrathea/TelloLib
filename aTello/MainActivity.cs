@@ -68,6 +68,8 @@ namespace aTello
                     //Override max hei on connect.
                     Tello.setMaxHeight(30);//meters
 
+                    Tello.setPicVidMode(0);//0=picture(960x720)
+
                     //Set new video file name based on date. 
                     //var path = "aTello/video/";
                     //System.IO.Directory.CreateDirectory(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path));
@@ -105,6 +107,7 @@ namespace aTello
 
             var videoFrame = new byte[100 * 1024];
             var videoOffset = 0;
+            Video.Decoder.surface = FindViewById<SurfaceView>(Resource.Id.surfaceView).Holder.Surface;
 
             //subscribe to Tello video data
             Tello.onVideoData += (byte[] data) =>
@@ -115,10 +118,10 @@ namespace aTello
                     //Save raw data minus sequence.
                     using (var stream = new FileStream(videoFilePath, FileMode.Append))
                     {
-                        stream.Write(data, 2, data.Length-2);//Note remove 2 byte seq when saving. 
+//                        stream.Write(data, 2, data.Length-2);//Note remove 2 byte seq when saving. 
                     }
                 }
-                if (false)//video decoder tests.
+                if (true)//video decoder tests.
                 {
                     if (data[2] == 0 && data[3] == 0 && data[4] == 0 && data[5] == 1)//if nal
                     {

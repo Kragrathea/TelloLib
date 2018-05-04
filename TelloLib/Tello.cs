@@ -100,6 +100,7 @@ namespace TelloLib
         }
         public static void setJpgQuality(int quality)
         {
+            //                                          crc    typ  cmdL  cmdH  seqL  seqH  quaL  crc   crc
             var packet = new byte[] { 0xcc, 0x60, 0x00, 0x27, 0x68, 0x37, 0x00, 0x09, 0x00, 0x00, 0x5b, 0xc5 };
 
             //payload
@@ -110,6 +111,27 @@ namespace TelloLib
 
             client.Send(packet);
         }
+
+        /*TELLO_CMD_SWITCH_PICTURE_VIDEO
+	    49 0x31
+	    0x68
+	    switching video stream mode
+        data: u8 (1=video, 0=photo)
+        */
+        public static void setPicVidMode(int mode)
+        {
+            //                                          crc    typ  cmdL  cmdH  seqL  seqH  modL  crc   crc
+            var packet = new byte[] { 0xcc, 0x60, 0x00, 0x27, 0x68, 0x31, 0x00, 0x00, 0x00, 0x00, 0x5b, 0xc5 };
+
+            //payload
+            packet[9] = (byte)(mode & 0xff);
+
+            setPacketSequence(packet);
+            setPacketCRCs(packet);
+
+            client.Send(packet);
+        }
+
         private static void setPacketSequence(byte[] packet)
         {
             packet[7] = (byte)(sequence & 0xff);
@@ -424,14 +446,15 @@ namespace TelloLib
             public int northSpeed;
             public int flyTime;
 
+            public bool flying;//
+
             public bool downVisualState;
             public bool droneHover;
             public bool eMOpen;
-            public bool flying;
             public bool onGround;
             public bool pressureState;
 
-            public int batteryPercentage;
+            public int batteryPercentage;//
             public bool batteryLow;
             public bool batteryLower;
             public bool batteryState;
@@ -440,7 +463,7 @@ namespace TelloLib
             public int droneFlyTimeLeft;
 
 
-            public int cameraState;
+            public int cameraState;//
             public int electricalMachineryState;
             public bool factoryMode;
             public bool frontIn;
@@ -449,14 +472,14 @@ namespace TelloLib
             public bool gravityState;
             public int imuCalibrationState;
             public bool imuState;
-            public int lightStrength;
+            public int lightStrength;//
             public bool outageRecording;
             public int smartVideoExitMode;
             public int temperatureHeight;
             public int throwFlyTimer;
-            public int wifiDisturb;
-            public int wifiStrength = 100;
-            public bool windState;
+            public int wifiDisturb;//
+            public int wifiStrength = 100;//
+            public bool windState;//
 
             public void set(byte[] data)
             {
@@ -531,3 +554,4 @@ namespace TelloLib
 
     }
 }
+ 
