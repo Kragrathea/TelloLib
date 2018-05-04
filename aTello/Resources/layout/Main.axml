@@ -8,10 +8,67 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/connect_status" />
-    <SurfaceView
+    <RelativeLayout
+        android:minWidth="25px"
+        android:minHeight="25px"
         android:layout_width="match_parent"
-        android:layout_height="272.5dp"
-        android:id="@+id/surfaceView" />
+        android:layout_height="279.0dp"
+        android:id="@+id/relativeLayout1">
+        <SurfaceView
+            android:id="@+id/surfaceView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" />
+        <ImageButton
+            android:src="@drawable/takeoff_white"
+            android:id="@+id/imageButton1"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginBottom="0dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="0dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:minWidth="25px"
+            android:minHeight="25px"
+            android:id="@+id/linearLayout1"
+            android:layout_width="320dp"
+            android:layout_height="32dp"
+            android:layout_toRightOf="@id/imageButton1"
+            android:background="#8888"
+            android:layout_marginRight="20.0dp">
+            <TextView
+                android:text="HS: 000"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:id="@+id/textView1"
+                android:gravity="left"
+                android:layout_width="50dp"
+                android:layout_height="match_parent" />
+            <TextView
+                android:text="VS: 000"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:id="@+id/textView1"
+                android:gravity="left"
+                android:layout_width="50dp"
+                android:layout_height="match_parent" />
+            <TextView
+                android:text="Bat: 000"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:id="@+id/textView1"
+                android:gravity="left"
+                android:layout_width="80dp"
+                android:layout_height="match_parent" />
+            <TextView
+                android:text="Wifi: 000"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:id="@+id/textView1"
+                android:gravity="left"
+                android:layout_width="80dp"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+    </RelativeLayout>
     <Button
         android:text="Takeoff"
         android:layout_width="match_parent"
