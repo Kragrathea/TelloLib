@@ -34,6 +34,22 @@ namespace TelloConsole
                 printAt(0, 2, outStr);
             };
 
+            //subscribe to Joystick update events. Called ~10x second.
+            PCJoystick.onUpdate += (SharpDX.DirectInput.JoystickState joyState) =>
+            {
+
+                var rx = ((float)joyState.RotationX / 0x8000) - 1;
+                var ry = (((float)joyState.RotationY / 0x8000) - 1);
+                var lx = ((float)joyState.X / 0x8000) - 1;
+                var ly = (((float)joyState.Y / 0x8000) - 1);
+                //var boost = joyState.Z
+                float[] axes = new float[] { lx, ly, rx, ry, 0 };
+                var outStr = string.Format("JOY {0: 0.00;-0.00} {1: 0.00;-0.00} {2: 0.00;-0.00} {3: 0.00;-0.00} {4: 0.00;-0.00}", axes[0], axes[1], axes[2], axes[3], axes[4]);
+                printAt(0, 22, outStr);
+                Tello.setAxis(axes);
+            };
+            PCJoystick.init();
+
             //Connection to send raw video data to local udp port.
             //To play: ffplay -probesize 32 -sync ext udp://127.0.0.1:7038
             //To play with minimum latency:ffmpeg -i udp://127.0.0.1:7038 -f sdl "Tello"
@@ -81,7 +97,7 @@ namespace TelloConsole
         static void clearConsole()
         {
             Console.Clear();
-            Console.SetCursorPosition(0, 22);
+            Console.SetCursorPosition(0, 23);
             Console.WriteLine("Commands:takeoff,land,exit,cls");
         }
     }
