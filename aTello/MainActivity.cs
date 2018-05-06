@@ -58,7 +58,7 @@ namespace aTello
                         //Not connected to network.
                         RunOnUiThread(() => {
                             cbutton.Text = "Not Connected. Touch Here.";
-                            cbutton.SetBackgroundColor(Android.Graphics.Color.DarkSalmon);
+                            cbutton.SetBackgroundColor(Android.Graphics.Color.ParseColor("#55ff3333"));
                         });
                         return;
                     }
@@ -81,9 +81,9 @@ namespace aTello
                 RunOnUiThread(() => {
                     cbutton.Text = newState.ToString();
                     if (newState == Tello.ConnectionState.Connected)
-                        cbutton.SetBackgroundColor(Android.Graphics.Color.LightGreen);
+                        cbutton.SetBackgroundColor(Android.Graphics.Color.ParseColor("#6090ee90"));//transparent light green.
                     else
-                        cbutton.SetBackgroundColor(Android.Graphics.Color.Yellow);
+                        cbutton.SetBackgroundColor(Android.Graphics.Color.ParseColor("#ffff00"));//yellow
 
                 });
 

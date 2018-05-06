@@ -14,9 +14,13 @@
     <Button
         android:id="@+id/connectButton"
         android:text="@string/connect_status"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_centerHorizontal="true" />
+        android:layout_width="fill_parent"
+        android:layout_height="30dp"
+        android:layout_centerHorizontal="true"
+        android:textSize="15dp"
+        style="@android:style/Widget.Holo.Button.Borderless"
+        android:textColor="@android:color/black"
+        android:background="#55ff3333" />
     <LinearLayout
         android:orientation="vertical"
         android:minWidth="25px"
@@ -33,7 +37,8 @@
             android:scaleType="centerInside"
             android:layout_width="wrap_content"
             android:background="@android:drawable/screen_background_light_transparent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp" />
         <ImageButton
             android:src="@drawable/takeoff_hand"
             android:id="@+id/takeoffButton"
