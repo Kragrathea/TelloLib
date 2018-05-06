@@ -2,8 +2,8 @@
 A Work-In-Progress cross platform Ryze/DJI Tello control library. Currently supports Android and PC.
 
 # aTello 
-A bare bones Android Tello control app. Minimal UI and NO live video support. 
-Requires a PS3 Joystick connected via OTG cable for a controller. Currently NO onscreen joysticks.   
+A bare bones Android Tello control app with minimal UI. 
+NOTE:Requires a PS3 Joystick connected via OTG cable for a controller. Currently NO onscreen joysticks.   
 
 <img src="https://github.com/Kragrathea/TelloLib/blob/master/Media/aTelloScreen4.png" width="600" >
 
