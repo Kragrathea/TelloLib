@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,9 +28,23 @@ namespace TelloConsole
                 printAt(0,0,"Tello " + newState.ToString());
             };
 
-            //subscribe to Tello update events.
+            //Log file setup.
+            var logPath = "logs/";
+            System.IO.Directory.CreateDirectory(Path.Combine("../", logPath));
+            var logStartTime = DateTime.Now;
+            var logFilePath = Path.Combine("../", logPath + logStartTime.ToString("yyyy-dd-M--HH-mm-ss") + ".csv");
+
+            //write header for cols in log.
+            File.WriteAllText(logFilePath, "time,"+Tello.state.getLogHeader());
+
+                //subscribe to Tello update events.
             Tello.onUpdate += (Tello.FlyData newState) =>
             {
+                //write update to log.
+                var elapsed = DateTime.Now - logStartTime;
+                File.AppendAllText(logFilePath,elapsed.ToString(@"mm\:ss\:ff\,") + newState.getLogLine());
+                
+                //display state in console.
                 var outStr = newState.ToString();//ToString() = Formated state
                 printAt(0, 2, outStr);
             };
@@ -81,7 +96,11 @@ namespace TelloConsole
                 if (str == "land" && Tello.connected && Tello.state.flying)
                     Tello.land();
                 if (str == "cls")
+                {
+                    Tello.setMaxHeight(9);
+                    Tello.queryMaxHeight();
                     clearConsole();
+                }
             }
         }
         //Print at x,y in console. 

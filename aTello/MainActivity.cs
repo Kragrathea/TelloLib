@@ -17,7 +17,7 @@ using TelloLib;
 namespace aTello
 {
     [Activity(ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.KeyboardHidden | ConfigChanges.ScreenSize, Label = "aTello",
-    MainLauncher = true, Icon = "@mipmap/icon", Theme = "@android:style/Theme.NoTitleBar.Fullscreen", ScreenOrientation = ScreenOrientation.Portrait)]
+    MainLauncher = true, Icon = "@mipmap/icon", Theme = "@android:style/Theme.Black.NoTitleBar.Fullscreen", ScreenOrientation = ScreenOrientation.SensorLandscape)]
     public class MainActivity : Activity, InputManager.IInputDeviceListener
     {
     
@@ -28,7 +28,7 @@ namespace aTello
         private List<int> connected_devices = new List<int>();
         private int current_device_id = -1;
 
-        Button takeoffButton;
+        ImageButton takeoffButton;
         string videoFilePath;//file to save raw h264 to. 
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -36,7 +36,7 @@ namespace aTello
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.Main);
 
-            takeoffButton = FindViewById<Button>(Resource.Id.takeoffButton);
+            takeoffButton = FindViewById<ImageButton>(Resource.Id.takeoffButton);
 
             var path = "aTello/video/";
             System.IO.Directory.CreateDirectory(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path));
@@ -65,10 +65,12 @@ namespace aTello
                 }
                 if (newState == Tello.ConnectionState.Connected)
                 {
+                    //Tello.queryMaxHeight();
                     //Override max hei on connect.
-                    Tello.setMaxHeight(30);//meters
+                    Tello.setMaxHeight(25);//meters
+                    Tello.queryMaxHeight();
 
-                    Tello.setPicVidMode(0);//0=picture(960x720)
+                    //Tello.setPicVidMode(0);//0=picture(960x720)
 
                     //Set new video file name based on date. 
                     //var path = "aTello/video/";
@@ -87,20 +89,45 @@ namespace aTello
 
 
             };
+            var modeTextView = FindViewById<TextView>(Resource.Id.modeTextView);
+            var hSpeedTextView =FindViewById<TextView>(Resource.Id.hSpeedTextView);
+            var vSpeedTextView = FindViewById<TextView>(Resource.Id.vSpeedTextView);
+            var heiTextView = FindViewById<TextView>(Resource.Id.heiTextView);
+            var batTextView = FindViewById<TextView>(Resource.Id.batTextView);
+            var wifiTextView = FindViewById<TextView>(Resource.Id.wifiTextView);
+
+            //Log file setup.
+            var logPath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, "aTello/logs/"); ;
+            System.IO.Directory.CreateDirectory(logPath);
+            var logStartTime = DateTime.Now;
+            var logFilePath = logPath + logStartTime.ToString("yyyy-dd-M--HH-mm-ss") + ".csv";
+
+            //write header for cols in log.
+            File.WriteAllText(logFilePath, "time," + Tello.state.getLogHeader());
+
             //subscribe to Tello update events
             Tello.onUpdate += (Tello.FlyData newState) =>
             {
-                var str = newState.ToString();//ToString() = Formated state
+                //write update to log.
+                var elapsed = DateTime.Now - logStartTime;
+                File.AppendAllText(logFilePath, elapsed.ToString(@"mm\:ss\:ff\,") + newState.getLogLine());
 
                 RunOnUiThread(() => {
                     //Update state on screen
-                    var acstat = FindViewById<TextView>(Resource.Id.ac_state);
+                    //var acstat = FindViewById<TextView>(Resource.Id.ac_state);
 
-                    acstat.Text = str;
-                    if (Tello.state.flying && takeoffButton.Text != "Land")
-                        takeoffButton.Text = "Land";
-                    else if (!Tello.state.flying && takeoffButton.Text != "Takeoff")
-                        takeoffButton.Text = "Takeoff";
+                    modeTextView.Text = "FM:" + newState.flyMode;
+                    hSpeedTextView.Text = "HS:" + newState.flySpeed;
+                    vSpeedTextView.Text = "VS:" + newState.verticalSpeed;
+                    heiTextView.Text = "Hei:" + newState.height;
+                    batTextView.Text = "Bat:" + newState.batteryPercentage;
+                    wifiTextView.Text = "Wifi:" + newState.wifiStrength;
+
+                    //acstat.Text = str;
+                    if (Tello.state.flying)
+                        takeoffButton.SetImageResource(Resource.Drawable.land);
+                    else if (!Tello.state.flying)
+                        takeoffButton.SetImageResource(Resource.Drawable.takeoff_white);
                 });
 
             };
@@ -171,10 +198,11 @@ namespace aTello
             };
 
             //Settings button
-            Button settingsButton = FindViewById<Button>(Resource.Id.button1);
+            /*Button settingsButton = FindViewById<Button>(Resource.Id.button1);
             settingsButton.Click += delegate {
                 StartActivity(typeof(SettingsActivity));
             };
+            */
 
             //Init joysticks.
             input_manager = (InputManager)GetSystemService(Context.InputService);
@@ -197,7 +225,7 @@ namespace aTello
                     TextView joystat = FindViewById<TextView>(Resource.Id.joystick_state);
                     
                     var dataStr = string.Join(" ", buttons);
-                    joystat.Text = string.Format(dataStr+"\nJOY {0: 0.00;-0.00} {1: 0.00;-0.00} {2: 0.00;-0.00} {3: 0.00;-0.00} {4: 0.00;-0.00}", axes[0], axes[1], axes[2], axes[3], axes[4]);
+                    joystat.Text = string.Format("JOY {0: 0.00;-0.00} {1: 0.00;-0.00} {2: 0.00;-0.00} {3: 0.00;-0.00} {4: 0.00;-0.00} BTN "+ dataStr , axes[0], axes[1], axes[2], axes[3], axes[4]);
 
                     //controller_view.Invalidate();
                     return true;

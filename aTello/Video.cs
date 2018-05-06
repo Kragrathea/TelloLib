@@ -73,6 +73,8 @@ namespace aTello
                                 //do something with raw frame in buffer. 
                             }
                             codec.ReleaseOutputBuffer(i, true);
+                            codec.SetVideoScalingMode(VideoScalingMode.ScaleToFit);
+
                             i = codec.DequeueOutputBuffer(BufferInfo, 0L);
                         }
                     }
@@ -125,6 +127,7 @@ namespace aTello
                 {
                     codec = MediaCodec.CreateDecoderByType(str);
                     codec.Configure(videoFormat, surface, (MediaCrypto)null, 0);
+                    codec.SetVideoScalingMode(VideoScalingMode.ScaleToFit);
                     codec.Start();
                     bConfigured = true;
                 }

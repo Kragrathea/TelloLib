@@ -15,6 +15,7 @@ namespace TelloLib
         private static DateTime lastMessageTime;//for connection timeouts.
 
         public static FlyData state = new FlyData();
+        private static int wifiStrength=0;
         public static bool connected = false;
 
         public delegate void updateDeligate(FlyData state);
@@ -23,6 +24,7 @@ namespace TelloLib
         public static event connectionDeligate onConnection;
         public delegate void videoUpdateDeligate(byte[] data);
         public static event videoUpdateDeligate onVideoData;
+       
 
         private static ushort sequence = 1;
 
@@ -65,7 +67,7 @@ namespace TelloLib
 
             //payload
             packet[9] = (byte)(height & 0xff);
-            packet[10] = (byte)((height >> 8) & 0xff);
+            packet[10] = (byte)((height >>8) & 0xff);
 
             setPacketSequence(packet);
             setPacketCRCs(packet);
@@ -75,6 +77,13 @@ namespace TelloLib
         public static void queryAttAngle()
         {
             var packet = new byte[] { 0xcc, 0x58, 0x00, 0x7c, 0x48, 0x59, 0x10, 0x06, 0x00, 0xe9, 0xb3 };
+            setPacketSequence(packet);
+            setPacketCRCs(packet);
+            client.Send(packet);
+        }
+        public static void queryMaxHeight()
+        {
+            var packet = new byte[] { 0xcc, 0x58, 0x00, 0x7c, 0x48, 0x56, 0x10, 0x06, 0x00, 0xe9, 0xb3 };
             setPacketSequence(packet);
             setPacketCRCs(packet);
             client.Send(packet);
@@ -237,7 +246,7 @@ namespace TelloLib
                             {
                                 //Fixed. Update errors do not cause disconnect.
                                 Console.WriteLine("onUpdate error:" + ex.Message);
-                                break;
+                                //break;
                             }
                             //update current state.
                             state = newState;
@@ -248,7 +257,28 @@ namespace TelloLib
                             //float f = BitConverter.ToSingle(array, 0);
                             //Console.WriteLine(f);
                         }
+                        if (cmdId == 4182)//max hei response
+                        {
+                            //var array = received.bytes.Skip(9).Take(4).Reverse().ToArray();
+                            //float f = BitConverter.ToSingle(array, 0);
+                            //Console.WriteLine(f);
+                            if (received.bytes[10] != 10)
+                            {
+
+                            }
+                        }
+                        if (cmdId == 26)//wifi str command
+                        {
+                            wifiStrength = received.bytes[9];
+                            if(received.bytes[10]!=0)//Disturb?
+                            {
+                            }
+                        }
+                        if (cmdId == 53)//light str command
+                        {
+                        }
                     }
+
                     catch (Exception ex)
                     {
                         Console.WriteLine("Receive thread error:" + ex.Message);
@@ -478,13 +508,13 @@ namespace TelloLib
             public int temperatureHeight;
             public int throwFlyTimer;
             public int wifiDisturb;//
-            public int wifiStrength = 100;//
+            public int wifiStrength;// = 100;//
             public bool windState;//
 
             public void set(byte[] data)
             {
                 var index = 0;
-                height = data[index] | (data[index + 1] << 8); index += 2;
+                height = (Int16)(data[index] | (data[index + 1] << 8)); index += 2;
                 northSpeed = (Int16)(data[index] | (data[index + 1] << 8)); index += 2;
                 eastSpeed = (Int16)(data[index] | (data[index + 1] << 8)); index += 2;
                 flySpeed = ((int)Math.Sqrt(Math.Pow(northSpeed, 2.0D) + Math.Pow(eastSpeed, 2.0D)));
@@ -530,6 +560,39 @@ namespace TelloLib
                 frontLSC = (data[index] >> 2 & 0x1) == 1 ? true : false;
                 index += 1;
                 temperatureHeight = (data[index] >> 0 & 0x1);//23
+
+                wifiStrength = Tello.wifiStrength;//Wifi str comes in a cmd.
+            }
+
+            public string getLogHeader()
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (System.Reflection.FieldInfo property in this.GetType().GetFields())
+                {
+                    sb.Append(property.Name);
+                    sb.Append(",");
+                }
+                sb.AppendLine();
+                return sb.ToString();
+            }
+            public string getLogLine()
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (System.Reflection.FieldInfo property in this.GetType().GetFields())
+                {
+                    if(property.FieldType==typeof(Boolean))
+                    {
+                        if((Boolean)property.GetValue(this)==true)
+                            sb.Append("1");
+                        else
+                            sb.Append("0");
+                    }
+                    else
+                        sb.Append(property.GetValue(this));
+                    sb.Append(",");
+                }
+                sb.AppendLine();
+                return sb.ToString();
             }
 
             public override string ToString()

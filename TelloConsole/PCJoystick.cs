@@ -32,12 +32,11 @@ namespace TelloConsole
                         DeviceEnumerationFlags.AllDevices))
                     joystickGuid = deviceInstance.InstanceGuid;
 
-            // If Joystick not found, throws an error
+            // If Joystick not found, return.
             if (joystickGuid == Guid.Empty)
             {
                 Console.WriteLine("No joystick/Gamepad found.");
-                Console.ReadKey();
-                Environment.Exit(1);
+                return;
             }
 
             // Instantiate the joystick

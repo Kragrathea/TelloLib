@@ -1,94 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="25px"
+    android:minHeight="25px"
+    android:id="@+id/relativeLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@android:color/black">
+    <SurfaceView
+        android:id="@+id/surfaceView"
+        android:layout_width="480dp"
+        android:layout_height="360dp"
+        android:layout_centerInParent="true" />
     <Button
         android:id="@+id/connectButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/connect_status" />
-    <RelativeLayout
+        android:text="@string/connect_status"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_centerHorizontal="true" />
+    <LinearLayout
+        android:orientation="vertical"
         android:minWidth="25px"
         android:minHeight="25px"
-        android:layout_width="match_parent"
-        android:layout_height="279.0dp"
-        android:id="@+id/relativeLayout1">
-        <SurfaceView
-            android:id="@+id/surfaceView"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
+        android:id="@+id/linearLayout2"
+        android:layout_width="50dp"
+        android:layout_height="fill_parent"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp">
         <ImageButton
-            android:src="@drawable/takeoff_white"
-            android:id="@+id/imageButton1"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_marginBottom="0dp"
-            android:layout_marginLeft="0dp"
-            android:layout_marginRight="0dp"
-            android:layout_marginTop="0dp"
+            android:src="@drawable/takeoff_white2"
+            android:id="@+id/takeoffButton"
             android:adjustViewBounds="true"
-            android:scaleType="centerInside" />
-        <LinearLayout
-            android:orientation="horizontal"
-            android:minWidth="25px"
-            android:minHeight="25px"
-            android:id="@+id/linearLayout1"
-            android:layout_width="320dp"
-            android:layout_height="32dp"
-            android:layout_toRightOf="@id/imageButton1"
-            android:background="#8888"
-            android:layout_marginRight="20.0dp">
-            <TextView
-                android:text="HS: 000"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:id="@+id/textView1"
-                android:gravity="left"
-                android:layout_width="50dp"
-                android:layout_height="match_parent" />
-            <TextView
-                android:text="VS: 000"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:id="@+id/textView1"
-                android:gravity="left"
-                android:layout_width="50dp"
-                android:layout_height="match_parent" />
-            <TextView
-                android:text="Bat: 000"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:id="@+id/textView1"
-                android:gravity="left"
-                android:layout_width="80dp"
-                android:layout_height="match_parent" />
-            <TextView
-                android:text="Wifi: 000"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:id="@+id/textView1"
-                android:gravity="left"
-                android:layout_width="80dp"
-                android:layout_height="match_parent" />
-        </LinearLayout>
-    </RelativeLayout>
-    <Button
-        android:text="Takeoff"
-        android:layout_width="match_parent"
+            android:scaleType="centerInside"
+            android:layout_width="wrap_content"
+            android:background="@android:drawable/screen_background_light_transparent"
+            android:layout_height="wrap_content" />
+        <ImageButton
+            android:src="@drawable/takeoff_hand"
+            android:id="@+id/takeoffButton"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:layout_width="wrap_content"
+            android:background="@android:drawable/screen_background_light_transparent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:id="@+id/linearLayout1"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/takeoffButton" />
-    <Button
-        android:text="Settings"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/button1" />
+        android:background="#8888"
+        android:layout_alignBottom="@id/surfaceView">
+        <TextView
+            android:text="FM:00"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/modeTextView"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:text="HS:00"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/hSpeedTextView"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="0.25" />
+        <TextView
+            android:text="VS:00"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/vSpeedTextView"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="0.25" />
+        <TextView
+            android:text="H:100"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/heiTextView"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="0.25" />
+        <TextView
+            android:text="Bat:000"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/batTextView"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="0.25" />
+        <TextView
+            android:text="Wifi:000"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/wifiTextView"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="0.25" />
+    </LinearLayout>
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:id="@+id/joystick_state"
-        android:text="Connect Joystick" />
-    <TextView
-        android:layout_width="match_parent"
+        android:text="Connect Joystick"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/ac_state"
-        android:text="Status Area"
-        android:textSize="10sp"
-        android:minLines="10" />
-</LinearLayout>
+        android:layout_above="@id/linearLayout1" />
+    <ImageButton
+        android:src="@drawable/settings_gear"
+        android:id="@+id/imageButton2"
+        android:adjustViewBounds="true"
+        android:scaleType="centerInside"
+        android:background="@android:drawable/screen_background_light_transparent"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true" />
+</RelativeLayout>
