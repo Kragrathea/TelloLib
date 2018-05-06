@@ -1,6 +1,17 @@
 # TelloLib 
 A Work-In-Progress cross platform Ryze/DJI Tello control library. Currently supports Android and PC.
 
+# aTello 
+A bare bones Android Tello control app. Minimal UI and NO live video support. 
+Requires a PS3 Joystick connected via OTG cable for a controller. Currently NO onscreen joysticks.   
+
+<img src="https://github.com/Kragrathea/TelloLib/blob/master/Media/aTelloScreen4.png" width="600" >
+
+# TelloConsole
+PC console app. Similar to hello tello but more functional. Does video out to ffplay. Only supports a few commands right now.
+
+<img src="https://github.com/Kragrathea/TelloLib/blob/master/Media/TelloConsole-Screen1.jpg" width="400">
+
 # HelloTello
 A very basic TelloLib example.
 ```
@@ -47,16 +58,6 @@ namespace HelloTello
 }
 ```
 
-# aTello 
-A bare bones Android Tello control app. Minimal UI and NO live video support. 
-Requires a PS3 Joystick connected via OTG cable for a controller. Currently NO onscreen joysticks.   
-
-<img src="https://github.com/Kragrathea/TelloLib/blob/master/Media/aTello-Screen1.jpg" width="300" height="400">
-
-# TelloConsole
-PC console app. Similar to hello tello but more functional. Does video out to ffplay. Only supports a few commands right now.
-
-<img src="https://github.com/Kragrathea/TelloLib/blob/master/Media/TelloConsole-Screen1.jpg" width="400">
 
 Written in C# using Xarmin.
 https://docs.microsoft.com/en-us/xamarin/cross-platform/get-started/installation/windows
