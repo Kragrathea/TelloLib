@@ -325,6 +325,10 @@ namespace TelloLib
             }, token);
 
         }
+
+        public delegate float[] getControllerDeligate();
+        public static getControllerDeligate getControllerCallback;
+
         private static void startHeartbeat()
         {
             CancellationToken token = cancelTokens.Token;
@@ -335,6 +339,8 @@ namespace TelloLib
                 int tick = 0;
                 while (true)
                 {
+                    if (getControllerCallback != null)
+                        joyAxis = getControllerCallback();
                     var rx = joyAxis[2];//Axis[0]((float)joyState.RotationX / 0x8000) - 1;
                     var ry = -joyAxis[3];//-(((float)joyState.RotationY / 0x8000) - 1);
                     var lx = joyAxis[0];// ((float)joyState.X / 0x8000) - 1;

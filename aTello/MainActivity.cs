@@ -171,6 +171,29 @@ namespace aTello
                 }
             };
 
+            var onScreenJoyL = FindViewById<JoystickView>(Resource.Id.joystickViewL);
+            var onScreenJoyR = FindViewById<JoystickView>(Resource.Id.joystickViewR);
+            Tello.getControllerCallback = () => {
+                if (current_device_id > -1)
+                {
+                    RunOnUiThread(() =>
+                    {
+                        onScreenJoyL.Visibility = ViewStates.Invisible;
+                        onScreenJoyR.Visibility = ViewStates.Invisible;
+                    });
+                    return axes;//joystick
+                }else
+                {
+                    RunOnUiThread(() =>
+                    {
+                        onScreenJoyL.Visibility = ViewStates.Visible;
+                        onScreenJoyR.Visibility = ViewStates.Visible;
+                    });
+                    var touchAxis = new float[] { onScreenJoyL.curX, onScreenJoyL.curY, onScreenJoyR.curX, onScreenJoyR.curY, 0 };
+                    return touchAxis;
+                }
+            };
+
             Tello.startConnecting();//Start trying to connect.
 
             //Clicking on network state button will show wifi connection page. 
