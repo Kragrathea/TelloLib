@@ -17,7 +17,7 @@ using TelloLib;
 namespace aTello
 {
     [Activity(ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.KeyboardHidden | ConfigChanges.ScreenSize, Label = "aTello",
-    MainLauncher = true, Icon = "@mipmap/icon", Theme = "@android:style/Theme.Black.NoTitleBar.Fullscreen", ScreenOrientation = ScreenOrientation.SensorLandscape)]
+    MainLauncher = true, Theme = "@android:style/Theme.Black.NoTitleBar.Fullscreen", ScreenOrientation = ScreenOrientation.SensorLandscape)]
     public class MainActivity : Activity, InputManager.IInputDeviceListener
     {
     
@@ -145,7 +145,7 @@ namespace aTello
                     //Save raw data minus sequence.
                     using (var stream = new FileStream(videoFilePath, FileMode.Append))
                     {
-//                        stream.Write(data, 2, data.Length-2);//Note remove 2 byte seq when saving. 
+                        stream.Write(data, 2, data.Length-2);//Note remove 2 byte seq when saving. 
                     }
                 }
                 if (true)//video decoder tests.
@@ -220,15 +220,24 @@ namespace aTello
 
             };
 
-            //Settings button
-            /*Button settingsButton = FindViewById<Button>(Resource.Id.button1);
-            settingsButton.Click += delegate {
-                StartActivity(typeof(SettingsActivity));
-            };
-            */
+            var pictureButton = FindViewById<ImageButton>(Resource.Id.pictureButton);
+            Tello.picPath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, "aTello/pics/");
+            System.IO.Directory.CreateDirectory(Tello.picPath);
 
-            //Init joysticks.
-            input_manager = (InputManager)GetSystemService(Context.InputService);
+
+            pictureButton.Click += delegate
+            {
+                Tello.takePicture();
+            };
+                //Settings button
+                /*Button settingsButton = FindViewById<Button>(Resource.Id.button1);
+                settingsButton.Click += delegate {
+                    StartActivity(typeof(SettingsActivity));
+                };
+                */
+
+                //Init joysticks.
+                input_manager = (InputManager)GetSystemService(Context.InputService);
             CheckGameControllers();
         }
         //Handle joystick axis events.

@@ -216,25 +216,28 @@ namespace aTello
 		{
 			
 			// aapt resource value: 0x7f020000
-			public const int land = 2130837504;
+			public const int aTelloLogo2 = 2130837504;
 			
 			// aapt resource value: 0x7f020001
-			public const int land_white = 2130837505;
+			public const int land = 2130837505;
 			
 			// aapt resource value: 0x7f020002
-			public const int settings_gear = 2130837506;
+			public const int land_white = 2130837506;
 			
 			// aapt resource value: 0x7f020003
-			public const int takeoff = 2130837507;
+			public const int settings_gear = 2130837507;
 			
 			// aapt resource value: 0x7f020004
-			public const int takeoff_hand = 2130837508;
+			public const int takeoff = 2130837508;
 			
 			// aapt resource value: 0x7f020005
-			public const int takeoff_white = 2130837509;
+			public const int takeoff_hand = 2130837509;
 			
 			// aapt resource value: 0x7f020006
-			public const int takeoff_white2 = 2130837510;
+			public const int takeoff_white = 2130837510;
+			
+			// aapt resource value: 0x7f020007
+			public const int takeoff_white2 = 2130837511;
 			
 			static Drawable()
 			{
@@ -249,14 +252,14 @@ namespace aTello
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f060027
-			public const int attAngleText = 2131099687;
+			// aapt resource value: 0x7f060028
+			public const int attAngleText = 2131099688;
 			
 			// aapt resource value: 0x7f06000e
 			public const int barrier = 2131099662;
 			
-			// aapt resource value: 0x7f060020
-			public const int batTextView = 2131099680;
+			// aapt resource value: 0x7f060021
+			public const int batTextView = 2131099681;
 			
 			// aapt resource value: 0x7f060000
 			public const int bottom = 2131099648;
@@ -273,26 +276,26 @@ namespace aTello
 			// aapt resource value: 0x7f060011
 			public const int direct = 2131099665;
 			
-			// aapt resource value: 0x7f060028
-			public const int eisText = 2131099688;
+			// aapt resource value: 0x7f060029
+			public const int eisText = 2131099689;
 			
 			// aapt resource value: 0x7f060001
 			public const int end = 2131099649;
 			
-			// aapt resource value: 0x7f060026
-			public const int exposureText = 2131099686;
+			// aapt resource value: 0x7f060027
+			public const int exposureText = 2131099687;
 			
 			// aapt resource value: 0x7f060006
 			public const int gone = 2131099654;
 			
-			// aapt resource value: 0x7f06001d
-			public const int hSpeedTextView = 2131099677;
+			// aapt resource value: 0x7f06001e
+			public const int hSpeedTextView = 2131099678;
 			
-			// aapt resource value: 0x7f06001f
-			public const int heiTextView = 2131099679;
+			// aapt resource value: 0x7f060020
+			public const int heiTextView = 2131099680;
 			
-			// aapt resource value: 0x7f060023
-			public const int imageButton2 = 2131099683;
+			// aapt resource value: 0x7f060024
+			public const int imageButton2 = 2131099684;
 			
 			// aapt resource value: 0x7f060007
 			public const int invisible = 2131099655;
@@ -303,23 +306,23 @@ namespace aTello
 			// aapt resource value: 0x7f060017
 			public const int joystickViewR = 2131099671;
 			
-			// aapt resource value: 0x7f060022
-			public const int joystick_state = 2131099682;
+			// aapt resource value: 0x7f060023
+			public const int joystick_state = 2131099683;
 			
 			// aapt resource value: 0x7f060002
 			public const int left = 2131099650;
 			
-			// aapt resource value: 0x7f06001b
-			public const int linearLayout1 = 2131099675;
-			
-			// aapt resource value: 0x7f060019
-			public const int linearLayout2 = 2131099673;
-			
-			// aapt resource value: 0x7f060025
-			public const int maxHeightText = 2131099685;
-			
 			// aapt resource value: 0x7f06001c
-			public const int modeTextView = 2131099676;
+			public const int linearLayout1 = 2131099676;
+			
+			// aapt resource value: 0x7f06001a
+			public const int linearLayout2 = 2131099674;
+			
+			// aapt resource value: 0x7f060026
+			public const int maxHeightText = 2131099686;
+			
+			// aapt resource value: 0x7f06001d
+			public const int modeTextView = 2131099677;
 			
 			// aapt resource value: 0x7f060012
 			public const int none = 2131099666;
@@ -332,6 +335,9 @@ namespace aTello
 			
 			// aapt resource value: 0x7f060009
 			public const int percent = 2131099657;
+			
+			// aapt resource value: 0x7f060019
+			public const int pictureButton = 2131099673;
 			
 			// aapt resource value: 0x7f060014
 			public const int relativeLayout1 = 2131099668;
@@ -354,20 +360,20 @@ namespace aTello
 			// aapt resource value: 0x7f060015
 			public const int surfaceView = 2131099669;
 			
-			// aapt resource value: 0x7f06001a
-			public const int takeoffButton = 2131099674;
+			// aapt resource value: 0x7f06001b
+			public const int takeoffButton = 2131099675;
 			
-			// aapt resource value: 0x7f060024
-			public const int textView1 = 2131099684;
+			// aapt resource value: 0x7f060025
+			public const int textView1 = 2131099685;
 			
 			// aapt resource value: 0x7f060005
 			public const int top = 2131099653;
 			
-			// aapt resource value: 0x7f06001e
-			public const int vSpeedTextView = 2131099678;
+			// aapt resource value: 0x7f06001f
+			public const int vSpeedTextView = 2131099679;
 			
-			// aapt resource value: 0x7f060021
-			public const int wifiTextView = 2131099681;
+			// aapt resource value: 0x7f060022
+			public const int wifiTextView = 2131099682;
 			
 			// aapt resource value: 0x7f06000b
 			public const int wrap = 2131099659;

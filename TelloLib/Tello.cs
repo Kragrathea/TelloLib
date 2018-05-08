@@ -24,7 +24,9 @@ namespace TelloLib
         public static event connectionDeligate onConnection;
         public delegate void videoUpdateDeligate(byte[] data);
         public static event videoUpdateDeligate onVideoData;
-       
+
+        public static string picPath;//todo redo this. 
+        public static string picFilePath;//todo redo this. 
 
         private static ushort sequence = 1;
 
@@ -140,7 +142,23 @@ namespace TelloLib
 
             client.Send(packet);
         }
+        public static void takePicture()
+        {
+            //                                          crc    typ  cmdL  cmdH  seqL  seqH  crc   crc
+            var packet = new byte[] { 0xcc, 0x58, 0x00, 0x7c, 0x68, 0x30, 0x00, 0x06, 0x00, 0xe9, 0xb3 };
+            setPacketSequence(packet);
+            setPacketCRCs(packet);
+            client.Send(packet);
+        }
+        public static void sendAckFileSize()
+        {
+            //                                          crc    typ  cmdL  cmdH  seqL  seqH  modL  crc   crc
+            var packet = new byte[] { 0xcc, 0x60, 0x00, 0x27, 0x50, 0x62, 0x00, 0x00, 0x00, 0x00, 0x5b, 0xc5 };
+            setPacketSequence(packet);
+            setPacketCRCs(packet);
 
+            client.Send(packet);
+        }
         private static void setPacketSequence(byte[] packet)
         {
             packet[7] = (byte)(sequence & 0xff);
@@ -198,6 +216,7 @@ namespace TelloLib
             client.Send(connectPacket);
         }
 
+        private static byte[] picbuffer=new byte[500*1024];
         private static void startListeners()
         {
             cancelTokens = new CancellationTokenSource();
@@ -276,6 +295,41 @@ namespace TelloLib
                         }
                         if (cmdId == 53)//light str command
                         {
+                        }
+                        if (cmdId == 98)
+                        {
+                            picFilePath = picPath + DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + ".jpg";
+                            sendAckFileSize();
+                        }
+                        if(cmdId == 99)//jpeg
+                        {
+                            var dataStr = BitConverter.ToString(received.bytes.Skip(0).Take(30).ToArray()).Replace("-", " ");
+
+                            var start = 9;
+                            var fileNum = BitConverter.ToUInt16(received.bytes,start);
+                            start += 2;
+                            var pieceNum = BitConverter.ToUInt32(received.bytes, start);
+                            start += 4;
+                            var seqNum = BitConverter.ToUInt32(received.bytes, start);
+                            start += 4;
+                            var size = BitConverter.ToUInt16(received.bytes, start);
+                            start += 2;
+                            Array.Copy(received.bytes,start, picbuffer,seqNum*1024, size);
+
+                            //Console.WriteLine("\nFN:"+fileNum+" PN:"+pieceNum+" "+seqNum);
+                            if (picFilePath != null && pieceNum>60)
+                            {
+                                //Save raw data minus sequence.
+                                using (var stream = new FileStream(picFilePath, FileMode.Append))
+                                {
+                                    stream.Write(picbuffer, 0, picbuffer.Length);
+                                }
+                            }
+
+                        }
+                        if (cmdId == 100)
+                        {
+
                         }
                     }
 
