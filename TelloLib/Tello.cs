@@ -150,10 +150,63 @@ namespace TelloLib
             setPacketCRCs(packet);
             client.Send(packet);
         }
+        public static void sendAckFilePiece(byte endFlag,UInt16 fileId, UInt32 pieceId)
+        {
+            //                                          crc    typ  cmdL  cmdH  seqL  seqH  byte  nL    nH    n2L                     crc   crc
+            var packet = new byte[] { 0xcc, 0x90, 0x00, 0x27, 0x50, 0x63, 0x00, 0xf0, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x5b, 0xc5 };
+
+            packet[9] = endFlag;
+            packet[10] = (byte)(fileId & 0xff);
+            packet[11] = (byte)((fileId >> 8) & 0xff);
+
+            packet[12] = ((byte)(int)(0xFF & pieceId));
+            packet[13] = ((byte)(int)(pieceId >> 8 & 0xFF));
+            packet[14] = ((byte)(int)(pieceId >> 16 & 0xFF));
+            packet[15] = ((byte)(int)(pieceId >> 24 & 0xFF));
+
+            setPacketSequence(packet);
+            setPacketCRCs(packet);
+            var dataStr = BitConverter.ToString(packet).Replace("-", " ");
+            Console.WriteLine(dataStr);
+
+            client.Send(packet);
+        }
+        //public void a(final byte b, final int n, final int n2)
+        //{
+        //    final c c = new c(18);
+        //    c.a(204);
+        //    c.a((short)144);
+        //    c.a(com.ryzerobotics.tello.gcs.core.b.c(c.b(), 4));
+        //    c.a(80);
+        //    c.a((short)99);
+        //    c.a(this.e.a());
+        //    c.a(b);
+        //    c.a((short)n);
+        //    c.b(n2);
+        //    com.ryzerobotics.tello.gcs.core.a.b(c.b(), 18);
+        //    com.ryzerobotics.tello.gcs.core.c.a.a().a(c);
+        //}
         public static void sendAckFileSize()
         {
             //                                          crc    typ  cmdL  cmdH  seqL  seqH  modL  crc   crc
             var packet = new byte[] { 0xcc, 0x60, 0x00, 0x27, 0x50, 0x62, 0x00, 0x00, 0x00, 0x00, 0x5b, 0xc5 };
+            setPacketSequence(packet);
+            setPacketCRCs(packet);
+
+            client.Send(packet);
+        }
+        public static void sendAckFileDone(int size)
+        {
+            //                                          crc    typ  cmdL  cmdH  seqL  seqH  fidL  fidH  size  size  size  size  crc   crc
+            var packet = new byte[] { 0xcc, 0x88, 0x00, 0x24, 0x48, 0x64, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x5b, 0xc5 };
+
+            //packet[9] = (byte)(fileid & 0xff);
+            //packet[10] = (byte)((fileid >> 8) & 0xff);
+
+            packet[11] = ((byte)(int)(0xFF & size));
+            packet[12] = ((byte)(int)(size >> 8 & 0xFF));
+            packet[13] = ((byte)(int)(size >> 16 & 0xFF));
+            packet[14] = ((byte)(int)(size >> 24 & 0xFF));
             setPacketSequence(packet);
             setPacketCRCs(packet);
 
@@ -167,9 +220,8 @@ namespace TelloLib
         }
         private static void setPacketCRCs(byte[] packet)
         {
-            packet[7] = (byte)(sequence & 0xff);
-            packet[8] = (byte)((sequence >> 8) & 0xff);
-            sequence++;
+            CRC.calcUCRC(packet, 4);
+            CRC.calcCrc(packet, packet.Length);
         }
         public static void setEV(int ev)
         {
@@ -216,7 +268,13 @@ namespace TelloLib
             client.Send(connectPacket);
         }
 
-        private static byte[] picbuffer=new byte[500*1024];
+        private static byte[] picbuffer;
+        private static bool[] picChunkState;
+        private static bool[] picPieceState;
+        private static UInt32 picBytesRecived;
+        private static UInt32 picBytesExpected;
+        private static UInt32 picExtraPackets;
+        private static int maxPieceNum = 0;
         private static void startListeners()
         {
             cancelTokens = new CancellationTokenSource();
@@ -299,6 +357,17 @@ namespace TelloLib
                         if (cmdId == 98)
                         {
                             picFilePath = picPath + DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + ".jpg";
+
+                            var start = 9;
+                            var ftype = received.bytes[start];
+                            start += 1;
+                            picBytesExpected = BitConverter.ToUInt32(received.bytes, start);
+
+                            picBytesRecived = 0;
+                            picbuffer = new byte[picBytesExpected]; 
+                            picChunkState = new bool[(picBytesExpected/1024)+1]; //todo calc based on size. 
+                            picPieceState = new bool[(picChunkState.Length / 8)+1];
+                            picExtraPackets = 0;//for debugging.
                             sendAckFileSize();
                         }
                         if(cmdId == 99)//jpeg
@@ -314,17 +383,56 @@ namespace TelloLib
                             start += 4;
                             var size = BitConverter.ToUInt16(received.bytes, start);
                             start += 2;
-                            Array.Copy(received.bytes,start, picbuffer,seqNum*1024, size);
 
-                            //Console.WriteLine("\nFN:"+fileNum+" PN:"+pieceNum+" "+seqNum);
-                            if (picFilePath != null && pieceNum>60)
+                            maxPieceNum = Math.Max((int)pieceNum, maxPieceNum);
+                            if (!picChunkState[seqNum])
                             {
-                                //Save raw data minus sequence.
-                                using (var stream = new FileStream(picFilePath, FileMode.Append))
+                                Array.Copy(received.bytes, start, picbuffer, seqNum * 1024, size);
+                                picBytesRecived += size;
+                                picChunkState[seqNum] = true;
+
+                                for (int p = 0; p < picChunkState.Length / 8; p++)
                                 {
-                                    stream.Write(picbuffer, 0, picbuffer.Length);
+                                    var done = true;
+                                    for (int s = 0; s < 8; s++)
+                                    {
+                                        if (!picChunkState[(p * 8) + s])
+                                        {
+                                            done = false;
+                                            break;
+                                        }
+                                    }
+                                    if (done && !picPieceState[p])
+                                    {
+                                        picPieceState[p] = true;
+                                        sendAckFilePiece(0, fileNum, (UInt32)p);
+                                        Console.WriteLine("\nACK PN:" + p + " " + seqNum);
+                                    }
+                                }
+                                if (picFilePath != null && picBytesRecived >= picBytesExpected)
+                                {
+
+
+                                    sendAckFilePiece(1, 0, (UInt32)maxPieceNum);//todo. Double check this. finalize
+
+                                    sendAckFileDone((int)picBytesExpected);
+                                    Console.WriteLine("\nDONE PN:" + pieceNum + " max: " + maxPieceNum);
+
+                                    //Save raw data minus sequence.
+                                    using (var stream = new FileStream(picFilePath, FileMode.Append))
+                                    {
+                                        stream.Write(picbuffer, 0, (int)picBytesExpected);
+                                    }
                                 }
                             }
+                            else
+                            {
+                                picExtraPackets++;//for debugging.
+
+                                if(picBytesRecived >= picBytesExpected)
+                                    Console.WriteLine("\nEXTRA PN:"+pieceNum+" max "+ maxPieceNum);
+                            }
+
 
                         }
                         if (cmdId == 100)
