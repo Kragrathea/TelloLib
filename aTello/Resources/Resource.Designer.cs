@@ -294,9 +294,6 @@ namespace aTello
 			// aapt resource value: 0x7f060020
 			public const int heiTextView = 2131099680;
 			
-			// aapt resource value: 0x7f060024
-			public const int imageButton2 = 2131099684;
-			
 			// aapt resource value: 0x7f060007
 			public const int invisible = 2131099655;
 			
@@ -344,6 +341,9 @@ namespace aTello
 			
 			// aapt resource value: 0x7f060003
 			public const int right = 2131099651;
+			
+			// aapt resource value: 0x7f060024
+			public const int settingsButton = 2131099684;
 			
 			// aapt resource value: 0x7f06000a
 			public const int spread = 2131099658;

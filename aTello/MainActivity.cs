@@ -13,6 +13,7 @@ using Android.Text.Format;
 using System.IO;
 using System.Linq;
 using TelloLib;
+using Plugin.TextToSpeech;
 
 namespace aTello
 {
@@ -70,12 +71,18 @@ namespace aTello
                     Tello.setMaxHeight(25);//meters
                     Tello.queryMaxHeight();
 
+                    CrossTextToSpeech.Current.Speak("Connected");
+
                     //Tello.setPicVidMode(0);//0=picture(960x720)
 
                     //Set new video file name based on date. 
                     //var path = "aTello/video/";
                     //System.IO.Directory.CreateDirectory(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path));
                     //videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + ".h264");
+                }
+                if (newState == Tello.ConnectionState.Connected)
+                {
+                    CrossTextToSpeech.Current.Speak("Disonnected");
                 }
                 //update connection state button.
                 RunOnUiThread(() => {
@@ -225,19 +232,24 @@ namespace aTello
             System.IO.Directory.CreateDirectory(Tello.picPath);
 
 
+            var cameraShutterSound = Plugin.SimpleAudioPlayer.CrossSimpleAudioPlayer.Current;
+            cameraShutterSound.Load("cameraShutterClick.mp3");
             pictureButton.Click += delegate
             {
                 Tello.takePicture();
-            };
-                //Settings button
-                /*Button settingsButton = FindViewById<Button>(Resource.Id.button1);
-                settingsButton.Click += delegate {
-                    StartActivity(typeof(SettingsActivity));
-                };
-                */
+                cameraShutterSound.Play();
 
-                //Init joysticks.
-                input_manager = (InputManager)GetSystemService(Context.InputService);
+            };
+            //Settings button
+            ImageButton settingsButton = FindViewById<ImageButton>(Resource.Id.settingsButton);
+            settingsButton.Click += delegate
+            {
+                StartActivity(typeof(SettingsActivity));
+            };
+
+
+            //Init joysticks.
+            input_manager = (InputManager)GetSystemService(Context.InputService);
             CheckGameControllers();
         }
         //Handle joystick axis events.
