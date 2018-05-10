@@ -140,7 +140,7 @@ namespace aTello
             Tello.onVideoData += (byte[] data) =>
             {
 
-                if (videoFilePath != null)
+                if (false)//videoFilePath != null)
                 {
                     //Save raw data minus sequence.
                     using (var stream = new FileStream(videoFilePath, FileMode.Append))

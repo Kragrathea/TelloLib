@@ -80,6 +80,9 @@ namespace aTello
                     }
                     catch (Exception ex)
                     {
+                        //attempt to recover.
+                        stop();
+                        config(surface, width, height, sps, pps);
                     }
                     ret = 0;
                 }
@@ -90,16 +93,17 @@ namespace aTello
             {
                 if (codec == null)
                     return;
+                bConfigured = false;
 
                 try
                 {
                     codec.Stop();
                     codec.Release();
-                    codec = null;
                 }
                 catch (Exception ex)
                 {
                 }
+                codec = null;
             }
 
             static public void config(Surface surface,int width, int height, byte[] sps, byte[] pps)

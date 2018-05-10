@@ -149,6 +149,7 @@ namespace TelloLib
             setPacketSequence(packet);
             setPacketCRCs(packet);
             client.Send(packet);
+            Console.WriteLine("PIC START");
         }
         public static void sendAckFilePiece(byte endFlag,UInt16 fileId, UInt32 pieceId)
         {
@@ -166,8 +167,8 @@ namespace TelloLib
 
             setPacketSequence(packet);
             setPacketCRCs(packet);
-            var dataStr = BitConverter.ToString(packet).Replace("-", " ");
-            Console.WriteLine(dataStr);
+            //var dataStr = BitConverter.ToString(packet).Replace("-", " ");
+            //Console.WriteLine(dataStr);
 
             client.Send(packet);
         }
@@ -268,7 +269,7 @@ namespace TelloLib
             client.Send(connectPacket);
         }
 
-        private static byte[] picbuffer;
+        private static byte[] picbuffer=new byte[700*1024];
         private static bool[] picChunkState;
         private static bool[] picPieceState;
         private static UInt32 picBytesRecived;
@@ -364,7 +365,7 @@ namespace TelloLib
                             picBytesExpected = BitConverter.ToUInt32(received.bytes, start);
 
                             picBytesRecived = 0;
-                            picbuffer = new byte[picBytesExpected]; 
+                            //picbuffer = new byte[picBytesExpected]; 
                             picChunkState = new bool[(picBytesExpected/1024)+1]; //todo calc based on size. 
                             picPieceState = new bool[(picChunkState.Length / 8)+1];
                             picExtraPackets = 0;//for debugging.
@@ -372,7 +373,7 @@ namespace TelloLib
                         }
                         if(cmdId == 99)//jpeg
                         {
-                            var dataStr = BitConverter.ToString(received.bytes.Skip(0).Take(30).ToArray()).Replace("-", " ");
+                            //var dataStr = BitConverter.ToString(received.bytes.Skip(0).Take(30).ToArray()).Replace("-", " ");
 
                             var start = 9;
                             var fileNum = BitConverter.ToUInt16(received.bytes,start);
@@ -406,7 +407,7 @@ namespace TelloLib
                                     {
                                         picPieceState[p] = true;
                                         sendAckFilePiece(0, fileNum, (UInt32)p);
-                                        Console.WriteLine("\nACK PN:" + p + " " + seqNum);
+                                        //Console.WriteLine("\nACK PN:" + p + " " + seqNum);
                                     }
                                 }
                                 if (picFilePath != null && picBytesRecived >= picBytesExpected)
@@ -429,8 +430,8 @@ namespace TelloLib
                             {
                                 picExtraPackets++;//for debugging.
 
-                                if(picBytesRecived >= picBytesExpected)
-                                    Console.WriteLine("\nEXTRA PN:"+pieceNum+" max "+ maxPieceNum);
+                                //if(picBytesRecived >= picBytesExpected)
+                                //    Console.WriteLine("\nEXTRA PN:"+pieceNum+" max "+ maxPieceNum);
                             }
 
 
