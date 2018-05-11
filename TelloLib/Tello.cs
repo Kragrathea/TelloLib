@@ -248,7 +248,7 @@ namespace TelloLib
             if (connectionState != ConnectionState.Disconnected)
             {
                 //if changed to disconnect send event
-                onConnection(connectionState);
+                onConnection(ConnectionState.Disconnected);
             }
 
             connectionState = ConnectionState.Disconnected;
@@ -269,7 +269,7 @@ namespace TelloLib
             client.Send(connectPacket);
         }
 
-        private static byte[] picbuffer=new byte[700*1024];
+        private static byte[] picbuffer=new byte[3000*1024];
         private static bool[] picChunkState;
         private static bool[] picPieceState;
         private static UInt32 picBytesRecived;
@@ -363,7 +363,12 @@ namespace TelloLib
                             var ftype = received.bytes[start];
                             start += 1;
                             picBytesExpected = BitConverter.ToUInt32(received.bytes, start);
-
+                            if(picBytesExpected>picbuffer.Length)
+                            {
+                                Console.WriteLine("ERROR:Picture Too Big! " + picBytesExpected);
+                         
+                                return;//todo better error handling. 
+                            }
                             picBytesRecived = 0;
                             //picbuffer = new byte[picBytesExpected]; 
                             picChunkState = new bool[(picBytesExpected/1024)+1]; //todo calc based on size. 

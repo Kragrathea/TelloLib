@@ -32,16 +32,6 @@
         style="@android:style/Widget.Holo.Button.Borderless"
         android:textColor="@android:color/black"
         android:background="#55ff3333" />
-    <ImageButton
-        android:src="@drawable/takeoff_white2"
-        android:id="@+id/pictureButton"
-        android:adjustViewBounds="true"
-        android:scaleType="centerInside"
-        android:background="@android:drawable/screen_background_light_transparent"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="40dp" />
     <LinearLayout
         android:orientation="vertical"
         android:minWidth="25px"
@@ -50,7 +40,37 @@
         android:layout_width="50dp"
         android:layout_height="fill_parent"
         android:layout_marginLeft="5dp"
-        android:layout_marginTop="5dp">
+        android:layout_marginTop="15dp"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/connectButton">
+        <ImageButton
+            android:src="@drawable/takepicture"
+            android:id="@+id/pictureButton"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:background="@android:drawable/screen_background_light_transparent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <ImageButton
+            android:src="@drawable/photogallery"
+            android:id="@+id/galleryButton"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:background="@android:drawable/screen_background_light_transparent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:id="@+id/linearLayout2"
+        android:layout_width="50dp"
+        android:layout_height="fill_parent"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="15dp"
+        android:layout_below="@id/connectButton">
         <ImageButton
             android:src="@drawable/takeoff_white2"
             android:id="@+id/takeoffButton"
@@ -58,8 +78,7 @@
             android:scaleType="centerInside"
             android:layout_width="wrap_content"
             android:background="@android:drawable/screen_background_light_transparent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp" />
+            android:layout_height="wrap_content" />
         <ImageButton
             android:src="@drawable/takeoff_hand"
             android:id="@+id/takeoffButton"

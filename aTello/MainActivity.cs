@@ -37,6 +37,9 @@ namespace aTello
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.Main);
 
+            //force max brightness on screen.
+            Window.Attributes.ScreenBrightness = 1f;
+
             takeoffButton = FindViewById<ImageButton>(Resource.Id.takeoffButton);
 
             var path = "aTello/video/";
@@ -56,6 +59,8 @@ namespace aTello
                     string ip = Formatter.FormatIpAddress(wifiManager.ConnectionInfo.IpAddress);
                     if (!ip.StartsWith("192.168.10."))
                     {
+                        //CrossTextToSpeech.Current.Speak("No network found.");
+
                         //Not connected to network.
                         RunOnUiThread(() => {
                             cbutton.Text = "Not Connected. Touch Here.";
@@ -80,9 +85,11 @@ namespace aTello
                     //System.IO.Directory.CreateDirectory(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path));
                     //videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + ".h264");
                 }
-                if (newState == Tello.ConnectionState.Connected)
+                if (newState == Tello.ConnectionState.Disconnected)
                 {
-                    CrossTextToSpeech.Current.Speak("Disonnected");
+                    //if was connected then warn.
+                    if(Tello.connectionState== Tello.ConnectionState.Connected)
+                        CrossTextToSpeech.Current.Speak("Disconnected");
                 }
                 //update connection state button.
                 RunOnUiThread(() => {
@@ -238,7 +245,17 @@ namespace aTello
             {
                 Tello.takePicture();
                 cameraShutterSound.Play();
+            };
 
+            var galleryButton = FindViewById<ImageButton>(Resource.Id.galleryButton);
+            galleryButton.Click += delegate
+            {
+
+                Intent intent = new Intent();
+                intent.PutExtra(Intent.ActionView, Tello.picPath);
+                intent.SetType("image/*");
+                intent.SetAction(Intent.ActionGetContent);
+                StartActivityForResult(Intent.CreateChooser(intent,"Select Picture"), 1);
             };
             //Settings button
             ImageButton settingsButton = FindViewById<ImageButton>(Resource.Id.settingsButton);
