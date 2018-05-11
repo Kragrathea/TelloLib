@@ -294,12 +294,12 @@ namespace aTello
                     {
                         axes[i] = GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(i));
                     }
-                    axes[4] = buttons[5];
+                    axes[4] = buttons[5];//boost button.
                     Tello.setAxis(axes);
                     TextView joystat = FindViewById<TextView>(Resource.Id.joystick_state);
                     
-                    var dataStr = string.Join(" ", buttons);
-                    joystat.Text = string.Format("JOY {0: 0.00;-0.00} {1: 0.00;-0.00} {2: 0.00;-0.00} {3: 0.00;-0.00} {4: 0.00;-0.00} BTN "+ dataStr , axes[0], axes[1], axes[2], axes[3], axes[4]);
+                    //var dataStr = string.Join(" ", buttons);
+                    //joystat.Text = string.Format("JOY {0: 0.00;-0.00} {1: 0.00;-0.00} {2: 0.00;-0.00} {3: 0.00;-0.00} {4: 0.00;-0.00} BTN "+ dataStr , axes[0], axes[1], axes[2], axes[3], axes[4]);
 
                     //controller_view.Invalidate();
                     return true;

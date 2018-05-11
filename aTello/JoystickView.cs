@@ -20,6 +20,7 @@ namespace aTello
         private Paint circlePaint;
         private Paint handlePaint;
         private double touchX, touchY;
+        private double firstX, firstY;//used to auto center joy at first touch.
         private int innerPadding;
         private int handleRadius;
         private int handleInnerBoundaries;
@@ -57,8 +58,7 @@ namespace aTello
 
             handlePaint.TextSize=(64);
 
-
-            innerPadding = 10;
+            innerPadding = 30;
         }
 
         protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
@@ -97,10 +97,10 @@ namespace aTello
             int radius = System.Math.Min(px, py);
 
             //background
-            canvas.DrawCircle(px, py, radius - innerPadding, circlePaint);
+            canvas.DrawCircle(px+ (int)firstX, py+ (int)firstY, radius - innerPadding, circlePaint);
 
             //thumb
-            canvas.DrawCircle((int)touchX + px, (int)touchY + py,
+            canvas.DrawCircle((int)touchX + px + (int)firstX, (int)touchY + py + (int)firstY,
                     handleRadius, handlePaint);
 
             //canvas.DrawText(string.Format("X:{0:0.00} Y:{1:0.00} ",curX,curY), 10, 100, handlePaint);
@@ -111,20 +111,25 @@ namespace aTello
         public override bool OnTouchEvent(MotionEvent xevent)
         {
             var actionType = xevent.Action;
+            if (actionType == MotionEventActions.Down)
+            {
+                firstX= xevent.GetX()-(MeasuredWidth / 2);
+                firstY = xevent.GetY()-(MeasuredHeight / 2);
+            }
             if (actionType == MotionEventActions.Move)
             {
                 int px = MeasuredWidth / 2;
                 int py = MeasuredHeight / 2;
                 int radius = System.Math.Min(px, py) - handleInnerBoundaries;
 
-                touchX = (xevent.GetX() - px);
+                touchX = (xevent.GetX() - px) - (float)firstX;
                 touchX = System.Math.Max(System.Math.Min(touchX, radius), -radius);
 
-                touchY = (xevent.GetY() - py);
+                touchY = (xevent.GetY() - py) - (float)firstY;
                 touchY = System.Math.Max(System.Math.Min(touchY, radius), -radius);
 
                 curX = ((float)touchX / radius);
-                curY = ((float)touchY / radius);
+                curY = ((float)touchY / radius) ;
 
                 //Console.WriteLine("X:" + (touchX / radius * sensitivity) + "|Y:" + (touchY / radius * sensitivity));
 
@@ -140,6 +145,8 @@ namespace aTello
 
                 curX = 0;
                 curY = 0;
+                firstX = 0;
+                firstY = 0;
                 returnHandleToCenter();
                 //Console.WriteLine("X:" + touchX + "|Y:" + touchY);
             }

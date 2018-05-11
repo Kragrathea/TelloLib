@@ -13,13 +13,13 @@
         android:layout_centerInParent="true" />
     <aTello.JoystickView
         android:id="@+id/joystickViewL"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
         android:layout_alignParentBottom="true" />
     <aTello.JoystickView
         android:id="@+id/joystickViewR"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="220dp"
+        android:layout_height="220dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true" />
     <Button
