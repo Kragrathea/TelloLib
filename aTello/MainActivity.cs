@@ -30,6 +30,7 @@ namespace aTello
         private int current_device_id = -1;
 
         ImageButton takeoffButton;
+        ImageButton throwTakeoffButton;
         string videoFilePath;//file to save raw h264 to. 
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -41,6 +42,7 @@ namespace aTello
             Window.Attributes.ScreenBrightness = 1f;
 
             takeoffButton = FindViewById<ImageButton>(Resource.Id.takeoffButton);
+            throwTakeoffButton = FindViewById<ImageButton>(Resource.Id.throwTakeoffButton);
 
             var path = "aTello/video/";
             System.IO.Directory.CreateDirectory(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path));
@@ -233,7 +235,18 @@ namespace aTello
 
 
             };
+            throwTakeoffButton.Click += delegate {
+                if (Tello.connected && !Tello.state.flying)
+                {
+                    Tello.throwTakeOff();
+                }
+                else if (Tello.connected && Tello.state.flying)
+                {
+                    //Tello.land();
+                }
 
+
+            };
             var pictureButton = FindViewById<ImageButton>(Resource.Id.pictureButton);
             Tello.picPath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, "aTello/pics/");
             System.IO.Directory.CreateDirectory(Tello.picPath);

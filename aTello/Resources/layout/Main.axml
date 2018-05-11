@@ -50,7 +50,8 @@
             android:scaleType="centerInside"
             android:background="@android:drawable/screen_background_light_transparent"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:tint="#620078c8" />
         <ImageButton
             android:src="@drawable/photogallery"
             android:id="@+id/galleryButton"
@@ -59,7 +60,8 @@
             android:background="@android:drawable/screen_background_light_transparent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp" />
+            android:layout_marginTop="15dp"
+            android:tint="#620078c8" />
     </LinearLayout>
     <LinearLayout
         android:orientation="vertical"
@@ -78,17 +80,18 @@
             android:scaleType="centerInside"
             android:layout_width="wrap_content"
             android:background="@android:drawable/screen_background_light_transparent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:tint="#620078c8" />
         <ImageButton
             android:src="@drawable/takeoff_hand"
-            android:id="@+id/takeoffButton"
+            android:id="@+id/throwTakeoffButton"
             android:adjustViewBounds="true"
             android:scaleType="centerInside"
             android:layout_width="wrap_content"
             android:background="@android:drawable/screen_background_light_transparent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:visibility="gone" />
+            android:layout_marginTop="15dp"
+            android:tint="#620078c8" />
     </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"
