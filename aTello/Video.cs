@@ -105,7 +105,15 @@ namespace aTello
                 }
                 codec = null;
             }
+            static public void reconfig()
+            {
+                stop();
+                bConfigured = false;
+                config(surface, width, height, sps, pps);
 
+                //sps = null;
+                //pps = null;
+            }
             static public void config(Surface surface,int width, int height, byte[] sps, byte[] pps)
             {
                 if (sps == null || pps == null)//not ready.

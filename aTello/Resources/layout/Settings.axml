@@ -5,76 +5,37 @@
     android:layout_height="match_parent"
     android:minWidth="25px"
     android:minHeight="25px">
-  <RelativeLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:id="@+id/relativeLayout1">
-    <TextView
-        android:text="Max Height"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_width="wrap_content"
+    <CheckBox
+        android:text="Save raw H264"
+        android:layout_width="match_parent"
+        android:id="@+id/checkBox1"
+        android:layout_marginBottom="0.0dp"
+        android:layout_height="wrap_content" />
+    <CheckBox
+        android:text="Save logs"
+        android:layout_width="match_parent"
+        android:id="@+id/checkBox1"
+        android:layout_marginBottom="0.0dp"
+        android:layout_height="wrap_content" />
+    <CheckBox
+        android:text="Limit Max Height to 10m (Default 30m)"
+        android:layout_width="match_parent"
+        android:id="@+id/checkBox1"
+        android:layout_marginBottom="0.0dp"
+        android:layout_height="wrap_content" />
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textView1"
-        android:layout_centerVertical="true" />
-    <EditText
-        android:inputType="number"
-        android:layout_width="50sp"
+        android:id="@+id/relativeLayout1">
+        <NumberPicker
+            android:id="@+id/numberPicker1"
+            android:scaleX="0.7"
+            android:scaleY="0.7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+    <Spinner
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/maxHeightText"
-        android:layout_alignParentRight="true" />
-  </RelativeLayout>
-  <RelativeLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:id="@+id/relativeLayout1">
-    <TextView
-        android:text="Exposure"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView1"
-        android:layout_centerVertical="true" />
-    <EditText
-        android:inputType="number"
-        android:layout_width="50sp"
-        android:layout_height="wrap_content"
-        android:id="@+id/exposureText"
-        android:layout_alignParentRight="true" />
-  </RelativeLayout>
-  <RelativeLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:id="@+id/relativeLayout1">
-    <TextView
-        android:text="Attitude Angle"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView1"
-        android:layout_centerVertical="true" />
-    <EditText
-        android:inputType="number"
-        android:layout_width="50sp"
-        android:layout_height="wrap_content"
-        android:id="@+id/attAngleText"
-        android:layout_alignParentRight="true" />
-  </RelativeLayout>
-  <RelativeLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:id="@+id/relativeLayout1">
-    <TextView
-        android:text="EIS"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView1"
-        android:layout_centerVertical="true" />
-    <EditText
-        android:inputType="number"
-        android:layout_width="50sp"
-        android:layout_height="wrap_content"
-        android:id="@+id/eisText"
-        android:layout_alignParentRight="true" />
-  </RelativeLayout>
+        android:id="@+id/spinner1" />
 </LinearLayout>

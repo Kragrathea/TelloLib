@@ -13,7 +13,7 @@ using TelloLib;
 
 namespace aTello
 {
-    [Activity(Label = "Settings")]
+    [Activity(Label = "Settings", Theme = "@android:style/Theme.Black.NoTitleBar.Fullscreen")]
     public class SettingsActivity : Activity
     {
         protected override void OnCreate(Bundle savedInstanceState)

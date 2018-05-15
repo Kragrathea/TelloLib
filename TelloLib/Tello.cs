@@ -11,7 +11,7 @@ namespace TelloLib
     public class Tello
     {
         private static UdpUser client;
-        private static float[] joyAxis = new float[] { 0, 0, 0, 0, 0 };
+//        private static float[] joyAxis = new float[] { 0, 0, 0, 0, 0 };
         private static DateTime lastMessageTime;//for connection timeouts.
 
         public static FlyData state = new FlyData();
@@ -238,9 +238,9 @@ namespace TelloLib
         {
         }
 
-        public static void setAxis(float[] axis)
+        public static void xsetAxis(float[] axis)
         {
-            joyAxis = axis.Take(5).ToArray(); ;
+//            joyAxis = axis.Take(5).ToArray(); ;
             //joyAxis[4] = axis[7];
             //joyAxis[3] = axis[11];
         }
@@ -514,33 +514,35 @@ namespace TelloLib
                 int tick = 0;
                 while (true)
                 {
-                    if (getControllerCallback != null)
-                        joyAxis = getControllerCallback();
-                    var rx = joyAxis[2];//Axis[0]((float)joyState.RotationX / 0x8000) - 1;
-                    var ry = -joyAxis[3];//-(((float)joyState.RotationY / 0x8000) - 1);
-                    var lx = joyAxis[0];// ((float)joyState.X / 0x8000) - 1;
-                    var ly = -joyAxis[1];//-(((float)joyState.Y / 0x8000) - 1);
-                    var deadBand = 0.15f;
-                    rx = Math.Abs(rx) < deadBand ? 0.0f : rx;
-                    ry = Math.Abs(ry) < deadBand ? 0.0f : ry;
-                    lx = Math.Abs(lx) < deadBand ? 0.0f : lx;
-                    ly = Math.Abs(ly) < deadBand ? 0.0f : ly;
+                    //if (getControllerCallback != null)
+                    //    joyAxis = getControllerCallback();
+                    //var rx = joyAxis[2];//Axis[0]((float)joyState.RotationX / 0x8000) - 1;
+                    //var ry = -joyAxis[3];//-(((float)joyState.RotationY / 0x8000) - 1);
+                    //var lx = joyAxis[0];// ((float)joyState.X / 0x8000) - 1;
+                    //var ly = -joyAxis[1];//-(((float)joyState.Y / 0x8000) - 1);
+                    //var deadBand = 0.15f;
+                    //rx = Math.Abs(rx) < deadBand ? 0.0f : rx;
+                    //ry = Math.Abs(ry) < deadBand ? 0.0f : ry;
+                    //lx = Math.Abs(lx) < deadBand ? 0.0f : lx;
+                    //ly = Math.Abs(ly) < deadBand ? 0.0f : ly;
 
 
-                    var boost = 0.0f;
-                    if (joyAxis[4] > 0.5)
-                        boost = 1.0f;
-                    var limit = 1.0f;//Slow down while testing.
-                    rx = rx * limit;
-                    ry = ry * limit;
+                    //var boost = 0.0f;
+                    //if (joyAxis[4] > 0.5)
+                    //    boost = 1.0f;
+                    //var limit = 1.0f;//Slow down while testing.
+                    //rx = rx * limit;
+                    //ry = ry * limit;
 
                     //Console.WriteLine(rx + " " + ry + " " + lx + " " + ly);
-                    var packet = createJoyPacket(rx, ry, lx, ly, boost);
+                    //var packet = createJoyPacket(rx, ry, lx, ly, boost);
                     try
                     {
                         if (token.IsCancellationRequested)
                             break;
-                        client.Send(packet);
+//                        client.Send(packet);
+                        sendControllerUpdate();
+
                         tick++;
                         if (tick % 10 == 0)
                             requestIframe();
@@ -597,6 +599,52 @@ namespace TelloLib
 
         }
 
+        public struct ControllerState
+        {
+            public float rx, ry, lx, ly;
+            public int speed;
+            public void setAxis(float lx, float ly,float rx, float ry)
+            {
+                var deadBand = 0.15f;
+                this.rx = Math.Abs(rx) < deadBand ? 0.0f : rx;
+                this.ry = Math.Abs(ry) < deadBand ? 0.0f : ry;
+                this.lx = Math.Abs(lx) < deadBand ? 0.0f : lx;
+                this.ly = Math.Abs(ly) < deadBand ? 0.0f : ly;
+
+                //Console.WriteLine(rx + " " + ry + " " + lx + " " + ly + " SP:" + speed);
+            }
+            public void setSpeedMode(int mode)
+            {
+                speed = mode;
+
+                //Console.WriteLine(rx + " " + ry + " " + lx + " " + ly + " SP:" + speed);
+            }
+        }
+        public static ControllerState controllerState=new ControllerState();
+
+        public static void sendControllerUpdate()
+        {
+            if (!connected)
+                return;
+
+            var boost = 0.0f;
+            if (controllerState.speed > 0)
+                boost = 1.0f;
+
+            //var limit = 1.0f;//Slow down while testing.
+            //rx = rx * limit;
+            //ry = ry * limit;
+
+            //Console.WriteLine(controllerState.rx + " " + controllerState.ry + " " + controllerState.lx + " " + controllerState.ly + " SP:"+boost);
+            var packet = createJoyPacket(controllerState.rx, controllerState.ry, controllerState.lx, controllerState.ly, boost);
+            try
+            {
+                client.Send(packet);
+            }catch (Exception ex)
+            {
+
+            }
+        }
 
         Dictionary<int, string> cmdIdLookup = new Dictionary<int, string>
             {

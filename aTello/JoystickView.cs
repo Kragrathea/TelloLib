@@ -24,7 +24,11 @@ namespace aTello
         private int innerPadding;
         private int handleRadius;
         private int handleInnerBoundaries;
-        public float curX, curY;
+        public float normalizedX, normalizedY;
+
+        public delegate void updateDeligate(JoystickView joystickView);
+        public event updateDeligate onUpdate;
+
 
         public JoystickView(Context context, IAttributeSet attrs) :
             base(context, attrs)
@@ -128,26 +132,24 @@ namespace aTello
                 touchY = (xevent.GetY() - py) - (float)firstY;
                 touchY = System.Math.Max(System.Math.Min(touchY, radius), -radius);
 
-                curX = ((float)touchX / radius);
-                curY = ((float)touchY / radius) ;
+                normalizedX = ((float)touchX / radius);
+                normalizedY = ((float)touchY / radius) ;
 
                 //Console.WriteLine("X:" + (touchX / radius * sensitivity) + "|Y:" + (touchY / radius * sensitivity));
 
-                //if (listener != null)
-                {
-                    //    listener.OnMoved((int)(touchX / radius * sensitivity), (int)(touchY / radius * sensitivity));
-                }
+                onUpdate(this);
 
                 Invalidate();
             }
             else if (actionType == MotionEventActions.Up)
             {
 
-                curX = 0;
-                curY = 0;
+                normalizedX = 0;
+                normalizedY = 0;
                 firstX = 0;
                 firstY = 0;
                 returnHandleToCenter();
+                onUpdate(this);
                 //Console.WriteLine("X:" + touchX + "|Y:" + touchY);
             }
             return true;
@@ -167,6 +169,9 @@ namespace aTello
                     {
                         touchX += intervalsX;
                         touchY += intervalsY;
+
+                        onUpdate(this);
+
                         Invalidate();
                     }
                 }, i * 40);

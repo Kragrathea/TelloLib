@@ -61,7 +61,8 @@ namespace TelloConsole
                 float[] axes = new float[] { lx, ly, rx, ry, 0 };
                 var outStr = string.Format("JOY {0: 0.00;-0.00} {1: 0.00;-0.00} {2: 0.00;-0.00} {3: 0.00;-0.00} {4: 0.00;-0.00}", axes[0], axes[1], axes[2], axes[3], axes[4]);
                 printAt(0, 22, outStr);
-                Tello.setAxis(axes);
+                Tello.controllerState.setAxis(lx, ly,rx, ry);
+                Tello.sendControllerUpdate();
             };
             PCJoystick.init();
 

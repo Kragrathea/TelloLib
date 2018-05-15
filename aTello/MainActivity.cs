@@ -21,17 +21,21 @@ namespace aTello
     MainLauncher = true, Theme = "@android:style/Theme.Black.NoTitleBar.Fullscreen", ScreenOrientation = ScreenOrientation.SensorLandscape)]
     public class MainActivity : Activity, InputManager.IInputDeviceListener
     {
-    
         //joystick stuff
-        public int[] buttons = new int[ButtonMapping.size];
-        public float[] axes = new float[AxesMapping.size];
         private InputManager input_manager;
         private List<int> connected_devices = new List<int>();
         private int current_device_id = -1;
 
+        JoystickView onScreenJoyL;
+        JoystickView onScreenJoyR;
+
         ImageButton takeoffButton;
         ImageButton throwTakeoffButton;
         string videoFilePath;//file to save raw h264 to. 
+
+        private int picMode = 0;
+
+        private bool doStateLogging = false;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -41,13 +45,16 @@ namespace aTello
             //force max brightness on screen.
             Window.Attributes.ScreenBrightness = 1f;
 
+            onScreenJoyL = FindViewById<JoystickView>(Resource.Id.joystickViewL);
+            onScreenJoyR = FindViewById<JoystickView>(Resource.Id.joystickViewR);
+
             takeoffButton = FindViewById<ImageButton>(Resource.Id.takeoffButton);
             throwTakeoffButton = FindViewById<ImageButton>(Resource.Id.throwTakeoffButton);
 
             var path = "aTello/video/";
             System.IO.Directory.CreateDirectory(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path));
             videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + ".h264");
-
+            
             //subscribe to Tello connection events
             Tello.onConnection += (Tello.ConnectionState newState) =>
             {
@@ -62,7 +69,6 @@ namespace aTello
                     if (!ip.StartsWith("192.168.10."))
                     {
                         //CrossTextToSpeech.Current.Speak("No network found.");
-
                         //Not connected to network.
                         RunOnUiThread(() => {
                             cbutton.Text = "Not Connected. Touch Here.";
@@ -79,13 +85,9 @@ namespace aTello
                     Tello.queryMaxHeight();
 
                     CrossTextToSpeech.Current.Speak("Connected");
+                    
+                    Tello.setPicVidMode(picMode);//0=picture(960x720)
 
-                    //Tello.setPicVidMode(0);//0=picture(960x720)
-
-                    //Set new video file name based on date. 
-                    //var path = "aTello/video/";
-                    //System.IO.Directory.CreateDirectory(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path));
-                    //videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + ".h264");
                 }
                 if (newState == Tello.ConnectionState.Disconnected)
                 {
@@ -100,7 +102,6 @@ namespace aTello
                         cbutton.SetBackgroundColor(Android.Graphics.Color.ParseColor("#6090ee90"));//transparent light green.
                     else
                         cbutton.SetBackgroundColor(Android.Graphics.Color.ParseColor("#ffff00"));//yellow
-
                 });
 
 
@@ -114,19 +115,25 @@ namespace aTello
 
             //Log file setup.
             var logPath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, "aTello/logs/"); ;
-            System.IO.Directory.CreateDirectory(logPath);
             var logStartTime = DateTime.Now;
             var logFilePath = logPath + logStartTime.ToString("yyyy-dd-M--HH-mm-ss") + ".csv";
 
-            //write header for cols in log.
-            File.WriteAllText(logFilePath, "time," + Tello.state.getLogHeader());
+            if (doStateLogging)
+            {
+                //write header for cols in log.
+                System.IO.Directory.CreateDirectory(logPath);
+                File.WriteAllText(logFilePath, "time," + Tello.state.getLogHeader());
+            }
 
             //subscribe to Tello update events
             Tello.onUpdate += (Tello.FlyData newState) =>
             {
-                //write update to log.
-                var elapsed = DateTime.Now - logStartTime;
-                File.AppendAllText(logFilePath, elapsed.ToString(@"mm\:ss\:ff\,") + newState.getLogLine());
+                if (doStateLogging)
+                {
+                    //write update to log.
+                    var elapsed = DateTime.Now - logStartTime;
+                    File.AppendAllText(logFilePath, elapsed.ToString(@"mm\:ss\:ff\,") + newState.getLogLine());
+                }
 
                 RunOnUiThread(() => {
                     //Update state on screen
@@ -135,6 +142,11 @@ namespace aTello
                     modeTextView.Text = "FM:" + newState.flyMode;
                     hSpeedTextView.Text = "HS:" + newState.flySpeed;
                     vSpeedTextView.Text = "VS:" + newState.verticalSpeed;
+//                    if (Tello.controllerState.speed > 0)
+//                        vSpeedTextView.SetTextColor(Android.Graphics.Color.Red);
+//                    else
+//                        vSpeedTextView.SetTextColor(Android.Graphics.Color.White);
+
                     heiTextView.Text = "Hei:" + newState.height;
                     batTextView.Text = "Bat:" + newState.batteryPercentage;
                     wifiTextView.Text = "Wifi:" + newState.wifiStrength;
@@ -152,16 +164,18 @@ namespace aTello
             var videoOffset = 0;
             Video.Decoder.surface = FindViewById<SurfaceView>(Resource.Id.surfaceView).Holder.Surface;
 
+            FileStream videoStream = null; 
             //subscribe to Tello video data
             Tello.onVideoData += (byte[] data) =>
             {
-
-                if (false)//videoFilePath != null)
+                if (true)//videoFilePath != null)
                 {
+                    if(videoStream==null)
+                        videoStream=new FileStream(videoFilePath, FileMode.Append);
                     //Save raw data minus sequence.
-                    using (var stream = new FileStream(videoFilePath, FileMode.Append))
+                    //using ()
                     {
-                        stream.Write(data, 2, data.Length-2);//Note remove 2 byte seq when saving. 
+                        videoStream.Write(data, 2, data.Length-2);//Note remove 2 byte seq when saving. 
                     }
                 }
                 if (true)//video decoder tests.
@@ -187,28 +201,10 @@ namespace aTello
                 }
             };
 
-            var onScreenJoyL = FindViewById<JoystickView>(Resource.Id.joystickViewL);
-            var onScreenJoyR = FindViewById<JoystickView>(Resource.Id.joystickViewR);
-            Tello.getControllerCallback = () => {
-                if (current_device_id > -1)
-                {
-                    RunOnUiThread(() =>
-                    {
-                        onScreenJoyL.Visibility = ViewStates.Invisible;
-                        onScreenJoyR.Visibility = ViewStates.Invisible;
-                    });
-                    return axes;//joystick
-                }else
-                {
-                    RunOnUiThread(() =>
-                    {
-                        onScreenJoyL.Visibility = ViewStates.Visible;
-                        onScreenJoyR.Visibility = ViewStates.Visible;
-                    });
-                    var touchAxis = new float[] { onScreenJoyL.curX, onScreenJoyL.curY, onScreenJoyR.curX, onScreenJoyR.curY, 0 };
-                    return touchAxis;
-                }
-            };
+            onScreenJoyL.onUpdate += OnTouchJoystickMoved;
+            onScreenJoyR.onUpdate += OnTouchJoystickMoved;
+
+
 
             Tello.startConnecting();//Start trying to connect.
 
@@ -232,8 +228,6 @@ namespace aTello
                 {
                     Tello.land();
                 }
-
-
             };
             throwTakeoffButton.Click += delegate {
                 if (Tello.connected && !Tello.state.flying)
@@ -244,8 +238,6 @@ namespace aTello
                 {
                     //Tello.land();
                 }
-
-
             };
             var pictureButton = FindViewById<ImageButton>(Resource.Id.pictureButton);
             Tello.picPath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, "aTello/pics/");
@@ -259,10 +251,31 @@ namespace aTello
                 Tello.takePicture();
                 cameraShutterSound.Play();
             };
+            pictureButton.LongClick += delegate
+            {
+                //Toggle
+                picMode= picMode == 1?0:1;
+                Tello.setPicVidMode(picMode);
+                aTello.Video.Decoder.reconfig();
+            };
 
             var galleryButton = FindViewById<ImageButton>(Resource.Id.galleryButton);
             galleryButton.Click += delegate
             {
+
+/*
+                RunOnUiThread(() => {
+                    var xxvideoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + "2018-11-5--23-16-02.h264");
+                    var videoConverter = new aTello.VideoConverter();
+
+                    var fileDir = this.FilesDir;
+
+                    videoConverter.ConvertFileAsync(this, new Java.IO.File(xxvideoFilePath));
+                });
+*/
+                //var uri = Android.Net.Uri.FromFile(new Java.IO.File(Tello.picPath));
+                //shareImage(uri);
+                //return;
 
                 Intent intent = new Intent();
                 intent.PutExtra(Intent.ActionView, Tello.picPath);
@@ -282,6 +295,21 @@ namespace aTello
             input_manager = (InputManager)GetSystemService(Context.InputService);
             CheckGameControllers();
         }
+        // Share image
+        private void shareImage(Android.Net.Uri imagePath)
+        {
+            Intent sharingIntent = new Intent(Intent.ActionSend);
+            sharingIntent.AddFlags(ActivityFlags.ClearWhenTaskReset);
+            sharingIntent.SetType("image/*");
+            sharingIntent.PutExtra(Intent.ExtraStream, imagePath);
+            StartActivity(Intent.CreateChooser(sharingIntent, "Share Image Using"));
+        }
+
+        public void OnTouchJoystickMoved(JoystickView joystickView )
+        {
+            Tello.controllerState.setAxis(onScreenJoyL.normalizedX, -onScreenJoyL.normalizedY, onScreenJoyR.normalizedX, -onScreenJoyR.normalizedY );
+            Tello.sendControllerUpdate();
+        }
         //Handle joystick axis events.
         public override bool OnGenericMotionEvent(MotionEvent e)
         {
@@ -290,13 +318,15 @@ namespace aTello
             {
                 if (IsGamepad(device))
                 {
-                    for (int i = 0; i < AxesMapping.size; i++)
-                    {
-                        axes[i] = GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(i));
-                    }
-                    axes[4] = buttons[5];//boost button.
-                    Tello.setAxis(axes);
-                    TextView joystat = FindViewById<TextView>(Resource.Id.joystick_state);
+                    var lx = GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(0));//axes[0];
+                    var ly = -GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(1));//-axes[1];
+                    var rx = GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(2));// axes[2];
+                    var ry = -GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(3));//-axes[3];
+
+                    Tello.controllerState.setAxis(lx, ly, rx, ry);
+                    Tello.sendControllerUpdate();
+
+                    //TextView joystat = FindViewById<TextView>(Resource.Id.joystick_state);
                     
                     //var dataStr = string.Join(" ", buttons);
                     //joystat.Text = string.Format("JOY {0: 0.00;-0.00} {1: 0.00;-0.00} {2: 0.00;-0.00} {3: 0.00;-0.00} {4: 0.00;-0.00} BTN "+ dataStr , axes[0], axes[1], axes[2], axes[3], axes[4]);
@@ -316,14 +346,15 @@ namespace aTello
                 int index = ButtonMapping.OrdinalValue(keyCode);
                 if (index >= 0)
                 {
-                    buttons[index] = 0;
                     if (index == 7)
                         Tello.takeOff();
                     if (index == 6)
                         Tello.land();
-                    axes[4] = buttons[5];
-                    Tello.setAxis(axes);
-
+                    if (index == 5)
+                    {
+                        Tello.controllerState.setSpeedMode(0);
+                        Tello.sendControllerUpdate();
+                    }
                     //controller_view.Invalidate();
                 }
                 return true;
@@ -341,10 +372,12 @@ namespace aTello
                     int index = ButtonMapping.OrdinalValue(keyCode);
                     if (index >= 0)
                     {
-                        buttons[index] = 1;
                         //controller_view.Invalidate();
-                        axes[4] = buttons[5];
-                        Tello.setAxis(axes);
+                        if (index == 5)
+                        {
+                            Tello.controllerState.setSpeedMode(1);
+                            Tello.sendControllerUpdate();
+                        }
                     }
                     return true;
                 }
@@ -358,7 +391,7 @@ namespace aTello
             int[] deviceIds = input_manager.GetInputDeviceIds();
             foreach (int deviceId in deviceIds)
             {
-                    Android.Views.InputDevice dev = InputDevice.GetDevice(deviceId);
+                Android.Views.InputDevice dev = InputDevice.GetDevice(deviceId);
                 int sources = (int)dev.Sources;
 
                 if (((sources & (int)InputSourceType.Gamepad) == (int)InputSourceType.Gamepad) ||
@@ -394,6 +427,25 @@ namespace aTello
         }
 
 
+        private void updateOnScreenJoyVisibility()
+        {
+            if (current_device_id > -1)
+            {
+                RunOnUiThread(() =>
+                {
+                    onScreenJoyL.Visibility = ViewStates.Invisible;
+                    onScreenJoyR.Visibility = ViewStates.Invisible;
+                });
+            }
+            else
+            {
+                RunOnUiThread(() =>
+                {
+                    onScreenJoyL.Visibility = ViewStates.Visible;
+                    onScreenJoyR.Visibility = ViewStates.Visible;
+                });
+            }
+        }
 
         public override bool OnTouchEvent(MotionEvent e)
         {
@@ -416,8 +468,6 @@ namespace aTello
             return 0;
 
         }
-
-
 
         private bool IsGamepad(InputDevice device)
         {
@@ -446,6 +496,7 @@ namespace aTello
                     //controller_view.Invalidate();
                 }
             }
+            updateOnScreenJoyVisibility();
         }
 
         public void OnInputDeviceRemoved(int deviceId)
@@ -470,13 +521,14 @@ namespace aTello
                     //controller_view.Invalidate();
                 }
             }
-
+            updateOnScreenJoyVisibility();
         }
 
         public void OnInputDeviceChanged(int deviceId)
         {
             //Log.Debug(TAG, "OnInputDeviceChanged: " + deviceId);
             //controller_view.Invalidate();
+            updateOnScreenJoyVisibility();
         }
 
 

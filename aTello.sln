@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelloConsole", "TelloConsol
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloTello", "HelloTello\HelloTello.csproj", "{A9F06754-2853-4CBF-9BC4-030A0FCC1B2C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFMpeg.Xamarin", "xamarin-android-ffmpeg\FFMpeg.Xamarin\FFMpeg.Xamarin.csproj", "{1049745B-3D4C-4DFF-AD8B-DC46F460B5D4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{A9F06754-2853-4CBF-9BC4-030A0FCC1B2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9F06754-2853-4CBF-9BC4-030A0FCC1B2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9F06754-2853-4CBF-9BC4-030A0FCC1B2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1049745B-3D4C-4DFF-AD8B-DC46F460B5D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1049745B-3D4C-4DFF-AD8B-DC46F460B5D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1049745B-3D4C-4DFF-AD8B-DC46F460B5D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1049745B-3D4C-4DFF-AD8B-DC46F460B5D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
