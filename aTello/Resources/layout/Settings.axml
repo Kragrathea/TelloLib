@@ -5,37 +5,147 @@
     android:layout_height="match_parent"
     android:minWidth="25px"
     android:minHeight="25px">
-    <CheckBox
-        android:text="Save raw H264"
-        android:layout_width="match_parent"
-        android:id="@+id/checkBox1"
-        android:layout_marginBottom="0.0dp"
-        android:layout_height="wrap_content" />
-    <CheckBox
-        android:text="Save logs"
-        android:layout_width="match_parent"
-        android:id="@+id/checkBox1"
-        android:layout_marginBottom="0.0dp"
-        android:layout_height="wrap_content" />
-    <CheckBox
-        android:text="Limit Max Height to 10m (Default 30m)"
-        android:layout_width="match_parent"
-        android:id="@+id/checkBox1"
-        android:layout_marginBottom="0.0dp"
-        android:layout_height="wrap_content" />
-    <RelativeLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/relativeLayout1">
-        <NumberPicker
-            android:id="@+id/numberPicker1"
-            android:scaleX="0.7"
-            android:scaleY="0.7"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </RelativeLayout>
-    <Spinner
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/spinner1" />
+        android:id="@+id/scrollView1"
+        android:minWidth="25px"
+        android:minHeight="25px">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/linearLayout3">
+            <CheckBox
+                android:text="Save raw H264"
+                android:layout_width="match_parent"
+                android:id="@+id/checkBox1"
+                android:layout_marginBottom="0.0dp"
+                android:layout_height="wrap_content" />
+            <CheckBox
+                android:text="Save logs"
+                android:layout_width="match_parent"
+                android:id="@+id/checkBox1"
+                android:layout_marginBottom="0.0dp"
+                android:layout_height="wrap_content" />
+            <CheckBox
+                android:text="Limit Max Height to 10m (Default 30m)"
+                android:layout_width="match_parent"
+                android:id="@+id/checkBox1"
+                android:layout_marginBottom="0.0dp"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:text="Joystick"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/joyLayout">
+                <TextView
+                    android:text="Axis   "
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:text="Lx"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:id="@+id/textView1" />
+                <Spinner
+                    android:id="@+id/lxSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:text="Ly"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:id="@+id/textView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <Spinner
+                    android:id="@+id/lySpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:id="@+id/joyLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:text="Rx"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:id="@+id/textView1" />
+                    <Spinner
+                        android:id="@+id/rxSpinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
+                    <TextView
+                        android:text="Ry"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:id="@+id/textView1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
+                    <Spinner
+                        android:id="@+id/rySpinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+            </LinearLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/relativeLayout2">
+                <TextView
+                    android:text="Speed Button   "
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <Spinner
+                    android:id="@+id/speedButtonSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/relativeLayout2">
+                <TextView
+                    android:text="Land Button   "
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <Spinner
+                    android:id="@+id/landButtonSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/relativeLayout1">
+                <TextView
+                    android:text="Takeoff Button   "
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <Spinner
+                    android:id="@+id/takeoffButttonSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true" />
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

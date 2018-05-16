@@ -372,13 +372,11 @@ namespace TelloLib
                             picBytesExpected = BitConverter.ToUInt32(received.bytes, start);
                             if(picBytesExpected>picbuffer.Length)
                             {
-                                Console.WriteLine("ERROR:Picture Too Big! " + picBytesExpected);
-                         
-                                return;//todo better error handling. 
+                                Console.WriteLine("WARNING:Picture Too Big! " + picBytesExpected);
+                                picbuffer = new byte[picBytesExpected]; 
                             }
                             picBytesRecived = 0;
-                            //picbuffer = new byte[picBytesExpected]; 
-                            picChunkState = new bool[(picBytesExpected/1024)+1]; //todo calc based on size. 
+                            picChunkState = new bool[(picBytesExpected/1024)+1]; //calc based on size. 
                             picPieceState = new bool[(picChunkState.Length / 8)+1];
                             picExtraPackets = 0;//for debugging.
                             sendAckFileSize();
