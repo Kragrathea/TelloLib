@@ -61,7 +61,7 @@ namespace aTello
                 Preferences.save();
             };
 
-            var buttonitems = new List<int>() { 0, 1, 2, 3, 4, 5, 6,7,8,9,10,11,12,13,14,15,16 };
+            var buttonitems = new List<int>() { 0, 1, 2, 3, 4, 5, 6,7,8,9,10,11,12,13,14,15 };
             var buttonAdapter = new ArrayAdapter<int>(this, Android.Resource.Layout.SimpleSpinnerItem, buttonitems);
             spinner = FindViewById<Spinner>(Resource.Id.takeoffButttonSpinner);
             spinner.Adapter = buttonAdapter;
@@ -87,6 +87,15 @@ namespace aTello
             spinner.ItemSelected += (sender, args) =>
             {
                 Preferences.speedButtonIndex = args.Position;
+                Preferences.save();
+            };
+
+            spinner = FindViewById<Spinner>(Resource.Id.pictureButttonSpinner);
+            spinner.Adapter = buttonAdapter;
+            spinner.SetSelection(Preferences.pictureButtonIndex);
+            spinner.ItemSelected += (sender, args) =>
+            {
+                Preferences.pictureButtonIndex = args.Position;
                 Preferences.save();
             };
 

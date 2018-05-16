@@ -35,6 +35,7 @@ namespace aTello
         string videoFilePath;//file to save raw h264 to. 
 
         private int picMode = 0;
+        Plugin.SimpleAudioPlayer.ISimpleAudioPlayer cameraShutterSound = Plugin.SimpleAudioPlayer.CrossSimpleAudioPlayer.Current;
 
         private bool doStateLogging = false;
 
@@ -245,7 +246,7 @@ namespace aTello
             System.IO.Directory.CreateDirectory(Tello.picPath);
 
 
-            var cameraShutterSound = Plugin.SimpleAudioPlayer.CrossSimpleAudioPlayer.Current;
+
             cameraShutterSound.Load("cameraShutterClick.mp3");
             pictureButton.Click += delegate
             {
@@ -319,18 +320,30 @@ namespace aTello
             {
                 if (IsGamepad(device))
                 {
-                    var lx = GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(0));//axes[0];
-                    var ly = -GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(1));//-axes[1];
-                    var rx = GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(2));// axes[2];
-                    var ry = -GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(3));//-axes[3];
+                    var lx = GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(Preferences.lxAxis));//axes[0];
+                    var ly = -GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(Preferences.lyAxis));//-axes[1];
+                    var rx = GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(Preferences.rxAxis));// axes[2];
+                    var ry = -GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(Preferences.ryAxis));//-axes[3];
 
                     Tello.controllerState.setAxis(lx, ly, rx, ry);
                     Tello.sendControllerUpdate();
 
-                    //TextView joystat = FindViewById<TextView>(Resource.Id.joystick_state);
-                    
-                    //var dataStr = string.Join(" ", buttons);
-                    //joystat.Text = string.Format("JOY {0: 0.00;-0.00} {1: 0.00;-0.00} {2: 0.00;-0.00} {3: 0.00;-0.00} {4: 0.00;-0.00} BTN "+ dataStr , axes[0], axes[1], axes[2], axes[3], axes[4]);
+                    updateOnScreenJoyVisibility();
+
+                    RunOnUiThread(() =>
+                    {
+                        TextView joystat = FindViewById<TextView>(Resource.Id.joystick_state);
+
+                        //var dataStr = string.Join(" ", buttons);
+                        joystat.Text = string.Format("JOY 0:{0: 0.00;-0.00} 1:{1: 0.00;-0.00} 2:{2: 0.00;-0.00} 3:{3: 0.00;-0.00} 4:{4: 0.00;-0.00} ",// BTN: " + dataStr,
+                            GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(0)),
+                            GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(1)),
+                            GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(2)),
+                            GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(3)),
+                            GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(4))
+                            );
+                    });
+ 
 
                     //controller_view.Invalidate();
                     return true;
@@ -347,10 +360,12 @@ namespace aTello
                 int index = ButtonMapping.OrdinalValue(keyCode);
                 if (index >= 0)
                 {
-                    if (index == Preferences.takeoffButtonIndex)
-                        Tello.takeOff();
-                    if (index == Preferences.landButtonIndex)
-                        Tello.land();
+                    if (index < buttons.Length)
+                        buttons[index] = 0;
+                    //if (index == Preferences.takeoffButtonIndex)
+                    //    Tello.takeOff();
+                    //if (index == Preferences.landButtonIndex)
+                    //    Tello.land();
                     if (index == Preferences.speedButtonIndex)
                     {
                         Tello.controllerState.setSpeedMode(0);
@@ -363,6 +378,7 @@ namespace aTello
             return base.OnKeyUp(keyCode, e);
         }
 
+        static int[] buttons = new int[16];
         public override bool OnKeyDown(Keycode keyCode, KeyEvent e)
         {
             InputDevice device = e.Device;
@@ -371,8 +387,20 @@ namespace aTello
                 if (IsGamepad(device))
                 {
                     int index = ButtonMapping.OrdinalValue(keyCode);
+                    //CrossTextToSpeech.Current.Speak(((int)keyCode).ToString());
                     if (index >= 0)
                     {
+                        if (index < buttons.Length)
+                            buttons[index] = 1;
+                        if (index == Preferences.takeoffButtonIndex && e.RepeatCount==7)
+                            Tello.takeOff();
+                        if (index == Preferences.landButtonIndex && e.RepeatCount == 7)
+                            Tello.land();
+                        if (index == 8 && e.RepeatCount == 0)
+                        {
+                            Tello.takePicture();
+                            cameraShutterSound.Play();
+                        };
                         //controller_view.Invalidate();
                         if (index == Preferences.speedButtonIndex)
                         {
@@ -419,6 +447,7 @@ namespace aTello
         {
             base.OnResume();
             input_manager.RegisterInputDeviceListener(this, null);
+            updateOnScreenJoyVisibility();
         }
 
         protected override void OnPause()

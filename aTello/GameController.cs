@@ -141,6 +141,7 @@ namespace aTello
             public static Keycode BUTTON_B = Keycode.ButtonB;
             public static Keycode BUTTON_X = Keycode.ButtonX;
             public static Keycode BUTTON_Y = Keycode.ButtonY;
+            public static Keycode BUTTON_Z = Keycode.ButtonZ;
             public static Keycode BUTTON_L1 = Keycode.ButtonL1;
             public static Keycode BUTTON_R1 = Keycode.ButtonR1;
             public static Keycode BUTTON_L2 = Keycode.ButtonL2;
@@ -198,29 +199,33 @@ namespace aTello
                 {
                     return 7;
                 }
-                else if (key == BUTTON_SELECT)
+                else if (key == BUTTON_Z)
                 {
                     return 8;
                 }
-                else if (key == BUTTON_START)
+                else if (key == BUTTON_SELECT)
                 {
                     return 9;
                 }
-                else if (key == BUTTON_THUMBL)
+                else if (key == BUTTON_START)
                 {
                     return 10;
                 }
-                else if (key == BUTTON_THUMBR)
+                else if (key == BUTTON_THUMBL)
                 {
                     return 11;
                 }
-                else if (key == BACK)
+                else if (key == BUTTON_THUMBR)
                 {
                     return 12;
                 }
-                else if (key == POWER)
+                else if (key == BACK)
                 {
                     return 13;
+                }
+                else if (key == POWER)
+                {
+                    return 14;
                 }
                 else
                 {

@@ -26,6 +26,8 @@ namespace aTello
 		
 		public static void UpdateIdValues()
 		{
+			global::FFMpeg.Xamarin.Resource.String.ApplicationName = global::aTello.Resource.String.ApplicationName;
+			global::FFMpeg.Xamarin.Resource.String.Hello = global::aTello.Resource.String.Hello;
 		}
 		
 		public partial class Attribute
@@ -90,8 +92,8 @@ namespace aTello
 			// aapt resource value: 0x7f06000f
 			public const int batTextView = 2131099663;
 			
-			// aapt resource value: 0x7f060015
-			public const int checkBox1 = 2131099669;
+			// aapt resource value: 0x7f060022
+			public const int checkBox1 = 2131099682;
 			
 			// aapt resource value: 0x7f060004
 			public const int connectButton = 2131099652;
@@ -105,8 +107,8 @@ namespace aTello
 			// aapt resource value: 0x7f06000e
 			public const int heiTextView = 2131099662;
 			
-			// aapt resource value: 0x7f060017
-			public const int joyLayout = 2131099671;
+			// aapt resource value: 0x7f060016
+			public const int joyLayout = 2131099670;
 			
 			// aapt resource value: 0x7f060002
 			public const int joystickViewL = 2131099650;
@@ -117,8 +119,8 @@ namespace aTello
 			// aapt resource value: 0x7f060011
 			public const int joystick_state = 2131099665;
 			
-			// aapt resource value: 0x7f06001f
-			public const int landButtonSpinner = 2131099679;
+			// aapt resource value: 0x7f06001e
+			public const int landButtonSpinner = 2131099678;
 			
 			// aapt resource value: 0x7f06000a
 			public const int linearLayout1 = 2131099658;
@@ -129,11 +131,14 @@ namespace aTello
 			// aapt resource value: 0x7f060014
 			public const int linearLayout3 = 2131099668;
 			
-			// aapt resource value: 0x7f060019
-			public const int lxSpinner = 2131099673;
+			// aapt resource value: 0x7f060021
+			public const int linearLayout4 = 2131099681;
 			
-			// aapt resource value: 0x7f06001a
-			public const int lySpinner = 2131099674;
+			// aapt resource value: 0x7f060018
+			public const int lxSpinner = 2131099672;
+			
+			// aapt resource value: 0x7f060019
+			public const int lySpinner = 2131099673;
 			
 			// aapt resource value: 0x7f06000b
 			public const int modeTextView = 2131099659;
@@ -141,17 +146,20 @@ namespace aTello
 			// aapt resource value: 0x7f060006
 			public const int pictureButton = 2131099654;
 			
+			// aapt resource value: 0x7f060020
+			public const int pictureButttonSpinner = 2131099680;
+			
 			// aapt resource value: 0x7f060000
 			public const int relativeLayout1 = 2131099648;
 			
-			// aapt resource value: 0x7f06001d
-			public const int relativeLayout2 = 2131099677;
+			// aapt resource value: 0x7f06001c
+			public const int relativeLayout2 = 2131099676;
+			
+			// aapt resource value: 0x7f06001a
+			public const int rxSpinner = 2131099674;
 			
 			// aapt resource value: 0x7f06001b
-			public const int rxSpinner = 2131099675;
-			
-			// aapt resource value: 0x7f06001c
-			public const int rySpinner = 2131099676;
+			public const int rySpinner = 2131099675;
 			
 			// aapt resource value: 0x7f060013
 			public const int scrollView1 = 2131099667;
@@ -159,8 +167,8 @@ namespace aTello
 			// aapt resource value: 0x7f060012
 			public const int settingsButton = 2131099666;
 			
-			// aapt resource value: 0x7f06001e
-			public const int speedButtonSpinner = 2131099678;
+			// aapt resource value: 0x7f06001d
+			public const int speedButtonSpinner = 2131099677;
 			
 			// aapt resource value: 0x7f060001
 			public const int surfaceView = 2131099649;
@@ -168,14 +176,14 @@ namespace aTello
 			// aapt resource value: 0x7f060008
 			public const int takeoffButton = 2131099656;
 			
-			// aapt resource value: 0x7f060020
-			public const int takeoffButttonSpinner = 2131099680;
+			// aapt resource value: 0x7f06001f
+			public const int takeoffButttonSpinner = 2131099679;
 			
-			// aapt resource value: 0x7f060018
-			public const int textView1 = 2131099672;
+			// aapt resource value: 0x7f060017
+			public const int textView1 = 2131099671;
 			
-			// aapt resource value: 0x7f060016
-			public const int textView2 = 2131099670;
+			// aapt resource value: 0x7f060015
+			public const int textView2 = 2131099669;
 			
 			// aapt resource value: 0x7f060009
 			public const int throwTakeoffButton = 2131099657;
@@ -235,16 +243,22 @@ namespace aTello
 		{
 			
 			// aapt resource value: 0x7f050001
-			public const int app_name = 2131034113;
+			public const int ApplicationName = 2131034113;
 			
 			// aapt resource value: 0x7f050000
-			public const int connect_status = 2131034112;
-			
-			// aapt resource value: 0x7f050002
-			public const int statusArea = 2131034114;
+			public const int Hello = 2131034112;
 			
 			// aapt resource value: 0x7f050003
-			public const int statusArea2 = 2131034115;
+			public const int app_name = 2131034115;
+			
+			// aapt resource value: 0x7f050002
+			public const int connect_status = 2131034114;
+			
+			// aapt resource value: 0x7f050004
+			public const int statusArea = 2131034116;
+			
+			// aapt resource value: 0x7f050005
+			public const int statusArea2 = 2131034117;
 			
 			static String()
 			{

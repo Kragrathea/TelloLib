@@ -19,6 +19,7 @@ namespace aTello
         public static int speedButtonIndex = 5;
         public static int landButtonIndex = 6;
         public static int takeoffButtonIndex = 7;
+        public static int pictureButtonIndex = 8;
 
         static Preferences()
         {
@@ -31,6 +32,7 @@ namespace aTello
             takeoffButtonIndex = prefs.GetInt("takeoffButtonIndex", takeoffButtonIndex);
             landButtonIndex = prefs.GetInt("landButtonIndex", landButtonIndex);
             speedButtonIndex = prefs.GetInt("speedButtonIndex", speedButtonIndex);
+            pictureButtonIndex = prefs.GetInt("pictureButtonIndex", pictureButtonIndex);
         }
         public static void save()
         {
@@ -45,6 +47,7 @@ namespace aTello
             editor.PutInt("takeoffButtonIndex", takeoffButtonIndex);
             editor.PutInt("landButtonIndex", landButtonIndex);
             editor.PutInt("speedButtonIndex", speedButtonIndex);
+            editor.PutInt("pictureButtonIndex", pictureButtonIndex);
 
             editor.Apply();        // applies changes asynchronously on newer APIs
         }
