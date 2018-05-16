@@ -3,6 +3,10 @@ Be very careful when flying! Especially the first time. Make sure the controls a
 Installing the APK.
 https://www.wikihow.tech/Install-APK-Files-on-Android
 
+Instructions
+
+<img src="https://github.com/Kragrathea/TelloLib/blob/master/Media/ScreenDiagram1.jpg" width="600" >
+
 1. Network status area. This bar will be RED if not connected to the Tello network. Tap to connect in that case.
 2. Takeoff/Land button
 3. Throw takeoff button
@@ -16,8 +20,10 @@ Joystick is currently mapped for a PS3 style controller. This will probably not 
 
 There are button mappings on a ps3 controller for takeoff, land, take picture and speed mode. But again these mappings will probably not match your controller. 
 
-Start (Hold) = Takeoff
-Select (Hold) = Land
+<img src="https://github.com/Kragrathea/TelloLib/blob/master/Media/PS3_diagram.png" width="600" >
+
+Start (Hold) = Takeoff.
+Select (Hold) = Land.
 R1 = Take Picture
 R2 = Speed mode.
 
@@ -28,4 +34,7 @@ Currently there is no "Record" button for video because video is always being re
 ffmpeg -i <input.h264> -vcodec copy output.mp4
  
 Ffmpeg is avail for all PCs and on Android in the play store.
+https://www.ffmpeg.org/
+
+https://play.google.com/store/apps/details?id=com.silentlexx.ffmpeggui&hl=en_US
 
