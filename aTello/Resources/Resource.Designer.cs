@@ -144,8 +144,8 @@ namespace aTello
 			// aapt resource value: 0x7f060000
 			public const int relativeLayout1 = 2131099648;
 			
-			// aapt resource value: 0x7f06001e
-			public const int relativeLayout2 = 2131099678;
+			// aapt resource value: 0x7f06001d
+			public const int relativeLayout2 = 2131099677;
 			
 			// aapt resource value: 0x7f06001b
 			public const int rxSpinner = 2131099675;
@@ -159,8 +159,8 @@ namespace aTello
 			// aapt resource value: 0x7f060012
 			public const int settingsButton = 2131099666;
 			
-			// aapt resource value: 0x7f060020
-			public const int speedButtonSpinner = 2131099680;
+			// aapt resource value: 0x7f06001e
+			public const int speedButtonSpinner = 2131099678;
 			
 			// aapt resource value: 0x7f060001
 			public const int surfaceView = 2131099649;
@@ -168,8 +168,8 @@ namespace aTello
 			// aapt resource value: 0x7f060008
 			public const int takeoffButton = 2131099656;
 			
-			// aapt resource value: 0x7f06001d
-			public const int takeoffButttonSpinner = 2131099677;
+			// aapt resource value: 0x7f060020
+			public const int takeoffButttonSpinner = 2131099680;
 			
 			// aapt resource value: 0x7f060018
 			public const int textView1 = 2131099672;

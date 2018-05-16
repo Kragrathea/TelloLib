@@ -29,10 +29,6 @@ namespace aTello
 
         JoystickView onScreenJoyL;
         JoystickView onScreenJoyR;
-        int rxAxis = 0, ryAxis = 1, lxAxis = 2, lyAxis = 3;
-        int speedButtonIndex = 5;
-        int landButtonIndex = 6;
-        int takeoffButtonIndex = 7;
 
         ImageButton takeoffButton;
         ImageButton throwTakeoffButton;
@@ -296,16 +292,6 @@ namespace aTello
             };
 
 
-            ISharedPreferences prefs = PreferenceManager.GetDefaultSharedPreferences(Application.Context);
-            lxAxis = prefs.GetInt("lxAxis", lxAxis);
-            lyAxis = prefs.GetInt("lyAxis", lyAxis);
-            rxAxis = prefs.GetInt("rxAxis", rxAxis);
-            ryAxis = prefs.GetInt("ryAxis", ryAxis);
-
-            takeoffButtonIndex = prefs.GetInt("takeoffButtonIndex", takeoffButtonIndex);
-            landButtonIndex = prefs.GetInt("landButtonIndex", landButtonIndex);
-            speedButtonIndex = prefs.GetInt("speedButtonIndex", speedButtonIndex);
-
             //Init joysticks.
             input_manager = (InputManager)GetSystemService(Context.InputService);
             CheckGameControllers();
@@ -361,11 +347,11 @@ namespace aTello
                 int index = ButtonMapping.OrdinalValue(keyCode);
                 if (index >= 0)
                 {
-                    if (index == takeoffButtonIndex)
+                    if (index == Preferences.takeoffButtonIndex)
                         Tello.takeOff();
-                    if (index == landButtonIndex)
+                    if (index == Preferences.landButtonIndex)
                         Tello.land();
-                    if (index == speedButtonIndex)
+                    if (index == Preferences.speedButtonIndex)
                     {
                         Tello.controllerState.setSpeedMode(0);
                         Tello.sendControllerUpdate();
@@ -388,7 +374,7 @@ namespace aTello
                     if (index >= 0)
                     {
                         //controller_view.Invalidate();
-                        if (index == speedButtonIndex)
+                        if (index == Preferences.speedButtonIndex)
                         {
                             Tello.controllerState.setSpeedMode(1);
                             Tello.sendControllerUpdate();
