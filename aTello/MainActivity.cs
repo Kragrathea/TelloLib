@@ -83,7 +83,7 @@ namespace aTello
                 {
                     //Tello.queryMaxHeight();
                     //Override max hei on connect.
-                    Tello.setMaxHeight(25);//meters
+                    Tello.setMaxHeight(30);//meters
                     Tello.queryMaxHeight();
 
                     CrossTextToSpeech.Current.Speak("Connected");
