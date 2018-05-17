@@ -86,6 +86,8 @@ namespace aTello
                     Tello.setMaxHeight(30);//meters
                     Tello.queryMaxHeight();
 
+                    Tello.setJpgQuality(1);
+
                     CrossTextToSpeech.Current.Speak("Connected");
                     
                     Tello.setPicVidMode(picMode);//0=picture(960x720)

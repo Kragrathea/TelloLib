@@ -16,6 +16,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/linearLayout3">
+            <Switch
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/switch1"
+                android:text="Photo Quality"
+                android:textOff="Low"
+                android:textOn="High"
+                android:showText="true" />
             <TextView
                 android:text="Joystick"
                 android:textAppearance="?android:attr/textAppearanceLarge"

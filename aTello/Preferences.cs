@@ -20,6 +20,7 @@ namespace aTello
         public static int landButtonIndex = 6;
         public static int takeoffButtonIndex = 7;
         public static int pictureButtonIndex = 8;
+        public static int jpgQuality = 0;
 
         static Preferences()
         {
