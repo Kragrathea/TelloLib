@@ -15,7 +15,7 @@ namespace aTello
 {
     public static class Preferences
     {
-        public static int rxAxis = 0, ryAxis = 1, lxAxis = 2, lyAxis = 3;
+        public static int lxAxis = 0, lyAxis = 1,rxAxis = 2, ryAxis = 3;
         public static int speedButtonIndex = 5;
         public static int landButtonIndex = 6;
         public static int takeoffButtonIndex = 7;
