@@ -143,14 +143,14 @@ namespace aTello
                     //Update state on screen
 
                     modeTextView.Text = "FM:" + newState.flyMode;
-                    hSpeedTextView.Text = string.Format("HS:{0: 0.00;-0.00}m/s", (float)newState.flySpeed / 10);
-                    vSpeedTextView.Text = string.Format("VS:{0: 0.00;-0.00}m/s", (float)newState.verticalSpeed / 10);
-                    heiTextView.Text = string.Format("Hei:{0: 0.00;-0.00}m", (float)newState.height / 10);
+                    hSpeedTextView.Text = string.Format("HS:{0: 0.0;-0.0}m/s", (float)newState.flySpeed / 10);
+                    vSpeedTextView.Text = string.Format("VS:{0: 0.0;-0.0}m/s", (float)newState.verticalSpeed / 10);
+                    heiTextView.Text = string.Format("Hei:{0: 0.0;-0.0}m", (float)newState.height / 10);
 
                     if (Tello.controllerState.speed > 0)
-                        vSpeedTextView.SetTextColor(Android.Graphics.Color.IndianRed);
+                        hSpeedTextView.SetBackgroundColor(Android.Graphics.Color.IndianRed);
                     else
-                        vSpeedTextView.SetTextColor(Android.Graphics.Color.White);
+                        hSpeedTextView.SetBackgroundColor(Android.Graphics.Color.Transparent);
 
                     batTextView.Text = "Bat:" + newState.batteryPercentage;
                     wifiTextView.Text = "Wifi:" + newState.wifiStrength;
