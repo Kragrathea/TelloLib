@@ -23,6 +23,8 @@ namespace aTello
         public static Keycode pictureButtonCode = Keycode.ButtonR1;
 
         public static int jpgQuality = 1;
+        public static int exposure = 9;
+        public static int videoBitRate = 0;
         public static int joyType = 0;
 
 
@@ -39,6 +41,9 @@ namespace aTello
             setJoyType(jtype);
 
             jpgQuality = prefs.GetInt("jpgQuality", jpgQuality);
+
+            exposure = prefs.GetInt("exposure", exposure);
+            videoBitRate = prefs.GetInt("videoBitRate", videoBitRate);
 
         }
 
@@ -74,6 +79,8 @@ namespace aTello
             editor.PutInt("ryAxis", ryAxis);
             editor.PutInt("joyType", joyType);
             editor.PutInt("jpgQuality", jpgQuality);
+            editor.PutInt("exposure", exposure);
+            editor.PutInt("videoBitRate", exposure);
 
             editor.Apply();        
         }

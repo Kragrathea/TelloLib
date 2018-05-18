@@ -92,6 +92,8 @@ namespace aTello
                     
                     Tello.setPicVidMode(picMode);//0=picture(960x720)
 
+                    Tello.setEV(Preferences.exposure);
+
                 }
                 if (newState == Tello.ConnectionState.Disconnected)
                 {

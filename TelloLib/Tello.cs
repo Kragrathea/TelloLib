@@ -129,7 +129,33 @@ namespace TelloLib
 
             client.Send(packet);
         }
+        public static void setEV(int ev)
+        {
+            //                                          crc    typ  cmdL  cmdH  seqL  seqH  evL  crc   crc
+            var packet = new byte[] { 0xcc, 0x60, 0x00, 0x27, 0x68, 0x34, 0x00, 0x09, 0x00, 0x00, 0x5b, 0xc5 };
 
+            byte evb = (byte)(ev-9);//Exposure goes from -9 to +9
+            //payload
+            packet[9] = evb;
+
+            setPacketSequence(packet);
+            setPacketCRCs(packet);
+
+            client.Send(packet);
+        }
+        public static void setVideoBitRate(int rate)
+        {
+            //                                          crc    typ  cmdL  cmdH  seqL  seqH  rateL  crc   crc
+            var packet = new byte[] { 0xcc, 0x60, 0x00, 0x27, 0x68, 0x20, 0x00, 0x09, 0x00, 0x00, 0x5b, 0xc5 };
+
+            //payload
+            packet[9] = (byte)rate;
+
+            setPacketSequence(packet);
+            setPacketCRCs(packet);
+
+            client.Send(packet);
+        }
         /*TELLO_CMD_SWITCH_PICTURE_VIDEO
 	    49 0x31
 	    0x68
@@ -230,9 +256,6 @@ namespace TelloLib
         {
             CRC.calcUCRC(packet, 4);
             CRC.calcCrc(packet, packet.Length);
-        }
-        public static void setEV(int ev)
-        {
         }
         public static void setEIS(int eis)
         {
