@@ -359,28 +359,17 @@ namespace aTello
             InputDevice device = e.Device;
             if (device != null && device.Id == current_device_id)
             {
-                int index = ButtonMapping.OrdinalValue(keyCode);
-                if (index >= 0)
+                if (keyCode == Preferences.speedButtonCode)
                 {
-                    if (index < buttons.Length)
-                        buttons[index] = 0;
-                    //if (index == Preferences.takeoffButtonIndex)
-                    //    Tello.takeOff();
-                    //if (index == Preferences.landButtonIndex)
-                    //    Tello.land();
-                    if (index == Preferences.speedButtonIndex)
-                    {
-                        Tello.controllerState.setSpeedMode(0);
-                        Tello.sendControllerUpdate();
-                    }
-                    //controller_view.Invalidate();
+                    Tello.controllerState.setSpeedMode(0);
+                    Tello.sendControllerUpdate();
+                    return true;
                 }
-                return true;
+
             }
             return base.OnKeyUp(keyCode, e);
         }
 
-        static int[] buttons = new int[16];
         public override bool OnKeyDown(Keycode keyCode, KeyEvent e)
         {
             InputDevice device = e.Device;
@@ -388,29 +377,36 @@ namespace aTello
             {
                 if (IsGamepad(device))
                 {
-                    int index = ButtonMapping.OrdinalValue(keyCode);
-                    //CrossTextToSpeech.Current.Speak(((int)keyCode).ToString());
-                    if (index >= 0)
+                    if (keyCode == Preferences.takeoffButtonCode)
+                        Console.WriteLine(e.RepeatCount);
+                    if (keyCode == Preferences.takeoffButtonCode && e.RepeatCount == 7)
                     {
-                        if (index < buttons.Length)
-                            buttons[index] = 1;
-                        if (index == Preferences.takeoffButtonIndex && e.RepeatCount==7)
-                            Tello.takeOff();
-                        if (index == Preferences.landButtonIndex && e.RepeatCount == 7)
-                            Tello.land();
-                        if (index == 8 && e.RepeatCount == 0)
-                        {
-                            Tello.takePicture();
-                            cameraShutterSound.Play();
-                        };
-                        //controller_view.Invalidate();
-                        if (index == Preferences.speedButtonIndex)
-                        {
-                            Tello.controllerState.setSpeedMode(1);
-                            Tello.sendControllerUpdate();
-                        }
+                        Tello.takeOff();
+                        return true;
                     }
-                    return true;
+                    if (keyCode == Preferences.landButtonCode && e.RepeatCount == 7)
+                    {
+                        Tello.land();
+                        return true;
+                    }
+                    if (keyCode == Preferences.pictureButtonCode && e.RepeatCount == 0)
+                    {
+                        Tello.takePicture();
+                        cameraShutterSound.Play();
+                        return true;
+                    };
+                    //controller_view.Invalidate();
+                    if (keyCode == Preferences.speedButtonCode)
+                    {
+                        Tello.controllerState.setSpeedMode(1);
+                        Tello.sendControllerUpdate();
+                        return true;
+                    }
+
+                    //if joy button return handled. 
+                    if(keyCode>= Keycode.ButtonA && keyCode <=Keycode.ButtonMode)
+                        return true;
+;
                 }
             }
             return base.OnKeyDown(keyCode, e);

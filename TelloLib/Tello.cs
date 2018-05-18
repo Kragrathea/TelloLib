@@ -512,33 +512,11 @@ namespace TelloLib
                 int tick = 0;
                 while (true)
                 {
-                    //if (getControllerCallback != null)
-                    //    joyAxis = getControllerCallback();
-                    //var rx = joyAxis[2];//Axis[0]((float)joyState.RotationX / 0x8000) - 1;
-                    //var ry = -joyAxis[3];//-(((float)joyState.RotationY / 0x8000) - 1);
-                    //var lx = joyAxis[0];// ((float)joyState.X / 0x8000) - 1;
-                    //var ly = -joyAxis[1];//-(((float)joyState.Y / 0x8000) - 1);
-                    //var deadBand = 0.15f;
-                    //rx = Math.Abs(rx) < deadBand ? 0.0f : rx;
-                    //ry = Math.Abs(ry) < deadBand ? 0.0f : ry;
-                    //lx = Math.Abs(lx) < deadBand ? 0.0f : lx;
-                    //ly = Math.Abs(ly) < deadBand ? 0.0f : ly;
 
-
-                    //var boost = 0.0f;
-                    //if (joyAxis[4] > 0.5)
-                    //    boost = 1.0f;
-                    //var limit = 1.0f;//Slow down while testing.
-                    //rx = rx * limit;
-                    //ry = ry * limit;
-
-                    //Console.WriteLine(rx + " " + ry + " " + lx + " " + ly);
-                    //var packet = createJoyPacket(rx, ry, lx, ly, boost);
                     try
                     {
                         if (token.IsCancellationRequested)
                             break;
-//                        client.Send(packet);
                         sendControllerUpdate();
 
                         tick++;

@@ -28,17 +28,30 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/spinner1" />
-            <TextView
-                android:text="Joystick"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:id="@+id/textView2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/joyLayout">
+                android:id="@+id/joyLayout"
+                android:layout_marginTop="10dp">
+                <TextView
+                    android:text="Joystick Type"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <Spinner
+                    android:id="@+id/joystickTypeSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/joyLayout"
+                android:layout_marginTop="10dp"
+                android:visibility="gone">
                 <TextView
                     android:text="Axis   "
                     android:textAppearance="?android:attr/textAppearanceLarge"
@@ -96,117 +109,6 @@
                         android:layout_height="match_parent" />
                 </LinearLayout>
             </LinearLayout>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/relativeLayout2">
-                <TextView
-                    android:text="Speed Button   "
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-                <Spinner
-                    android:id="@+id/speedButtonSpinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true" />
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/relativeLayout2">
-                <TextView
-                    android:text="Land Button   "
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-                <Spinner
-                    android:id="@+id/landButtonSpinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true" />
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/relativeLayout1">
-                <TextView
-                    android:text="Takeoff Button   "
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-                <Spinner
-                    android:id="@+id/takeoffButttonSpinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true" />
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/relativeLayout1">
-                <TextView
-                    android:text="Picture Button   "
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-                <Spinner
-                    android:id="@+id/pictureButttonSpinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true" />
-            </RelativeLayout>
-            <LinearLayout
-                android:orientation="vertical"
-                android:minWidth="25px"
-                android:minHeight="25px"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/linearLayout4"
-                android:visibility="gone">
-                <CheckBox
-                    android:text="Save raw H264"
-                    android:layout_width="match_parent"
-                    android:id="@+id/checkBox1"
-                    android:layout_marginBottom="0.0dp"
-                    android:layout_height="wrap_content" />
-                <CheckBox
-                    android:text="Save logs"
-                    android:layout_width="match_parent"
-                    android:id="@+id/checkBox1"
-                    android:layout_marginBottom="0.0dp"
-                    android:layout_height="wrap_content" />
-                <CheckBox
-                    android:text="Limit Max Height to 10m (Default 30m)"
-                    android:layout_width="match_parent"
-                    android:id="@+id/checkBox1"
-                    android:layout_marginBottom="0.0dp"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/joyLayout">
-                <TextView
-                    android:text="Joystick Type"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent" />
-                <Spinner
-                    android:id="@+id/joystickTypeSpinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent" />
-            </LinearLayout>
         </LinearLayout>
     </ScrollView>
-    <Switch
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/switch2" />
 </LinearLayout>

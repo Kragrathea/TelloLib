@@ -63,52 +63,16 @@ namespace aTello
                 Preferences.save();
             };
 
-            var buttonitems = new List<int>() { 0, 1, 2, 3, 4, 5, 6,7,8,9,10,11,12,13,14,15 };
-            var buttonAdapter = new ArrayAdapter<int>(this, Android.Resource.Layout.SimpleSpinnerItem, buttonitems);
-            spinner = FindViewById<Spinner>(Resource.Id.takeoffButttonSpinner);
-            spinner.Adapter = buttonAdapter;
-            spinner.SetSelection(Preferences.takeoffButtonIndex);
-            spinner.ItemSelected += (sender, args) =>
-            {
-                Preferences.takeoffButtonIndex = args.Position;
-                Preferences.save();
-            };
 
-            spinner = FindViewById<Spinner>(Resource.Id.landButtonSpinner);
-            spinner.Adapter = buttonAdapter;
-            spinner.SetSelection(Preferences.landButtonIndex);
-            spinner.ItemSelected += (sender, args) =>
-            {
-                Preferences.landButtonIndex = args.Position;
-                Preferences.save();
-            };
-
-            spinner = FindViewById<Spinner>(Resource.Id.speedButtonSpinner);
-            spinner.Adapter = buttonAdapter;
-            spinner.SetSelection(Preferences.speedButtonIndex);
-            spinner.ItemSelected += (sender, args) =>
-            {
-                Preferences.speedButtonIndex = args.Position;
-                Preferences.save();
-            };
-
-            spinner = FindViewById<Spinner>(Resource.Id.pictureButttonSpinner);
-            spinner.Adapter = buttonAdapter;
-            spinner.SetSelection(Preferences.pictureButtonIndex);
-            spinner.ItemSelected += (sender, args) =>
-            {
-                Preferences.pictureButtonIndex = args.Position;
-                Preferences.save();
-            };
 
             var joyItems = new List<string>() { "Generic","PS3" };
             var joyAdapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleSpinnerItem, joyItems);
             var joyTypeSpinner = FindViewById<Spinner>(Resource.Id.joystickTypeSpinner);
             joyTypeSpinner.Adapter = joyAdapter;
-            joyTypeSpinner.SetSelection(Preferences.lxAxis);
+            joyTypeSpinner.SetSelection(Preferences.joyType);
             joyTypeSpinner.ItemSelected += (sender, args) =>
             {
-                Preferences.lxAxis = args.Position;
+                Preferences.setJoyType(args.Position);
                 Preferences.save();
             };
 

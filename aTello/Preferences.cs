@@ -16,11 +16,13 @@ namespace aTello
     public static class Preferences
     {
         public static int lxAxis = 0, lyAxis = 1,rxAxis = 2, ryAxis = 3;
-        public static int speedButtonIndex = 5;
-        public static int landButtonIndex = 6;
-        public static int takeoffButtonIndex = 7;
-        public static int pictureButtonIndex = 8;
-        public static int jpgQuality = 0;
+
+        public static Keycode speedButtonCode = Keycode.ButtonR2;
+        public static Keycode landButtonCode = Keycode.ButtonSelect;
+        public static Keycode takeoffButtonCode = Keycode.ButtonStart;
+        public static Keycode pictureButtonCode = Keycode.ButtonR1;
+
+        public static int jpgQuality = 1;
         public static int joyType = 0;
 
 
@@ -32,12 +34,12 @@ namespace aTello
             rxAxis = prefs.GetInt("rxAxis", rxAxis);
             ryAxis = prefs.GetInt("ryAxis", ryAxis);
 
-            joyType = prefs.GetInt("joyType", joyType);
 
-            takeoffButtonIndex = prefs.GetInt("takeoffButtonIndex", takeoffButtonIndex);
-            landButtonIndex = prefs.GetInt("landButtonIndex", landButtonIndex);
-            speedButtonIndex = prefs.GetInt("speedButtonIndex", speedButtonIndex);
-            pictureButtonIndex = prefs.GetInt("pictureButtonIndex", pictureButtonIndex);
+            var jtype = prefs.GetInt("joyType", joyType);
+            setJoyType(jtype);
+
+            jpgQuality = prefs.GetInt("jpgQuality", jpgQuality);
+
         }
 
         public static void setJoyType(int type)
@@ -45,8 +47,18 @@ namespace aTello
             switch(type)
             {
                 case 0://generic
+                    speedButtonCode = Keycode.ButtonR2;
+                    landButtonCode =  Keycode.ButtonSelect;
+                    takeoffButtonCode = Keycode.ButtonStart;
+                    pictureButtonCode = Keycode.ButtonR1;
+                    joyType = type;
                     break;
                 case 1://ps3
+                    speedButtonCode = Keycode.ButtonR1;
+                    landButtonCode = Keycode.ButtonL2;
+                    takeoffButtonCode = Keycode.ButtonR2;
+                    pictureButtonCode = Keycode.ButtonZ;
+                    joyType = type;
                     break;
 
             }
@@ -60,14 +72,10 @@ namespace aTello
             editor.PutInt("lyAxis", lyAxis);
             editor.PutInt("rxAxis", rxAxis);
             editor.PutInt("ryAxis", ryAxis);
-            editor.PutInt("joyType", ryAxis);
+            editor.PutInt("joyType", joyType);
+            editor.PutInt("jpgQuality", jpgQuality);
 
-            editor.PutInt("takeoffButtonIndex", takeoffButtonIndex);
-            editor.PutInt("landButtonIndex", landButtonIndex);
-            editor.PutInt("speedButtonIndex", speedButtonIndex);
-            editor.PutInt("pictureButtonIndex", pictureButtonIndex);
-
-            editor.Apply();        // applies changes asynchronously on newer APIs
+            editor.Apply();        
         }
     }
 }
