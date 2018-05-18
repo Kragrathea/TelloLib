@@ -86,7 +86,7 @@ namespace aTello
                     Tello.setMaxHeight(30);//meters
                     Tello.queryMaxHeight();
 
-                    Tello.setJpgQuality(1);
+                    Tello.setJpgQuality(Preferences.jpgQuality);
 
                     CrossTextToSpeech.Current.Speak("Connected");
                     
@@ -141,17 +141,17 @@ namespace aTello
 
                 RunOnUiThread(() => {
                     //Update state on screen
-                    //var acstat = FindViewById<TextView>(Resource.Id.ac_state);
 
                     modeTextView.Text = "FM:" + newState.flyMode;
-                    hSpeedTextView.Text = "HS:" + newState.flySpeed;
-                    vSpeedTextView.Text = "VS:" + newState.verticalSpeed;
-//                    if (Tello.controllerState.speed > 0)
-//                        vSpeedTextView.SetTextColor(Android.Graphics.Color.Red);
-//                    else
-//                        vSpeedTextView.SetTextColor(Android.Graphics.Color.White);
+                    hSpeedTextView.Text = string.Format("HS:{0: 0.00;-0.00}m/s", (float)newState.flySpeed / 10);
+                    vSpeedTextView.Text = string.Format("VS:{0: 0.00;-0.00}m/s", (float)newState.verticalSpeed / 10);
+                    heiTextView.Text = string.Format("Hei:{0: 0.00;-0.00}m", (float)newState.height / 10);
 
-                    heiTextView.Text = "Hei:" + newState.height;
+                    if (Tello.controllerState.speed > 0)
+                        vSpeedTextView.SetTextColor(Android.Graphics.Color.IndianRed);
+                    else
+                        vSpeedTextView.SetTextColor(Android.Graphics.Color.White);
+
                     batTextView.Text = "Bat:" + newState.batteryPercentage;
                     wifiTextView.Text = "Wifi:" + newState.wifiStrength;
 

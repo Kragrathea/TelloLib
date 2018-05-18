@@ -15,14 +15,16 @@ using static Android.Views.ViewGroup;
 
 namespace aTello
 {
-    [Activity(Label = "Settings", Theme = "@android:style/Theme.Black.NoTitleBar.Fullscreen")]
+    [Activity(Label = "Settings", Theme = "@android:style/Theme.DeviceDefault")]
     public class SettingsActivity : Activity
     {
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            this.RequestWindowFeature(WindowFeatures.NoTitle);
+            this.Window.AddFlags(WindowManagerFlags.Fullscreen | WindowManagerFlags.TurnScreenOn);
             SetContentView(Resource.Layout.Settings);
-            
+
             var items = new List<int>() { 0,1,2,3,4,5,6 };
             var axisAdapter = new ArrayAdapter<int>(this, Android.Resource.Layout.SimpleSpinnerItem, items);
             var spinner = FindViewById<Spinner>(Resource.Id.lxSpinner);
@@ -98,6 +100,29 @@ namespace aTello
                 Preferences.pictureButtonIndex = args.Position;
                 Preferences.save();
             };
+
+            var joyItems = new List<string>() { "Generic","PS3" };
+            var joyAdapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleSpinnerItem, joyItems);
+            var joyTypeSpinner = FindViewById<Spinner>(Resource.Id.joystickTypeSpinner);
+            joyTypeSpinner.Adapter = joyAdapter;
+            joyTypeSpinner.SetSelection(Preferences.lxAxis);
+            joyTypeSpinner.ItemSelected += (sender, args) =>
+            {
+                Preferences.lxAxis = args.Position;
+                Preferences.save();
+            };
+
+
+            var photoQualitySwitch = FindViewById<Switch>(Resource.Id.photoQualitySwitch);
+            photoQualitySwitch.Checked = Preferences.jpgQuality > 0;
+            photoQualitySwitch.CheckedChange += (sender, args) =>
+            {
+                Preferences.jpgQuality = args.IsChecked?1:0;
+                Preferences.save();
+                Tello.setJpgQuality(Preferences.jpgQuality);
+            };
+
+            
 
             //EditText text = FindViewById<EditText>(Resource.Id.maxHeightText);
             //text.AfterTextChanged += delegate {

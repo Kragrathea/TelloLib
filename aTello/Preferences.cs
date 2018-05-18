@@ -21,6 +21,8 @@ namespace aTello
         public static int takeoffButtonIndex = 7;
         public static int pictureButtonIndex = 8;
         public static int jpgQuality = 0;
+        public static int joyType = 0;
+
 
         static Preferences()
         {
@@ -30,10 +32,24 @@ namespace aTello
             rxAxis = prefs.GetInt("rxAxis", rxAxis);
             ryAxis = prefs.GetInt("ryAxis", ryAxis);
 
+            joyType = prefs.GetInt("joyType", joyType);
+
             takeoffButtonIndex = prefs.GetInt("takeoffButtonIndex", takeoffButtonIndex);
             landButtonIndex = prefs.GetInt("landButtonIndex", landButtonIndex);
             speedButtonIndex = prefs.GetInt("speedButtonIndex", speedButtonIndex);
             pictureButtonIndex = prefs.GetInt("pictureButtonIndex", pictureButtonIndex);
+        }
+
+        public static void setJoyType(int type)
+        {
+            switch(type)
+            {
+                case 0://generic
+                    break;
+                case 1://ps3
+                    break;
+
+            }
         }
         public static void save()
         {
@@ -44,6 +60,7 @@ namespace aTello
             editor.PutInt("lyAxis", lyAxis);
             editor.PutInt("rxAxis", rxAxis);
             editor.PutInt("ryAxis", ryAxis);
+            editor.PutInt("joyType", ryAxis);
 
             editor.PutInt("takeoffButtonIndex", takeoffButtonIndex);
             editor.PutInt("landButtonIndex", landButtonIndex);

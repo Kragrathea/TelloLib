@@ -18,12 +18,16 @@
             android:id="@+id/linearLayout3">
             <Switch
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/switch1"
+                android:layout_height="50dp"
+                android:id="@+id/photoQualitySwitch"
                 android:text="Photo Quality"
+                android:showText="true"
                 android:textOff="Low"
-                android:textOn="High"
-                android:showText="true" />
+                android:textOn="High" />
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/spinner1" />
             <TextView
                 android:text="Joystick"
                 android:textAppearance="?android:attr/textAppearanceLarge"
@@ -183,6 +187,26 @@
                     android:layout_marginBottom="0.0dp"
                     android:layout_height="wrap_content" />
             </LinearLayout>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/joyLayout">
+                <TextView
+                    android:text="Joystick Type"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <Spinner
+                    android:id="@+id/joystickTypeSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
+    <Switch
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/switch2" />
 </LinearLayout>
