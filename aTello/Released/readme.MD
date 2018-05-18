@@ -16,9 +16,9 @@ Instructions
 7. Joystick axis status (for debugging)
 8. Aircraft status area.
 
-Joystick is currently supported for a Generic Android controllers and PS3 style controllers. This is selected in the settings page. If your joystick doesn't work First check to make sure it works on other Android apps. If it does then post an issue with including your controller brand.
+Joystick is currently supported for generic Android Bluetooth/OTG controllers and PS3 style controllers. Joystick type is selected in the settings page. If your joystick doesn't work First check to make sure it works on other Android apps. If it does then post an issue including your controller brand.
 
-There are button mappings on the controllers for takeoff, land, take picture and speed mode. 
+These are the button mappings on the controller for takeoff, land, take picture and speed mode. 
 
 <img src="https://github.com/Kragrathea/TelloLib/blob/master/Media/PS3_diagram.png" width="600" >
 
