@@ -12,13 +12,13 @@ Instructions
 3. Throw takeoff button
 4. Take picture button. Hold to switch to aspect ratio to 16x9. (not fully working yet)
 5. Show pictures. Not fully working.
-6. Settings. Just joystick config at the moment.
+6. Settings. Joystick config and Jpeg quality.
 7. Joystick axis status (for debugging)
 8. Aircraft status area.
 
-Joystick is currently mapped for a PS3 style controller. This will probably not be right for most joysticks. The buttons can be configured in the settings but I plan to have preset configs for each of the major joystick types (Android,Ps3, Xbox etc).
+Joystick is currently supported for generic Android Bluetooth/OTG controllers and PS3 style controllers. Joystick type is selected in the settings page. If your joystick doesn't work First check to make sure it works on other Android apps. If it does then post an issue including your controller brand.
 
-There are button mappings on a ps3 controller for takeoff, land, take picture and speed mode. But again these mappings will probably not match your controller. 
+These are the button mappings on the controller for takeoff, land, take picture and speed mode. 
 
 <img src="https://github.com/Kragrathea/TelloLib/blob/master/Media/PS3_diagram.png" width="600" >
 
