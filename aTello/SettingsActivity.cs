@@ -77,6 +77,33 @@ namespace aTello
             };
 
 
+
+            var evItems = new List<double>() { -3.0, -2.7, -2.3, -2.0, -1.7, -1.3, -1.0, -0.7, -0.3, 0, 0.3, 0.7, 1.0, 1.3, 1.7, 2.0, 2.3, 2.7, 3.0 };
+            var evAdapter = new ArrayAdapter<double>(this, Android.Resource.Layout.SimpleSpinnerItem, evItems);
+            var evSpinner = FindViewById<Spinner>(Resource.Id.exposureSpinner);
+            evSpinner.Adapter = evAdapter;
+            evSpinner.SetSelection(Preferences.exposure);
+            evSpinner.ItemSelected += (sender, args) =>
+            {
+                Preferences.exposure=args.Position;
+                Tello.setEV(Preferences.exposure);
+
+                Preferences.save();
+            };
+
+            var vbrItems = new List<string>() { "Auto", "1M", "1.5M", "2M", "3M", "4M" };
+            var vbrAdapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleSpinnerItem, vbrItems);
+            var vbrSpinner = FindViewById<Spinner>(Resource.Id.vbrSpinner);
+            vbrSpinner.Adapter = vbrAdapter;
+            vbrSpinner.SetSelection(Preferences.videoBitRate);
+            vbrSpinner.ItemSelected += (sender, args) =>
+            {
+                Preferences.videoBitRate = args.Position;
+                Tello.setVideoBitRate(Preferences.videoBitRate);
+
+                Preferences.save();
+            };
+
             var photoQualitySwitch = FindViewById<Switch>(Resource.Id.photoQualitySwitch);
             photoQualitySwitch.Checked = Preferences.jpgQuality > 0;
             photoQualitySwitch.CheckedChange += (sender, args) =>
