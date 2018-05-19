@@ -86,6 +86,10 @@ namespace aTello
                     Tello.setMaxHeight(30);//meters
                     Tello.queryMaxHeight();
 
+                    //Tello.queryAttAngle();
+                    Tello.setAttAngle(25);
+                    //Tello.queryAttAngle();
+
                     Tello.setJpgQuality(Preferences.jpgQuality);
 
                     CrossTextToSpeech.Current.Speak("Connected");

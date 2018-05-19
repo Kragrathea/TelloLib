@@ -83,6 +83,16 @@ namespace TelloLib
 
             client.Send(packet);
         }
+
+        public static void queryUnk(int cmd)
+        {
+            var packet = new byte[] { 0xcc, 0x58, 0x00, 0x7c, 0x48, 0xff, 0x00, 0x06, 0x00, 0xe9, 0xb3 };
+            packet[5] = (byte)cmd;
+            setPacketSequence(packet);
+            setPacketCRCs(packet);
+            client.Send(packet);
+        }
+
         public static void queryAttAngle()
         {
             var packet = new byte[] { 0xcc, 0x58, 0x00, 0x7c, 0x48, 0x59, 0x10, 0x06, 0x00, 0xe9, 0xb3 };
@@ -100,7 +110,7 @@ namespace TelloLib
         public static void setAttAngle(float angle)
         {
             //                                          crc    typ  cmdL  cmdH  seqL  seqH  ang1  ang2 ang3  ang4  crc   crc
-            var packet = new byte[] { 0xcc, 0x68, 0x00, 0x27, 0x68, 0x58, 0x00, 0x00, 0x00, 0x00, 0x00,0x00, 0x00, 0x5b, 0xc5 };
+            var packet = new byte[] { 0xcc, 0x78, 0x00, 0x27, 0x68, 0x58, 0x10, 0x00, 0x00, 0x00, 0x00,0x00, 0x00, 0x5b, 0xc5 };
 
             //payload
             byte[] bytes = BitConverter.GetBytes(angle);
@@ -311,12 +321,19 @@ namespace TelloLib
 
                                 startHeartbeat();
                                 requestIframe();
+                                //for(int i=74;i<80;i++)
+                                //queryUnk(i);
                                 //Console.WriteLine("Tello connected!");
                                 continue;
                             }
                         }
 
                         int cmdId = ((int)received.bytes[5] | ((int)received.bytes[6] << 8));
+
+                        if(cmdId>=74 && cmdId<80)
+                        {
+                            //Console.WriteLine("XXXXXXXXCMD:" + cmdId);
+                        }
                         if (cmdId == 86)//state command
                         {
                             //update
@@ -338,9 +355,9 @@ namespace TelloLib
                         }
                         if (cmdId == 4185)//att angle response
                         {
-                            //var array = received.bytes.Skip(9).Take(4).Reverse().ToArray();
-                            //float f = BitConverter.ToSingle(array, 0);
-                            //Console.WriteLine(f);
+                            var array = received.bytes.Skip(10).Take(4).ToArray();
+                            float f = BitConverter.ToSingle(array, 0);
+                            Console.WriteLine(f);
                         }
                         if (cmdId == 4182)//max hei response
                         {
