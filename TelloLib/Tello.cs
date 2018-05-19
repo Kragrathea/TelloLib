@@ -126,6 +126,19 @@ namespace TelloLib
 
             Tello.queryAttAngle();//refresh
         }
+        public static void doFlip(int dir)
+        {
+            //                                          crc    typ  cmdL  cmdH  seqL  seqH  dirL  crc   crc
+            var packet = new byte[] { 0xcc, 0x60, 0x00, 0x27, 0x70, 0x5c, 0x00, 0x09, 0x00, 0x00, 0x5b, 0xc5 };
+
+            //payload
+            packet[9] = (byte)(dir & 0xff);
+
+            setPacketSequence(packet);
+            setPacketCRCs(packet);
+
+            client.Send(packet);
+        }
         public static void setJpgQuality(int quality)
         {
             //                                          crc    typ  cmdL  cmdH  seqL  seqH  quaL  crc   crc

@@ -15,6 +15,8 @@ using System.Linq;
 using TelloLib;
 using Plugin.TextToSpeech;
 using Android.Preferences;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace aTello
 {
@@ -38,6 +40,7 @@ namespace aTello
         Plugin.SimpleAudioPlayer.ISimpleAudioPlayer cameraShutterSound = Plugin.SimpleAudioPlayer.CrossSimpleAudioPlayer.Current;
         private bool toggleRecording = false;
         private bool isRecording = false;
+        private DateTime startRecordingTime;
 
         private bool doStateLogging = false;
 
@@ -177,10 +180,12 @@ namespace aTello
 
             var path = "aTello/video/cache/";
             System.IO.Directory.CreateDirectory(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path));
-            videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + ".h264");
+            videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("MMMM dd yyyy HH-mm-ss") + ".h264");
+
             FileStream videoStream = null;
 
-            updateUI();//hide record light etc. 
+            startUIUpdateThread();
+            //updateUI();//hide record light etc. 
 
             //subscribe to Tello video data
             Tello.onVideoData += (byte[] data) =>
@@ -202,13 +207,15 @@ namespace aTello
                                 toggleRecording = false;
                                 if (isRecording)
                                 {
-                                    videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("../REC_yyyy-dd-M--HH-mm-ss") + ".h264");
+//                                    videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("../REC_yyyy-dd-M--HH-mm-ss") + ".h264");
+                                    videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("../MMMM dd yyyy HH-mm-ss") + ".h264");
+                                    startRecordingTime = DateTime.Now;
                                     CrossTextToSpeech.Current.Speak("Recording");
                                     updateUI();
                                 }
                                 else
                                 {
-                                    videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + ".h264");
+                                    videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("MMMM dd yyyy HH-mm-ss") + ".h264");
                                     CrossTextToSpeech.Current.Speak("Recording stopped");
                                     updateUI();
                                 }
@@ -342,6 +349,35 @@ namespace aTello
             CheckGameControllers();
         }
 
+        private void startUIUpdateThread()
+        {
+            Task.Factory.StartNew(async () =>
+            {
+                var recLight = FindViewById<RadioButton>(Resource.Id.recLightButton);
+                int tick = 0;
+                while (true)
+                {
+                    try
+                    {
+                        RunOnUiThread(() =>
+                        {
+                            if (isRecording)
+                            {
+                                recLight.Visibility = ViewStates.Visible;
+                                recLight.Text = "REC " + (DateTime.Now - startRecordingTime).ToString(@"mm\:ss");
+                            }
+                            else
+                                recLight.Visibility = ViewStates.Gone;
+                        });
+                        Thread.Sleep(250);//Often enough?
+                    }
+                    catch (Exception ex)
+                    {
+                    }
+                }
+            });
+        }
+
         private void updateUI()
         {
             var recLight = FindViewById<RadioButton>(Resource.Id.recLightButton);
@@ -368,7 +404,9 @@ namespace aTello
             Tello.controllerState.setAxis(onScreenJoyL.normalizedX, -onScreenJoyL.normalizedY, onScreenJoyR.normalizedX, -onScreenJoyR.normalizedY );
             Tello.sendControllerUpdate();
         }
+        public float hatAxisX, hatAxisY;
         //Handle joystick axis events.
+        private DateTime lastFlip;
         public override bool OnGenericMotionEvent(MotionEvent e)
         {
             InputDevice device = e.Device;
@@ -381,10 +419,40 @@ namespace aTello
                     var rx = GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(Preferences.rxAxis));// axes[2];
                     var ry = -GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(Preferences.ryAxis));//-axes[3];
 
+
                     Tello.controllerState.setAxis(lx, ly, rx, ry);
                     Tello.sendControllerUpdate();
 
                     updateOnScreenJoyVisibility();
+
+                    hatAxisX = GetCenteredAxis(e, device, AxesMapping.AXIS_HAT_X);
+                    hatAxisY = GetCenteredAxis(e, device, AxesMapping.AXIS_HAT_Y);
+
+                    //do flips only in speed mode.
+                    if (Tello.controllerState.speed > 0)
+                    {
+                        if (hatAxisY > 0.9f && (DateTime.Now - lastFlip).TotalMilliseconds > 600)
+                        {
+                            lastFlip = DateTime.Now;
+                            Tello.doFlip(2);
+                        }
+                        if (hatAxisY < -0.9f && (DateTime.Now - lastFlip).TotalMilliseconds > 600)
+                        {
+                            lastFlip = DateTime.Now;
+                            Tello.doFlip(0);
+                        }
+                        if (hatAxisX > 0.9f && (DateTime.Now - lastFlip).TotalMilliseconds > 600)
+                        {
+                            lastFlip = DateTime.Now;
+                            Tello.doFlip(3);
+                        }
+                        if (hatAxisX < -0.9f && (DateTime.Now - lastFlip).TotalMilliseconds > 600)
+                        {
+                            lastFlip = DateTime.Now;
+                            Tello.doFlip(1);
+                        }
+                    }
+
 
                     RunOnUiThread(() =>
                     {
@@ -431,11 +499,16 @@ namespace aTello
             {
                 if (IsGamepad(device))
                 {
-                    if (keyCode == Preferences.takeoffButtonCode)
-                        Console.WriteLine(e.RepeatCount);
                     if (keyCode == Preferences.takeoffButtonCode && e.RepeatCount == 7)
                     {
-                        Tello.takeOff();
+                        if (Tello.connected && !Tello.state.flying)
+                        {
+                            Tello.takeOff();
+                        }
+                        else if (Tello.connected && Tello.state.flying)
+                        {
+                            Tello.land();
+                        }
                         return true;
                     }
                     if (keyCode == Preferences.landButtonCode && e.RepeatCount == 7)
@@ -449,10 +522,9 @@ namespace aTello
                         cameraShutterSound.Play();
                         return true;
                     };
-                    if (keyCode == Preferences.recButtonCode && e.RepeatCount == 1)
+                    if (keyCode == Preferences.recButtonCode && e.RepeatCount == 0)
                     {
                         toggleRecording = true;
-                        //cameraShutterSound.Play();
                         return true;
                     };
                     //controller_view.Invalidate();
