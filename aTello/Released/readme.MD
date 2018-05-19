@@ -26,10 +26,13 @@ These are the button mappings on the controller for takeoff, land, take picture 
 **Select** (Hold) = Land.  
 **R1** = Take Picture.  
 **R2** = Speed mode.  
+**L1** = Record.  
 
 Pictures are stored in <storage>/aTello/pics. Video is stored in <storage>/aTello/video.
 
-Currently there is no "Record" button for video because video is **always** being recorded. The video is saved as the raw H264 that is coming from the drone and must be converted to mp4 for playback. I plan on a built in conversion but right now you need to use an external ffmpeg app to convert. Like this:
+Video is handled a bit differently. Currently the video stream is **always** being "recorded" as in saved to storage. I like it this way because I am always forgetting to press record or I don't decide until afterward that I wanted somethig recorded. The "Record" button just toggles where the file is saved. When not recording the files are stored in aTello/videos/cache. When recording the file is saved in aTello/videos. This allows you to explicitly have video "recorded" into a dicreet piece.
+
+Currently the video is saved as the raw H264 that is coming from the drone and must be converted to mp4 for playback. I plan on a built in conversion but right now you need to use an external ffmpeg app to convert. Like this:
 
 ffmpeg -i <input.h264> -vcodec copy output.mp4
  
