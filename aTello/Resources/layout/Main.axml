@@ -32,11 +32,20 @@
         style="@android:style/Widget.Holo.Button.Borderless"
         android:textColor="@android:color/black"
         android:background="#55ff3333" />
+    <RadioButton
+        android:text="Rec:00:00:00"
+        android:id="@+id/recLightButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/connectButton"
+        android:checked="true"
+        android:buttonTint="#ffff0000"
+        android:layout_toRightOf="@+id/linearLayoutLeft" />
     <LinearLayout
         android:orientation="vertical"
         android:minWidth="25px"
         android:minHeight="25px"
-        android:id="@+id/linearLayout2"
+        android:id="@+id/linearLayoutRight"
         android:layout_width="50dp"
         android:layout_height="fill_parent"
         android:layout_marginLeft="5dp"
@@ -67,7 +76,7 @@
         android:orientation="vertical"
         android:minWidth="25px"
         android:minHeight="25px"
-        android:id="@+id/linearLayout2"
+        android:id="@+id/linearLayoutLeft"
         android:layout_width="50dp"
         android:layout_height="fill_parent"
         android:layout_marginLeft="5dp"

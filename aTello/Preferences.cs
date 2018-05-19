@@ -21,6 +21,7 @@ namespace aTello
         public static Keycode landButtonCode = Keycode.ButtonSelect;
         public static Keycode takeoffButtonCode = Keycode.ButtonStart;
         public static Keycode pictureButtonCode = Keycode.ButtonR1;
+        public static Keycode recButtonCode = Keycode.ButtonL1;
 
         public static int jpgQuality = 1;
         public static int exposure = 9;
@@ -44,6 +45,8 @@ namespace aTello
 
             exposure = prefs.GetInt("exposure", exposure);
             videoBitRate = prefs.GetInt("videoBitRate", videoBitRate);
+            if (videoBitRate < 0 || videoBitRate > 5)
+                videoBitRate = 0;
 
         }
 
@@ -56,6 +59,7 @@ namespace aTello
                     landButtonCode =  Keycode.ButtonSelect;
                     takeoffButtonCode = Keycode.ButtonStart;
                     pictureButtonCode = Keycode.ButtonR1;
+                    recButtonCode = Keycode.ButtonL1;
                     joyType = type;
                     break;
                 case 1://ps3
@@ -63,6 +67,7 @@ namespace aTello
                     landButtonCode = Keycode.ButtonL2;
                     takeoffButtonCode = Keycode.ButtonR2;
                     pictureButtonCode = Keycode.ButtonZ;
+                    recButtonCode = Keycode.ButtonY;
                     joyType = type;
                     break;
 
@@ -80,7 +85,7 @@ namespace aTello
             editor.PutInt("joyType", joyType);
             editor.PutInt("jpgQuality", jpgQuality);
             editor.PutInt("exposure", exposure);
-            editor.PutInt("videoBitRate", exposure);
+            editor.PutInt("videoBitRate", videoBitRate);
 
             editor.Apply();        
         }

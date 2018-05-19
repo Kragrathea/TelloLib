@@ -36,8 +36,13 @@ namespace aTello
 
         private int picMode = 0;
         Plugin.SimpleAudioPlayer.ISimpleAudioPlayer cameraShutterSound = Plugin.SimpleAudioPlayer.CrossSimpleAudioPlayer.Current;
+        private bool toggleRecording = false;
+        private bool isRecording = false;
 
         private bool doStateLogging = false;
+
+        private void startUIUpdate()
+        { }
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -52,11 +57,7 @@ namespace aTello
 
             takeoffButton = FindViewById<ImageButton>(Resource.Id.takeoffButton);
             throwTakeoffButton = FindViewById<ImageButton>(Resource.Id.throwTakeoffButton);
-
-            var path = "aTello/video/";
-            System.IO.Directory.CreateDirectory(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path));
-            videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + ".h264");
-            
+           
             //subscribe to Tello connection events
             Tello.onConnection += (Tello.ConnectionState newState) =>
             {
@@ -174,13 +175,48 @@ namespace aTello
             var videoOffset = 0;
             Video.Decoder.surface = FindViewById<SurfaceView>(Resource.Id.surfaceView).Holder.Surface;
 
-            FileStream videoStream = null; 
+            var path = "aTello/video/cache/";
+            System.IO.Directory.CreateDirectory(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path));
+            videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + ".h264");
+            FileStream videoStream = null;
+
+            updateUI();//hide record light etc. 
+
             //subscribe to Tello video data
             Tello.onVideoData += (byte[] data) =>
             {
                 if (true)//videoFilePath != null)
                 {
-                    if(videoStream==null)
+                    if (data[2] == 0 && data[3] == 0 && data[4] == 0 && data[5] == 1)//if nal
+                    {
+                        var nalType = data[6] & 0x1f;
+ //                       if (nalType == 7 || nalType == 8)
+                        {
+                            if (toggleRecording)
+                            {
+                                if (videoStream != null)
+                                    videoStream.Close();
+                                videoStream = null;
+
+                                isRecording = !isRecording;
+                                toggleRecording = false;
+                                if (isRecording)
+                                {
+                                    videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("../REC_yyyy-dd-M--HH-mm-ss") + ".h264");
+                                    CrossTextToSpeech.Current.Speak("Recording");
+                                    updateUI();
+                                }
+                                else
+                                {
+                                    videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + ".h264");
+                                    CrossTextToSpeech.Current.Speak("Recording stopped");
+                                    updateUI();
+                                }
+                            }
+                        }
+                    }
+
+                    if (videoStream==null)
                         videoStream=new FileStream(videoFilePath, FileMode.Append);
                     //Save raw data minus sequence.
                     //using ()
@@ -195,7 +231,7 @@ namespace aTello
                         var nalType = data[6] & 0x1f;
                         if (nalType == 7|| nalType == 8)
                         {
-
+  
                         }
                         if (videoOffset > 0)
                         {
@@ -305,6 +341,18 @@ namespace aTello
             input_manager = (InputManager)GetSystemService(Context.InputService);
             CheckGameControllers();
         }
+
+        private void updateUI()
+        {
+            var recLight = FindViewById<RadioButton>(Resource.Id.recLightButton);
+            RunOnUiThread(() =>
+            {
+                if(isRecording)
+                    recLight.Visibility = ViewStates.Visible;
+                else
+                    recLight.Visibility = ViewStates.Gone;
+            });
+        }
         // Share image
         private void shareImage(Android.Net.Uri imagePath)
         {
@@ -399,6 +447,12 @@ namespace aTello
                     {
                         Tello.takePicture();
                         cameraShutterSound.Play();
+                        return true;
+                    };
+                    if (keyCode == Preferences.recButtonCode && e.RepeatCount == 1)
+                    {
+                        toggleRecording = true;
+                        //cameraShutterSound.Play();
                         return true;
                     };
                     //controller_view.Invalidate();
