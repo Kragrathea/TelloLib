@@ -22,11 +22,12 @@ These are the button mappings on the controller for takeoff, land, take picture 
 
 <img src="https://github.com/Kragrathea/TelloLib/blob/master/Media/PS3_diagram.png" width="600" >
 
-**Start** (Hold) = Takeoff.  
+**Start** (Hold) = Takeoff/Land.  
 **Select** (Hold) = Land.  
 **R1** = Take Picture.  
 **R2** = Speed mode.  
 **L1** = Record.  
+**R2+DPad** = Flip
 
 Pictures are stored in <storage>/aTello/pics. Video is stored in <storage>/aTello/video.
 
