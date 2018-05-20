@@ -17,6 +17,8 @@ using Plugin.TextToSpeech;
 using Android.Preferences;
 using System.Threading.Tasks;
 using System.Threading;
+using Plugin.FilePicker.Abstractions;
+using Plugin.FilePicker;
 
 namespace aTello
 {
@@ -195,7 +197,7 @@ namespace aTello
                     if (data[2] == 0 && data[3] == 0 && data[4] == 0 && data[5] == 1)//if nal
                     {
                         var nalType = data[6] & 0x1f;
- //                       if (nalType == 7 || nalType == 8)
+                        //                       if (nalType == 7 || nalType == 8)
                         {
                             if (toggleRecording)
                             {
@@ -207,7 +209,6 @@ namespace aTello
                                 toggleRecording = false;
                                 if (isRecording)
                                 {
-//                                    videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("../REC_yyyy-dd-M--HH-mm-ss") + ".h264");
                                     videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("../MMMM dd yyyy HH-mm-ss") + ".h264");
                                     startRecordingTime = DateTime.Now;
                                     CrossTextToSpeech.Current.Speak("Recording");
@@ -223,22 +224,29 @@ namespace aTello
                         }
                     }
 
-                    if (videoStream==null)
-                        videoStream=new FileStream(videoFilePath, FileMode.Append);
-                    //Save raw data minus sequence.
-                    //using ()
+                    if ((isRecording || Preferences.cacheVideo))
                     {
-                        videoStream.Write(data, 2, data.Length-2);//Note remove 2 byte seq when saving. 
+                        if (videoStream == null)
+                            videoStream = new FileStream(videoFilePath, FileMode.Append);
+
+                        if (videoStream != null)
+                        {
+                            //Save raw data minus sequence.
+                            videoStream.Write(data, 2, data.Length - 2);//Note remove 2 byte seq when saving. 
+                        }
                     }
                 }
+
                 if (true)//video decoder tests.
                 {
+                    //Console.WriteLine("1");
+
                     if (data[2] == 0 && data[3] == 0 && data[4] == 0 && data[5] == 1)//if nal
                     {
                         var nalType = data[6] & 0x1f;
-                        if (nalType == 7|| nalType == 8)
+                        if (nalType == 7 || nalType == 8)
                         {
-  
+
                         }
                         if (videoOffset > 0)
                         {
@@ -249,6 +257,7 @@ namespace aTello
                         //if (nal != 0x01 && nal != 0x07 && nal != 0x08 && nal != 0x05)
                         //    Console.WriteLine("NAL type:" + nal);
                     }
+                    //todo. resquence frames.
                     Array.Copy(data, 2, videoFrame, videoOffset, data.Length - 2);
                     videoOffset += (data.Length - 2);
                 }
@@ -313,23 +322,42 @@ namespace aTello
             };
 
             var galleryButton = FindViewById<ImageButton>(Resource.Id.galleryButton);
-            galleryButton.Click += delegate
+            galleryButton.Click += async delegate
             {
 
-/*
-                RunOnUiThread(() => {
-                    var xxvideoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + "2018-11-5--23-16-02.h264");
-                    var videoConverter = new aTello.VideoConverter();
+                /*
+                                RunOnUiThread(() => {
+                                    var xxvideoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + "2018-11-5--23-16-02.h264");
+                                    var videoConverter = new aTello.VideoConverter();
 
-                    var fileDir = this.FilesDir;
+                                    var fileDir = this.FilesDir;
 
-                    videoConverter.ConvertFileAsync(this, new Java.IO.File(xxvideoFilePath));
-                });
-*/
+                                    videoConverter.ConvertFileAsync(this, new Java.IO.File(xxvideoFilePath));
+                                });
+                */
                 //var uri = Android.Net.Uri.FromFile(new Java.IO.File(Tello.picPath));
                 //shareImage(uri);
                 //return;
+                if (false)
+                {
+                    try
+                    {
+                        FileData fileData = await CrossFilePicker.Current.PickFile();
+                        if (fileData == null)
+                            return; // user canceled file picking
+                        Console.WriteLine(fileData.FilePath);
+                        string fileName = fileData.FileName;
+                        string contents = System.Text.Encoding.UTF8.GetString(fileData.DataArray);
 
+                        System.Console.WriteLine("File name chosen: " + fileName);
+                        System.Console.WriteLine("File data: " + contents);
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Console.WriteLine("Exception choosing file: " + ex.ToString());
+                    }
+                    return;
+                }
                 Intent intent = new Intent();
                 intent.PutExtra(Intent.ActionView, Tello.picPath);
                 intent.SetType("image/*");

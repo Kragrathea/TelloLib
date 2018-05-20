@@ -540,7 +540,8 @@ namespace TelloLib
                             onVideoData(received.bytes);
                         }
 
-                    }catch (Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         Console.WriteLine("Video receive thread error:" + ex.Message);
                         

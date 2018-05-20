@@ -28,6 +28,8 @@ namespace aTello
         public static int videoBitRate = 0;
         public static int joyType = 0;
 
+        public static bool cacheVideo = true;
+
 
         static Preferences()
         {
@@ -48,6 +50,7 @@ namespace aTello
             if (videoBitRate < 0 || videoBitRate > 5)
                 videoBitRate = 0;
 
+            cacheVideo = prefs.GetBoolean("cacheVideo", cacheVideo);
         }
 
         public static void setJoyType(int type)
@@ -86,6 +89,7 @@ namespace aTello
             editor.PutInt("jpgQuality", jpgQuality);
             editor.PutInt("exposure", exposure);
             editor.PutInt("videoBitRate", videoBitRate);
+            editor.PutBoolean("cacheVideo", cacheVideo);
 
             editor.Apply();        
         }

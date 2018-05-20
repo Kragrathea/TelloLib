@@ -25,6 +25,15 @@
                 android:textOff="Low"
                 android:textOn="High"
                 android:textSize="20dp" />
+            <Switch
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:id="@+id/cacheVideoSwitch"
+                android:text="Cache Video"
+                android:showText="true"
+                android:textOff="Off"
+                android:textOn="On"
+                android:textSize="20dp" />
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"

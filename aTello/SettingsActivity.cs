@@ -102,17 +102,23 @@ namespace aTello
                 Preferences.save();
             };
 
+            var cacheVideoSwitch = FindViewById<Switch>(Resource.Id.cacheVideoSwitch);
+            cacheVideoSwitch.Checked = Preferences.cacheVideo;
+            cacheVideoSwitch.CheckedChange += (sender, args) =>
+            {
+                Preferences.cacheVideo = args.IsChecked;
+                Preferences.save();
+            };
+
+
             var photoQualitySwitch = FindViewById<Switch>(Resource.Id.photoQualitySwitch);
             photoQualitySwitch.Checked = Preferences.jpgQuality > 0;
             photoQualitySwitch.CheckedChange += (sender, args) =>
             {
-                Preferences.jpgQuality = args.IsChecked?1:0;
+                Preferences.jpgQuality = args.IsChecked ? 1 : 0;
                 Preferences.save();
                 Tello.setJpgQuality(Preferences.jpgQuality);
             };
-
-            
-
             //EditText text = FindViewById<EditText>(Resource.Id.maxHeightText);
             //text.AfterTextChanged += delegate {
             //    Tello.setMaxHeight(int.Parse(text.Text));
