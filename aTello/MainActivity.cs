@@ -180,9 +180,9 @@ namespace aTello
             var videoOffset = 0;
             Video.Decoder.surface = FindViewById<SurfaceView>(Resource.Id.surfaceView).Holder.Surface;
 
-            var path = "aTello/video/cache/";
-            System.IO.Directory.CreateDirectory(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path));
-            videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("MMMM dd yyyy HH-mm-ss") + ".h264");
+            var path = "aTello/video/";
+            System.IO.Directory.CreateDirectory(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path+"cache/"));
+            videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path +"cache/"+ DateTime.Now.ToString("MMMM dd yyyy HH-mm-ss") + ".h264");
 
             FileStream videoStream = null;
 
@@ -192,6 +192,7 @@ namespace aTello
             //subscribe to Tello video data
             Tello.onVideoData += (byte[] data) =>
             {
+                //Handle recording.
                 if (true)//videoFilePath != null)
                 {
                     if (data[2] == 0 && data[3] == 0 && data[4] == 0 && data[5] == 1)//if nal
@@ -209,14 +210,14 @@ namespace aTello
                                 toggleRecording = false;
                                 if (isRecording)
                                 {
-                                    videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("../MMMM dd yyyy HH-mm-ss") + ".h264");
+                                    videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("MMMM dd yyyy HH-mm-ss") + ".h264");
                                     startRecordingTime = DateTime.Now;
                                     CrossTextToSpeech.Current.Speak("Recording");
                                     updateUI();
                                 }
                                 else
                                 {
-                                    videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("MMMM dd yyyy HH-mm-ss") + ".h264");
+                                    videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + "cache/" + DateTime.Now.ToString("MMMM dd yyyy HH-mm-ss") + ".h264");
                                     CrossTextToSpeech.Current.Speak("Recording stopped");
                                     updateUI();
                                 }
@@ -237,6 +238,7 @@ namespace aTello
                     }
                 }
 
+                //Handle video display.
                 if (true)//video decoder tests.
                 {
                     //Console.WriteLine("1");
