@@ -10,6 +10,8 @@ using Android.Preferences;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Plugin.FilePicker;
+using Plugin.FilePicker.Abstractions;
 using TelloLib;
 using static Android.Views.ViewGroup;
 
@@ -118,6 +120,40 @@ namespace aTello
                 Preferences.jpgQuality = args.IsChecked ? 1 : 0;
                 Preferences.save();
                 Tello.setJpgQuality(Preferences.jpgQuality);
+            };
+
+            //Settings button
+            Button convertVideoButton = FindViewById<Button>(Resource.Id.convertVideoButton);
+            convertVideoButton.Click += async delegate
+            {
+                if (true)
+                {
+                    try
+                    {
+                        FileData fileData = await CrossFilePicker.Current.PickFile();
+                        if (fileData == null)
+                            return; // user canceled file picking
+                        string fileName = fileData.FileName;
+                        //string contents = System.Text.Encoding.UTF8.GetString(fileData.DataArray);
+                        Console.WriteLine(fileData.FilePath);
+
+                        System.Console.WriteLine("File name chosen: " + fileName);
+                        //System.Console.WriteLine("File data: " + contents);
+
+                        RunOnUiThread(async () => {
+                            var videoConverter = new aTello.VideoConverter();
+                            var result = await videoConverter.ConvertFileAsync(this, new Java.IO.File(fileData.FilePath));
+                            Toast.MakeText(Application.Context, "Video Converted. Result:" + result, ToastLength.Long).Show();
+                        });
+
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Console.WriteLine("Exception choosing file: " + ex.ToString());
+                    }
+                    return;
+                }
+
             };
             //EditText text = FindViewById<EditText>(Resource.Id.maxHeightText);
             //text.AfterTextChanged += delegate {

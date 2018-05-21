@@ -22,7 +22,7 @@ namespace aTello
         {
 
         }
-
+        public int result = 0;
         /**
         * This method must be called from UI thread.
         ***/
@@ -38,7 +38,7 @@ namespace aTello
             List<string> cmd = new List<string>();
             cmd.Add("-y");
             cmd.Add("-i");
-            cmd.Add(inputFile.CanonicalPath);
+            cmd.Add("\""+inputFile.CanonicalPath+ "\"");
 
             MediaMetadataRetriever m = new MediaMetadataRetriever();
             m.SetDataSource(inputFile.CanonicalPath);
@@ -83,21 +83,23 @@ namespace aTello
             //cmd.Add("-f");
             //cmd.Add("mpg");
 
-            cmd.Add(ouputFile.CanonicalPath);
+            cmd.Add("\"" + ouputFile.CanonicalPath+ "\"");
 
             string cmdParams = string.Join(" ", cmd);
 
             int total = 0;
             int current = 0;
 
-            await FFMpeg.Xamarin.FFMpegLibrary.Run(
+            result =await FFMpeg.Xamarin.FFMpegLibrary.Run(
                 context,
                 cmdParams
                 , (s) =>
                 {
                     logger?.Invoke(s);
                     System.Console.WriteLine(s);
-                    int n = Extract(s, "Duration:", ",");
+
+
+/*                    int n = Extract(s, "Duration:", ",");
                     if (n != -1)
                     {
                         total = n;
@@ -108,9 +110,11 @@ namespace aTello
                         current = n;
                         onProgress?.Invoke(current, total);
                     }
+                    */
                 });
-
-            return ouputFile;
+            if(result == 0)//todo better error handling.
+                return ouputFile;
+            return null;
         }
 
         int Extract(String text, String start, String end)

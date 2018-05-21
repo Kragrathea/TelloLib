@@ -55,11 +55,11 @@
     <BundleAssemblies>false</BundleAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Plugin.FilePicker, Version=2.0.64.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Xamarin.Plugin.FilePicker.2.0.64-beta\lib\MonoAndroid10\Plugin.FilePicker.dll</HintPath>
+    <Reference Include="Plugin.FilePicker, Version=1.4.34.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Xamarin.Plugin.FilePicker.1.4.34-beta\lib\MonoAndroid10\Plugin.FilePicker.dll</HintPath>
     </Reference>
-    <Reference Include="Plugin.FilePicker.Abstractions, Version=2.0.64.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Xamarin.Plugin.FilePicker.2.0.64-beta\lib\MonoAndroid10\Plugin.FilePicker.Abstractions.dll</HintPath>
+    <Reference Include="Plugin.FilePicker.Abstractions, Version=1.4.34.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Xamarin.Plugin.FilePicker.1.4.34-beta\lib\MonoAndroid10\Plugin.FilePicker.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Plugin.SimpleAudioPlayer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Xam.Plugin.SimpleAudioPlayer.1.2.1.1-beta\lib\MonoAndroid10\Plugin.SimpleAudioPlayer.dll</HintPath>

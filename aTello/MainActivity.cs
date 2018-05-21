@@ -325,39 +325,10 @@ namespace aTello
             galleryButton.Click += async delegate
             {
 
-                /*
-                                RunOnUiThread(() => {
-                                    var xxvideoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + "2018-11-5--23-16-02.h264");
-                                    var videoConverter = new aTello.VideoConverter();
 
-                                    var fileDir = this.FilesDir;
-
-                                    videoConverter.ConvertFileAsync(this, new Java.IO.File(xxvideoFilePath));
-                                });
-                */
                 //var uri = Android.Net.Uri.FromFile(new Java.IO.File(Tello.picPath));
                 //shareImage(uri);
                 //return;
-                if (false)
-                {
-                    try
-                    {
-                        FileData fileData = await CrossFilePicker.Current.PickFile();
-                        if (fileData == null)
-                            return; // user canceled file picking
-                        Console.WriteLine(fileData.FilePath);
-                        string fileName = fileData.FileName;
-                        string contents = System.Text.Encoding.UTF8.GetString(fileData.DataArray);
-
-                        System.Console.WriteLine("File name chosen: " + fileName);
-                        System.Console.WriteLine("File data: " + contents);
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Console.WriteLine("Exception choosing file: " + ex.ToString());
-                    }
-                    return;
-                }
                 Intent intent = new Intent();
                 intent.PutExtra(Intent.ActionView, Tello.picPath);
                 intent.SetType("image/*");
