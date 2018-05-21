@@ -49,7 +49,7 @@ namespace FFMpeg.Xamarin
 
             await Task.Run(() =>
             {
-                if (_ffmpegFile.Exists())
+                if (_ffmpegFile.Exists() && _ffmpegFile.Length()>15413150)
                 {
                     try
                     {
