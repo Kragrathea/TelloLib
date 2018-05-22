@@ -46,10 +46,7 @@ namespace aTello
         private DateTime startRecordingTime;
 
         private bool doStateLogging = false;
-
-        private void startUIUpdate()
-        { }
-
+        
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -57,6 +54,22 @@ namespace aTello
 
             //force max brightness on screen.
             Window.Attributes.ScreenBrightness = 1f;
+
+            //Full screen and hide nav bar.
+            View decorView = Window.DecorView;
+            var uiOptions = (int)decorView.SystemUiVisibility;
+            var newUiOptions = (int)uiOptions;
+            newUiOptions |= (int)SystemUiFlags.LowProfile;
+            newUiOptions |= (int)SystemUiFlags.Fullscreen;
+            newUiOptions |= (int)SystemUiFlags.HideNavigation;
+            newUiOptions |= (int)SystemUiFlags.Immersive;
+            // This option will make bars disappear by themselves
+            newUiOptions |= (int)SystemUiFlags.ImmersiveSticky;
+            decorView.SystemUiVisibility = (StatusBarVisibility)newUiOptions;
+
+            //Keep screen from dimming.
+            this.Window.SetFlags(WindowManagerFlags.KeepScreenOn, WindowManagerFlags.KeepScreenOn);
+
 
             onScreenJoyL = FindViewById<JoystickView>(Resource.Id.joystickViewL);
             onScreenJoyR = FindViewById<JoystickView>(Resource.Id.joystickViewR);
