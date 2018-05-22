@@ -46,7 +46,6 @@ namespace aTello
                     {
                         ByteBuffer[] inputBuffers = codec.GetInputBuffers();
                         ByteBuffer[] outputBuffers = codec.GetOutputBuffers();
-
                         int dequeueInputBuffer = codec.DequeueInputBuffer(-1L);
                         if (dequeueInputBuffer >= 0)
                         {
@@ -132,7 +131,7 @@ namespace aTello
                 MediaFormat videoFormat = MediaFormat.CreateVideoFormat("video/avc", width, height);
                 videoFormat.SetByteBuffer("csd-0",ByteBuffer.Wrap(sps));
                 videoFormat.SetByteBuffer("csd-1", ByteBuffer.Wrap(pps));
-                videoFormat.SetInteger("color-format", 19);
+                //videoFormat.SetInteger("color-format", 19);
 
                 string str = videoFormat.GetString("mime");
                 try
