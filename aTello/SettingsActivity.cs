@@ -163,7 +163,13 @@ namespace aTello
             {
                 var path = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, "aTello/video/");
                 Java.IO.File f = new Java.IO.File(path);
-                Java.IO.File[] files = f.ListFiles();
+                var files = f.ListFiles().ToList();
+
+                //append cache files to list.
+                path = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, "aTello/video/cache");
+                f = new Java.IO.File(path);
+                files.AddRange(f.ListFiles());
+
                 foreach (Java.IO.File inFile in files)
                 {
                     if (!inFile.IsDirectory && inFile.Name.EndsWith(".h264"))
@@ -175,27 +181,6 @@ namespace aTello
                             var result = await videoConverter.ConvertFileAsync(this, inF);
                             Toast.MakeText(Application.Context, "Video Converted. Result:" + result, ToastLength.Long).Show();
                             if(result!=null)
-                            {
-                                inF.Delete();
-                            }
-                        });
-                    }
-                }
-
-                path = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, "aTello/video/cache");
-                f = new Java.IO.File(path);
-                files = f.ListFiles();
-                foreach (Java.IO.File inFile in files)
-                {
-                    if (!inFile.IsDirectory && inFile.Name.EndsWith(".h264"))
-                    {
-                        RunOnUiThread(async () =>
-                        {
-                            var videoConverter = new aTello.VideoConverter();
-                            var inF = new Java.IO.File(inFile.Path);
-                            var result = await videoConverter.ConvertFileAsync(this, inF);
-                            Toast.MakeText(Application.Context, "Video Converted. Result:" + result, ToastLength.Long).Show();
-                            if (result != null)
                             {
                                 inF.Delete();
                             }
