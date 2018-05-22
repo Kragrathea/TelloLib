@@ -106,7 +106,7 @@
         android:orientation="horizontal"
         android:minWidth="25px"
         android:minHeight="25px"
-        android:id="@+id/linearLayout1"
+        android:id="@+id/statusLayout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="#8888"
@@ -160,11 +160,19 @@
             android:layout_weight="0.25" />
     </LinearLayout>
     <TextView
+        android:text="Vbr:0k"
+        android:id="@+id/vbrTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_above="@+id/statusLayout"
+        android:textSize="13dp" />
+    <TextView
         android:id="@+id/joystick_state"
         android:text="Connect Joystick"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/linearLayout1" />
+        android:layout_above="@id/statusLayout" />
     <ImageButton
         android:src="@drawable/settings_gear"
         android:id="@+id/settingsButton"

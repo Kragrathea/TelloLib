@@ -2,4 +2,5 @@
 <resources>
 	<string name="statusArea">Status Area</string>
 	<string name="statusArea2">Status Area</string>
+	<string name="rec000000">Rec:00:00:00</string>
 </resources>

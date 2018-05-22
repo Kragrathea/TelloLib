@@ -28,7 +28,7 @@ namespace aTello
             this.Window.AddFlags(WindowManagerFlags.Fullscreen | WindowManagerFlags.TurnScreenOn);
             SetContentView(Resource.Layout.Settings);
 
-            var items = new List<int>() { 0,1,2,3,4,5,6 };
+            var items = new List<int>() { 0, 1, 2, 3, 4, 5, 6 };
             var axisAdapter = new ArrayAdapter<int>(this, Android.Resource.Layout.SimpleSpinnerItem, items);
             var spinner = FindViewById<Spinner>(Resource.Id.lxSpinner);
             spinner.Adapter = axisAdapter;
@@ -68,7 +68,7 @@ namespace aTello
 
 
 
-            var joyItems = new List<string>() { "Generic","PS3" };
+            var joyItems = new List<string>() { "Generic", "PS3" };
             var joyAdapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleSpinnerItem, joyItems);
             var joyTypeSpinner = FindViewById<Spinner>(Resource.Id.joystickTypeSpinner);
             joyTypeSpinner.Adapter = joyAdapter;
@@ -86,13 +86,13 @@ namespace aTello
             evSpinner.SetSelection(Preferences.exposure);
             evSpinner.ItemSelected += (sender, args) =>
             {
-                Preferences.exposure=args.Position;
+                Preferences.exposure = args.Position;
                 Tello.setEV(Preferences.exposure);
 
                 Preferences.save();
             };
 
-            var vbrItems = new List<string>() { "Auto", "1M", "1.5M", "2M", "3M", "4M" };
+            var vbrItems = new List<string>() { "Auto", "1M", "1.5M", "2M", "3M", "4M", "5", "6" };
             var vbrAdapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleSpinnerItem, vbrItems);
             var vbrSpinner = FindViewById<Spinner>(Resource.Id.vbrSpinner);
             vbrSpinner.Adapter = vbrAdapter;
@@ -104,6 +104,53 @@ namespace aTello
 
                 Preferences.save();
             };
+            //2,5,10,20,40
+            var iframeRateItems = new List<string>() { "10/s", "4/s", "2/s", "1/s", "0.5/s" };
+            var iframeRateAdapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleSpinnerItem, iframeRateItems);
+            var iframeRateSpinner = FindViewById<Spinner>(Resource.Id.iframeRateSpinner);
+            iframeRateSpinner.Adapter = iframeRateAdapter;
+            switch (Preferences.iFrameRate)
+            {
+                case 2:
+                    iframeRateSpinner.SetSelection(0);
+                    break;
+                case 5:
+                    iframeRateSpinner.SetSelection(1);
+                    break;
+                case 10:
+                    iframeRateSpinner.SetSelection(2);
+                    break;
+                case 20:
+                    iframeRateSpinner.SetSelection(3);
+                    break;
+                case 40:
+                    iframeRateSpinner.SetSelection(4);
+                    break;
+            }
+            iframeRateSpinner.ItemSelected += (sender, args) =>
+            {
+                switch(args.Position)
+                {
+                    case 0:
+                        Preferences.iFrameRate = 2;
+                        break;
+                    case 1:
+                        Preferences.iFrameRate = 5;
+                        break;
+                    case 2:
+                        Preferences.iFrameRate = 10;
+                        break;
+                    case 3:
+                        Preferences.iFrameRate = 20;
+                        break;
+                    case 4:
+                        Preferences.iFrameRate = 40;
+                        break;
+                }
+                Tello.iFrameRate = Preferences.iFrameRate;
+                Preferences.save();
+            };
+            
 
             var cacheVideoSwitch = FindViewById<Switch>(Resource.Id.cacheVideoSwitch);
             cacheVideoSwitch.Checked = Preferences.cacheVideo;

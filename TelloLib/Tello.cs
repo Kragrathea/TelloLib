@@ -28,6 +28,8 @@ namespace TelloLib
         public static string picPath;//todo redo this. 
         public static string picFilePath;//todo redo this. 
 
+        public static int iFrameRate = 5;//How often to ask for iFrames in 50ms. Ie 2=10x 5=4x 10=2xSecond 5 = 4xSecond
+
         private static ushort sequence = 1;
 
         public enum ConnectionState
@@ -574,7 +576,7 @@ namespace TelloLib
                         sendControllerUpdate();
 
                         tick++;
-                        if (tick % 10 == 0)
+                        if ((tick % iFrameRate) == 0)
                             requestIframe();
 
                         Thread.Sleep(50);//Often enough?

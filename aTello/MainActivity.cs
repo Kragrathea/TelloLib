@@ -37,6 +37,7 @@ namespace aTello
         ImageButton takeoffButton;
         ImageButton throwTakeoffButton;
         string videoFilePath;//file to save raw h264 to. 
+        private long totalVideoBytesReceived = 0;//used to calc video bit rate display.
 
         private int picMode = 0;
         Plugin.SimpleAudioPlayer.ISimpleAudioPlayer cameraShutterSound = Plugin.SimpleAudioPlayer.CrossSimpleAudioPlayer.Current;
@@ -192,6 +193,7 @@ namespace aTello
             //subscribe to Tello video data
             Tello.onVideoData += (byte[] data) =>
             {
+                totalVideoBytesReceived += data.Length;
                 //Handle recording.
                 if (true)//videoFilePath != null)
                 {
@@ -357,7 +359,9 @@ namespace aTello
                 var recLight = FindViewById<RadioButton>(Resource.Id.recLightButton);
                 var throwButton = FindViewById<ImageButton>(Resource.Id.throwTakeoffButton);
                 var galleryButton = FindViewById<ImageButton>(Resource.Id.galleryButton);
+                var vbrTextView = FindViewById<TextView>(Resource.Id.vbrTextView);
                 int tick = 0;
+                long videoBytesReceivedLastSecond = 0;
                 while (true)
                 {
                     try
@@ -383,13 +387,22 @@ namespace aTello
                                 throwButton.Visibility = ViewStates.Visible;
                                 galleryButton.Visibility = ViewStates.Visible;
                             }
-
+                            if((tick%4)==0)//Every second.
+                            {
+                                if (totalVideoBytesReceived > 0 && videoBytesReceivedLastSecond > 0)
+                                {
+                                    var perSec = totalVideoBytesReceived - videoBytesReceivedLastSecond;
+                                    vbrTextView.Text =string.Format("Vbr:{0}k i:{1}",(perSec / 1024),Tello.iFrameRate);
+                                }
+                                videoBytesReceivedLastSecond = totalVideoBytesReceived;
+                            }
                         });
                         Thread.Sleep(250);//Often enough?
                     }
                     catch (Exception ex)
                     {
                     }
+                    tick++;
                 }
             });
         }
