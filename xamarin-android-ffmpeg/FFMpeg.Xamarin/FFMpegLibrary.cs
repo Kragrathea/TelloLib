@@ -30,30 +30,29 @@ namespace FFMpeg.Xamarin
 
         private void copyAssets(Context context)
         {
-            //InputStream iin = null;
-            OutputStream iout = null;
-
             AssetManager assetManager = context.Assets;
             String appFileDirectory = context.FilesDir.Path;
             String executableFilePath = appFileDirectory + "/ffmpeg";
 
             try
             {
-                var iin = assetManager.Open("ffmpeg");
+                var fIn = assetManager.Open("ffmpeg");
                 Java.IO.File outFile = new Java.IO.File(executableFilePath);
-                iout = new FileOutputStream(outFile);
+
+                OutputStream fOut = null;
+                fOut = new FileOutputStream(outFile);
 
                 byte[] buffer = new byte[1024];
                 int read;
-                while ((read = iin.Read(buffer, 0, 1024)) >0)
+                while ((read = fIn.Read(buffer, 0, 1024)) >0)
                 {
-                    iout.Write(buffer, 0, read);
+                    fOut.Write(buffer, 0, read);
                 }
-                iin.Close();
-                iin = null;
-                iout.Flush();
-                iout.Close();
-                iout = null;
+                fIn.Close();
+                fIn = null;
+                fOut.Flush();
+                fOut.Close();
+                fOut = null;
 
                 Java.IO.File execFile = new Java.IO.File(executableFilePath);
                 execFile.SetExecutable(true);

@@ -149,11 +149,16 @@
                         android:layout_height="match_parent" />
                 </LinearLayout>
             </LinearLayout>
+            <Button
+                android:text="Convert Video"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/convertVideoButton" />
+            <Button
+                android:text="Convert ALL Video"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/convertAllVideoButton" />
         </LinearLayout>
     </ScrollView>
-    <Button
-        android:text="Convert Video"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/convertVideoButton" />
 </LinearLayout>

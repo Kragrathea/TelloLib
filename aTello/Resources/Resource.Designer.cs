@@ -96,6 +96,9 @@ namespace aTello
 			// aapt resource value: 0x7f060004
 			public const int connectButton = 2131099652;
 			
+			// aapt resource value: 0x7f060025
+			public const int convertAllVideoButton = 2131099685;
+			
 			// aapt resource value: 0x7f060024
 			public const int convertVideoButton = 2131099684;
 			

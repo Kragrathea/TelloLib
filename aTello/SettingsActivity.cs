@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -154,6 +155,53 @@ namespace aTello
                     return;
                 }
 
+            };
+
+
+            Button convertAllVideoButton = FindViewById<Button>(Resource.Id.convertAllVideoButton);
+            convertAllVideoButton.Click += async delegate
+            {
+                var path = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, "aTello/video/");
+                Java.IO.File f = new Java.IO.File(path);
+                Java.IO.File[] files = f.ListFiles();
+                foreach (Java.IO.File inFile in files)
+                {
+                    if (!inFile.IsDirectory && inFile.Name.EndsWith(".h264"))
+                    {
+                        RunOnUiThread(async () =>
+                        {
+                            var videoConverter = new aTello.VideoConverter();
+                            var inF = new Java.IO.File(inFile.Path);
+                            var result = await videoConverter.ConvertFileAsync(this, inF);
+                            Toast.MakeText(Application.Context, "Video Converted. Result:" + result, ToastLength.Long).Show();
+                            if(result!=null)
+                            {
+                                inF.Delete();
+                            }
+                        });
+                    }
+                }
+
+                path = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, "aTello/video/cache");
+                f = new Java.IO.File(path);
+                files = f.ListFiles();
+                foreach (Java.IO.File inFile in files)
+                {
+                    if (!inFile.IsDirectory && inFile.Name.EndsWith(".h264"))
+                    {
+                        RunOnUiThread(async () =>
+                        {
+                            var videoConverter = new aTello.VideoConverter();
+                            var inF = new Java.IO.File(inFile.Path);
+                            var result = await videoConverter.ConvertFileAsync(this, inF);
+                            Toast.MakeText(Application.Context, "Video Converted. Result:" + result, ToastLength.Long).Show();
+                            if (result != null)
+                            {
+                                inF.Delete();
+                            }
+                        });
+                    }
+                }
             };
             //EditText text = FindViewById<EditText>(Resource.Id.maxHeightText);
             //text.AfterTextChanged += delegate {
