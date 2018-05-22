@@ -355,11 +355,14 @@ namespace aTello
             Task.Factory.StartNew(async () =>
             {
                 var recLight = FindViewById<RadioButton>(Resource.Id.recLightButton);
+                var throwButton = FindViewById<ImageButton>(Resource.Id.throwTakeoffButton);
+                var galleryButton = FindViewById<ImageButton>(Resource.Id.galleryButton);
                 int tick = 0;
                 while (true)
                 {
                     try
                     {
+                        var bFlying = Tello.state.flying;
                         RunOnUiThread(() =>
                         {
                             if (isRecording)
@@ -369,6 +372,18 @@ namespace aTello
                             }
                             else
                                 recLight.Visibility = ViewStates.Gone;
+
+                            if (bFlying)
+                            {
+                                throwButton.Visibility = ViewStates.Gone;
+                                galleryButton.Visibility = ViewStates.Gone;
+                            }
+                            else
+                            {
+                                throwButton.Visibility = ViewStates.Visible;
+                                galleryButton.Visibility = ViewStates.Visible;
+                            }
+
                         });
                         Thread.Sleep(250);//Often enough?
                     }
