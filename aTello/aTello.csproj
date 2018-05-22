@@ -90,6 +90,7 @@
     <Compile Include="VideoConverter.cs" />
   </ItemGroup>
   <ItemGroup>
+    <AndroidAsset Include="Assets\ffmpeg" />
     <None Include="GettingStarted.Xamarin" />
     <None Include="packages.config" />
     <None Include="Resources\AboutResources.txt" />

@@ -10,6 +10,9 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using System.Threading.Tasks;
+using Java.IO;
+using Android.Content.Res;
+using System.IO;
 
 namespace FFMpeg.Xamarin
 {
@@ -25,6 +28,42 @@ namespace FFMpeg.Xamarin
 
         private Java.IO.File _ffmpegFile;
 
+        private void copyAssets(Context context)
+        {
+            //InputStream iin = null;
+            OutputStream iout = null;
+
+            AssetManager assetManager = context.Assets;
+            String appFileDirectory = context.FilesDir.Path;
+            String executableFilePath = appFileDirectory + "/ffmpeg";
+
+            try
+            {
+                var iin = assetManager.Open("ffmpeg");
+                Java.IO.File outFile = new Java.IO.File(executableFilePath);
+                iout = new FileOutputStream(outFile);
+
+                byte[] buffer = new byte[1024];
+                int read;
+                while ((read = iin.Read(buffer, 0, 1024)) >0)
+                {
+                    iout.Write(buffer, 0, read);
+                }
+                iin.Close();
+                iin = null;
+                iout.Flush();
+                iout.Close();
+                iout = null;
+
+                Java.IO.File execFile = new Java.IO.File(executableFilePath);
+                execFile.SetExecutable(true);
+            }
+            catch (Exception e)
+            {
+                //Log.e(TAG, "Failed to copy asset file: " + filename, e);
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -35,13 +74,29 @@ namespace FFMpeg.Xamarin
             if (_initialized)
                 return;
 
-            if (cdn != null)
+            var filesDir = context.FilesDir;
+
+            _ffmpegFile = new Java.IO.File(filesDir + "/ffmpeg");
+
+            if (_ffmpegFile.Exists() && _ffmpegFile.CanExecute())
+            {
+                _initialized = true;
+                return;
+            }
+            copyAssets(context);
+            if (_ffmpegFile.Exists())
+                _initialized = true;
+            return;
+
+
+
+
+                if (cdn != null)
             {
                 CDNHost = cdn;
             }
 
             // do all initialization...
-            var filesDir = context.FilesDir;
 
             _ffmpegFile = new Java.IO.File(filesDir + "/ffmpeg");
 
