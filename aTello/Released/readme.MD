@@ -1,9 +1,13 @@
+
+aTello for Android
+======
+
 Be very careful when flying! Especially the first time. Make sure the controls are what you expect and not inverted.
 
-Installing the APK.
+## Installing the APK.
 https://www.wikihow.tech/Install-APK-Files-on-Android
 
-Instructions
+## Instructions
 
 <img src="https://github.com/Kragrathea/TelloLib/blob/master/Media/ScreenDiagram1.jpg" width="900" >
 
@@ -29,7 +33,8 @@ These are the button mappings on the controller for takeoff, land, take picture 
 **L1** = Record.  
 **L2+DPad** = Flip
 
-***Settings screen***
+## Settings screen
+
 <img src="https://github.com/Kragrathea/TelloLib/blob/master/Media/aTelloSettings.png" width="900" >
 
 1. Convert H264 to MP4.
