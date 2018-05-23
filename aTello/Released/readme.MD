@@ -27,17 +27,23 @@ These are the button mappings on the controller for takeoff, land, take picture 
 **R1** = Take Picture.  
 **R2** = Speed mode.  
 **L1** = Record.  
-**R2+DPad** = Flip
+**L2+DPad** = Flip
 
 Pictures are stored in <storage>/aTello/pics. Video is stored in <storage>/aTello/video.
 
-Video is handled a bit differently. Currently the video stream is **always** being "recorded" as in saved to storage. I like it this way because I am always forgetting to press record or I don't decide until afterward that I wanted somethig recorded. The "Record" button just toggles where the file is saved. When not recording the files are stored in aTello/videos/cache. When recording the file is saved in aTello/videos. This allows you to explicitly have video "recorded" into a dicreet piece.
+Video is handled a bit differently. Currently the video stream is **always** being "recorded" as in saved to storage. This can be disabled in the options. I like it this way because I am always forgetting to press record or I don't decide until afterward that I wanted somethig recorded. The "Record" button just toggles where the file is saved. When not recording the files are stored in aTello/videos/cache. When recording the file is saved in aTello/videos. This allows you to explicitly have video "recorded" into a dicreet piece.
 
-Currently the video is saved as the raw H264 that is coming from the drone and must be converted to mp4 for playback. I plan on a built in conversion but right now you need to use an external ffmpeg app to convert. Like this:
+Currently the video is saved as the raw H264 that is coming from the drone and must be converted to mp4 for playback. There are two buttons on the settings screen that will handle the conversion to .mp4. For the most part use the Convert All Videos button. 
 
-ffmpeg -i <input.h264> -vcodec copy output.mp4
- 
-Ffmpeg is avail for all PCs and on Android in the play store.  
-https://www.ffmpeg.org/  
-https://play.google.com/store/apps/details?id=com.silentlexx.ffmpeggui&hl=en_US  
+<img src="https://github.com/Kragrathea/TelloLib/blob/master/Media/aTelloSettings.png" width="900" >
+
+1. Convert H264 to MP4.
+2. Joystick type Generic for Android compatible bluetooth or OTG. PS3 or PS4 also supported.
+3. Photo quality. Jpeg photo quality.
+4. Exposure.
+5. Cache video. If on video is always being saved to the /cache folder when it is not being recorded.
+6. Video bit rate. 
+7. Video iFrame rate. How often keyframes are sent. Adjusting this **may** change video quality.
+
+
 
