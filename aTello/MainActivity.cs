@@ -323,7 +323,6 @@ namespace aTello
             System.IO.Directory.CreateDirectory(Tello.picPath);
 
 
-
             cameraShutterSound.Load("cameraShutterClick.mp3");
             pictureButton.Click += delegate
             {
@@ -336,6 +335,12 @@ namespace aTello
                 picMode= picMode == 1?0:1;
                 Tello.setPicVidMode(picMode);
                 aTello.Video.Decoder.reconfig();
+            };
+
+            var recordButton = FindViewById<ImageButton>(Resource.Id.recordButton);
+            recordButton.Click += delegate
+            {
+                toggleRecording = true;
             };
 
             var galleryButton = FindViewById<ImageButton>(Resource.Id.galleryButton);

@@ -32,15 +32,6 @@
         style="@android:style/Widget.Holo.Button.Borderless"
         android:textColor="@android:color/black"
         android:background="#55ff3333" />
-    <RadioButton
-        android:text="Rec:00:00:00"
-        android:id="@+id/recLightButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/connectButton"
-        android:checked="true"
-        android:buttonTint="#ffff0000"
-        android:layout_toRightOf="@+id/linearLayoutLeft" />
     <LinearLayout
         android:orientation="vertical"
         android:minWidth="25px"
@@ -60,7 +51,8 @@
             android:background="@android:drawable/screen_background_light_transparent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:tint="#620078c8" />
+            android:tint="#620078c8"
+            android:alpha="0.5" />
         <ImageButton
             android:src="@drawable/photogallery"
             android:id="@+id/galleryButton"
@@ -70,7 +62,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:tint="#620078c8" />
+            android:tint="#620078c8"
+            android:alpha="0.5" />
     </LinearLayout>
     <LinearLayout
         android:orientation="vertical"
@@ -90,7 +83,8 @@
             android:layout_width="wrap_content"
             android:background="@android:drawable/screen_background_light_transparent"
             android:layout_height="wrap_content"
-            android:tint="#620078c8" />
+            android:tint="#620078c8"
+            android:alpha="0.5" />
         <ImageButton
             android:src="@drawable/takeoff_hand"
             android:id="@+id/throwTakeoffButton"
@@ -100,7 +94,8 @@
             android:background="@android:drawable/screen_background_light_transparent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:tint="#620078c8" />
+            android:tint="#620078c8"
+            android:alpha="0.5" />
     </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"
@@ -158,6 +153,35 @@
             android:layout_height="match_parent"
             android:layout_width="0dp"
             android:layout_weight="0.25" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout1"
+        android:layout_toLeftOf="@id/linearLayoutRight"
+        android:layout_below="@id/connectButton"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="10dp">
+        <RadioButton
+            android:text="Rec:00:00:00"
+            android:id="@+id/recLightButton"
+            android:checked="true"
+            android:buttonTint="#ffff0000"
+            android:layout_width="wrap_content"
+            android:layout_height="26dp"
+            android:layout_marginRight="5dp"
+            android:textSize="12dp" />
+        <ImageButton
+            android:src="@drawable/record"
+            android:id="@+id/recordButton"
+            android:adjustViewBounds="true"
+            android:background="@android:drawable/screen_background_light_transparent"
+            android:tint="#620078c8"
+            android:scaleType="centerInside"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:alpha="0.5" />
     </LinearLayout>
     <TextView
         android:text="Vbr:0k"

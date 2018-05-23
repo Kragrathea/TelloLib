@@ -67,8 +67,7 @@ namespace aTello
             };
 
 
-
-            var joyItems = new List<string>() { "Generic", "PS3" };
+            var joyItems = new List<string>() { "Generic", "PS3/PS4" };
             var joyAdapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleSpinnerItem, joyItems);
             var joyTypeSpinner = FindViewById<Spinner>(Resource.Id.joystickTypeSpinner);
             joyTypeSpinner.Adapter = joyAdapter;

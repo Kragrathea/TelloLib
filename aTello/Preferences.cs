@@ -17,6 +17,7 @@ namespace aTello
     {
         public static int lxAxis = 0, lyAxis = 1,rxAxis = 2, ryAxis = 3;
 
+        public static Keycode flipButtonCode = Keycode.ButtonL2;
         public static Keycode speedButtonCode = Keycode.ButtonR2;
         public static Keycode landButtonCode = Keycode.ButtonSelect;
         public static Keycode takeoffButtonCode = Keycode.ButtonStart;
@@ -60,6 +61,7 @@ namespace aTello
             switch(type)
             {
                 case 0://generic
+                    flipButtonCode = Keycode.ButtonL2;
                     speedButtonCode = Keycode.ButtonR2;
                     landButtonCode =  Keycode.ButtonSelect;
                     takeoffButtonCode = Keycode.ButtonStart;
@@ -68,6 +70,7 @@ namespace aTello
                     joyType = type;
                     break;
                 case 1://ps3
+                    flipButtonCode = Keycode.ButtonL1;
                     speedButtonCode = Keycode.ButtonR1;
                     landButtonCode = Keycode.ButtonL2;
                     takeoffButtonCode = Keycode.ButtonR2;
@@ -75,7 +78,6 @@ namespace aTello
                     recButtonCode = Keycode.ButtonY;
                     joyType = type;
                     break;
-
             }
         }
         public static void save()
