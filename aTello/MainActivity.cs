@@ -170,7 +170,7 @@ namespace aTello
 
                     modeTextView.Text = "FM:" + newState.flyMode;
                     hSpeedTextView.Text = string.Format("HS:{0: 0.0;-0.0}m/s", (float)newState.flySpeed / 10);
-                    vSpeedTextView.Text = string.Format("VS:{0: 0.0;-0.0}m/s", (float)newState.verticalSpeed / 10);
+                    vSpeedTextView.Text = string.Format("VS:{0: 0.0;-0.0}m/s", -(float)newState.verticalSpeed / 10);//Note invert so negative means moving down. 
                     heiTextView.Text = string.Format("Hei:{0: 0.0;-0.0}m", (float)newState.height / 10);
 
                     if (Tello.controllerState.speed > 0)

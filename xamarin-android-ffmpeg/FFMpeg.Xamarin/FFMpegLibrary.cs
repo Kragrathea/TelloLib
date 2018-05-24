@@ -18,17 +18,12 @@ namespace FFMpeg.Xamarin
 {
     public class FFMpegLibrary
     {
-        public static string EndOfFFMPEGLine = "final ratefactor:";
+        private static bool _initialized = false;
 
-        public string CDNHost { get; set; } = "raw.githubusercontent.com";
-        
-        public readonly static FFMpegLibrary Instance = new FFMpegLibrary();
+        private static Java.IO.File _ffmpegFile;
+        public static string ResultString = "";
 
-        private bool _initialized = false;
-
-        private Java.IO.File _ffmpegFile;
-
-        private void copyAssets(Context context)
+        private static void copyAssets(Context context)
         {
             AssetManager assetManager = context.Assets;
             String appFileDirectory = context.FilesDir.Path;
@@ -68,8 +63,9 @@ namespace FFMpeg.Xamarin
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task Init(Context context, string cdn = null, string downloadTitle = null, string downloadMessage = null)
+        public static async Task Init(Context context, string cdn = null, string downloadTitle = null, string downloadMessage = null)
         {
+            ResultString = "init "+ _initialized;
             if (_initialized)
                 return;
 
@@ -84,129 +80,9 @@ namespace FFMpeg.Xamarin
             }
             copyAssets(context);
             if (_ffmpegFile.Exists())
+            {
                 _initialized = true;
-            return;
-
-
-
-
-                if (cdn != null)
-            {
-                CDNHost = cdn;
             }
-
-            // do all initialization...
-
-            _ffmpegFile = new Java.IO.File(filesDir + "/ffmpeg");
-
-            FFMpegSource source = FFMpegSource.Get();
-
-            await Task.Run(() =>
-            {
-                if (_ffmpegFile.Exists() && _ffmpegFile.Length()>15413150)
-                {
-                    try
-                    {
-                        //if (source.IsHashMatch(System.IO.File.ReadAllBytes(_ffmpegFile.CanonicalPath)))
-                        {
-                            if (!_ffmpegFile.CanExecute())
-                                _ffmpegFile.SetExecutable(true);
-                            _initialized = true;
-                            return;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine($" Error validating file {ex}");
-                    }
-
-                    // file is not same...
-
-                    // delete the file...
-
-                    if (_ffmpegFile.CanExecute())
-                        _ffmpegFile.SetExecutable(false);
-                    _ffmpegFile.Delete();
-                    System.Diagnostics.Debug.WriteLine($"ffmpeg file deleted at {_ffmpegFile.AbsolutePath}");
-                }
-            });
-
-            if (_initialized)
-            {
-                // ffmpeg file exists...
-                return;
-            }
-
-            if (_ffmpegFile.Exists())
-            {
-                _ffmpegFile.Delete();
-            }
-
-            // lets try to download
-            var dialog = new ProgressDialog(context);
-            dialog.SetTitle(downloadMessage ?? "Downloading Video Converter");
-            //dlg.SetMessage(downloadMessage ?? "Downloading Video Converter");
-            dialog.Indeterminate = false;
-            dialog.SetProgressStyle(ProgressDialogStyle.Horizontal);
-            dialog.SetCancelable(false);
-            dialog.CancelEvent += (s, e) =>
-            {
-
-            };
-
-            dialog.SetCanceledOnTouchOutside(false);
-            dialog.Show();
-            using (var c = new System.Net.Http.HttpClient())
-            {
-                using (var fout = System.IO.File.OpenWrite(_ffmpegFile.AbsolutePath))
-                {
-                    string url = source.Url;
-                    var g = new System.Net.Http.HttpRequestMessage(System.Net.Http.HttpMethod.Get, url);
-
-                    var h = await c.SendAsync(g, System.Net.Http.HttpCompletionOption.ResponseHeadersRead);
-
-                    var buffer = new byte[51200];
-
-                    var s = await h.Content.ReadAsStreamAsync();
-                    long total = h.Content.Headers.ContentLength.GetValueOrDefault();
-
-                    IEnumerable<string> sl;
-                    if (h.Headers.TryGetValues("Content-Length", out sl))
-                    {
-                        if (total == 0 && sl.Any())
-                        {
-                            long.TryParse(sl.FirstOrDefault(), out total);
-                        }
-                    }
-
-                    int count = 0;
-                    int progress = 0;
-
-                    dialog.Max = (int)total;
-
-                    while ((count = await s.ReadAsync(buffer, 0, buffer.Length)) > 0)
-                    {
-                        await fout.WriteAsync(buffer, 0, count);
-
-                        progress += count;
-
-                        //System.Diagnostics.Debug.WriteLine($"Downloaded {progress} of {total} from {url}");
-
-                        dialog.Progress = progress;
-                    }
-                    dialog.Hide();
-                }
-            }
-
-            System.Diagnostics.Debug.WriteLine($"ffmpeg file copied at {_ffmpegFile.AbsolutePath}");
-
-            if (!_ffmpegFile.CanExecute())
-            {
-                _ffmpegFile.SetExecutable(true);
-                System.Diagnostics.Debug.WriteLine($"ffmpeg file made executable");
-            }
-
-            _initialized = true;
         }
 
         /// <summary>
@@ -222,7 +98,18 @@ namespace FFMpeg.Xamarin
             {
                 TaskCompletionSource<int> source = new TaskCompletionSource<int>();
 
-                await Instance.Init(context);
+                await Init(context);
+
+                if(!_initialized)
+                {
+                    if (!_ffmpegFile.Exists())
+                        ResultString = "Ffmpeg missing";
+                    else if(!_ffmpegFile.CanExecute())
+                        ResultString = "Ffmpeg cant execute";
+
+                    source.SetResult(-1);
+                    return await source.Task;
+                }
 
                 await Task.Run(() =>
                 {
@@ -256,7 +143,7 @@ namespace FFMpeg.Xamarin
 
             //var process = Java.Lang.Runtime.GetRuntime().Exec( Instance.ffmpegFile.CanonicalPath + " " + cmd );
 
-            var startInfo = new System.Diagnostics.ProcessStartInfo(Instance._ffmpegFile.CanonicalPath, cmd);
+            var startInfo = new System.Diagnostics.ProcessStartInfo(_ffmpegFile.CanonicalPath, cmd);
 
             startInfo.RedirectStandardError = true;
             startInfo.RedirectStandardOutput = true;
@@ -286,8 +173,8 @@ namespace FFMpeg.Xamarin
                                 break;
                             logger?.Invoke(line);
                             processOutput.Append(line);
-                            
-                            if (line.StartsWith(EndOfFFMPEGLine))
+
+                            if (line.StartsWith("final ratefactor:"))
                             {
                                 Task.Run(async () =>
                                 {

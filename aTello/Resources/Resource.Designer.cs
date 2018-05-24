@@ -26,8 +26,6 @@ namespace aTello
 		
 		public static void UpdateIdValues()
 		{
-			global::FFMpeg.Xamarin.Resource.String.ApplicationName = global::aTello.Resource.String.ApplicationName;
-			global::FFMpeg.Xamarin.Resource.String.Hello = global::aTello.Resource.String.Hello;
 		}
 		
 		public partial class Attribute
@@ -270,25 +268,19 @@ namespace aTello
 		{
 			
 			// aapt resource value: 0x7f050001
-			public const int ApplicationName = 2131034113;
+			public const int app_name = 2131034113;
 			
 			// aapt resource value: 0x7f050000
-			public const int Hello = 2131034112;
-			
-			// aapt resource value: 0x7f050003
-			public const int app_name = 2131034115;
-			
-			// aapt resource value: 0x7f050002
-			public const int connect_status = 2131034114;
-			
-			// aapt resource value: 0x7f050006
-			public const int rec000000 = 2131034118;
+			public const int connect_status = 2131034112;
 			
 			// aapt resource value: 0x7f050004
-			public const int statusArea = 2131034116;
+			public const int rec000000 = 2131034116;
 			
-			// aapt resource value: 0x7f050005
-			public const int statusArea2 = 2131034117;
+			// aapt resource value: 0x7f050002
+			public const int statusArea = 2131034114;
+			
+			// aapt resource value: 0x7f050003
+			public const int statusArea2 = 2131034115;
 			
 			static String()
 			{

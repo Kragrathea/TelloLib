@@ -34,7 +34,7 @@ namespace FFMpeg.Xamarin
         
         //https://cdn.rawgit.com/neurospeech/xamarin-android-ffmpeg/master/binary/3.0.1.1/arm/ffmpeg
         //https://raw.githubusercontent.com/neurospeech/xamarin-android-ffmpeg/master/binary/3.0.1.1/arm/ffmpeg
-        public string Url => $"https://{FFMpegLibrary.Instance.CDNHost}/neurospeech/xamarin-android-ffmpeg/v1.0.7/binary/{FFMPEGVersion}/{Arch}/ffmpeg";
+        //public string Url => $"https://{FFMpegLibrary.Instance.CDNHost}/neurospeech/xamarin-android-ffmpeg/v1.0.7/binary/{FFMPEGVersion}/{Arch}/ffmpeg";
 
         public Func<string, bool> IsArch { get; }
 

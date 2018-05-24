@@ -190,7 +190,7 @@ namespace aTello
                         RunOnUiThread(async () => {
                             var videoConverter = new aTello.VideoConverter();
                             var result = await videoConverter.ConvertFileAsync(this, new Java.IO.File(fileData.FilePath));
-                            Toast.MakeText(Application.Context, "Video Converted. Result:" + result, ToastLength.Long).Show();
+                            Toast.MakeText(Application.Context, "Video Conversion. Result:" + result, ToastLength.Long).Show();
                         });
 
                     }
@@ -226,7 +226,7 @@ namespace aTello
                             var inF = new Java.IO.File(inFile.Path);
                             var result = await videoConverter.ConvertFileAsync(this, inF);
                             Toast.MakeText(Application.Context, "Video Converted. Result:" + result, ToastLength.Long).Show();
-                            if(result!=null)
+                            if(result.StartsWith("Success"))
                             {
                                 inF.Delete();
                             }

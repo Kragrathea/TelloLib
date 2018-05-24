@@ -26,7 +26,7 @@ namespace aTello
         /**
         * This method must be called from UI thread.
         ***/
-        public async Task<File> ConvertFileAsync(Context context,
+        public async Task<string> ConvertFileAsync(Context context,
             File inputFile,
             Action<string> logger = null,
             Action<int, int> onProgress = null)
@@ -112,8 +112,10 @@ namespace aTello
                     }
                     */
                 });
-            if(result == 0)//todo better error handling.
-                return ouputFile;
+            if (result == 0)//todo better error handling.
+                return "Success:"+ouputFile.ToString();
+            else
+                return "Fail:"+FFMpeg.Xamarin.FFMpegLibrary.ResultString;
             return null;
         }
 
