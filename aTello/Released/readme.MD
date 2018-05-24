@@ -52,6 +52,15 @@ Video is handled a bit differently. Currently the video stream is **always** bei
 
 Currently the video is saved as the raw H264 that is coming from the drone and must be converted to mp4 for playback. There are two buttons on the settings screen that will handle the conversion to .mp4. For the most part use the Convert All Videos button. 
 
+## On Video quality
+The Tello has a very good camera and takes good pictures, but the video feed is a letdown. The compression is high and the WIFI signal is weak leading to video breakup and lost frames. aTello uses the same video feed as the official app. And so all things being equal the video quality should be the same. That said here are a few things that are not equal.
 
+Given the inherent low quality video my approach to the video feed is to maximize the user experience while flying the drone as opposed to make the recorded video look as possible. To that end:
+
+-By default aTello uses a 4:3 aspect ratio and a video resolution of 960x720. The official app records video only at 16x9 1280x720. You can switch to 16x9 mode in aTello by holding the onscreen camera button down for a moment. This will result in the video being cropped the same as the official app and will apparently increase the compression quality since less there is less of the frame to compress.
+
+-The official app chooses to drop frames when it encounters an error resulting in a black or frozen frame. aTello will draw the frame even if there are errors. This means you will get a frame with some amount of garbage instead of black. In some cases this is unnoticeable and in others it results in a mess. I think it is a desirable trade-off.
+
+-You can potentially improve the video quality by adjusting the Video bit rate and iFrame interval in the settings. A lower bitrate should help with lost frames or corrupted frames at the expense of quality. A higher iFrame rate will allow it to recover from bad frames faster but will again cost some quality.
 
 
