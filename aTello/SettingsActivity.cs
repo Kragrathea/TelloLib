@@ -91,7 +91,7 @@ namespace aTello
                 Preferences.save();
             };
 
-            var vbrItems = new List<string>() { "Auto", "1M", "1.5M", "2M", "3M", "4M", "5", "6" };
+            var vbrItems = new List<string>() { "Auto", "1M", "1.5M", "2M", "3M", "4M"};
             var vbrAdapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleSpinnerItem, vbrItems);
             var vbrSpinner = FindViewById<Spinner>(Resource.Id.vbrSpinner);
             vbrSpinner.Adapter = vbrAdapter;
@@ -188,9 +188,15 @@ namespace aTello
                         //System.Console.WriteLine("File data: " + contents);
 
                         RunOnUiThread(async () => {
-                            var videoConverter = new aTello.VideoConverter();
-                            var result = await videoConverter.ConvertFileAsync(this, new Java.IO.File(fileData.FilePath));
-                            Toast.MakeText(Application.Context, "Video Conversion. Result:" + result, ToastLength.Long).Show();
+                            try
+                            {
+                                var videoConverter = new aTello.VideoConverter();
+                                var result = await videoConverter.ConvertFileAsync(this, new Java.IO.File(fileData.FilePath));
+                                Toast.MakeText(Application.Context, "Video Conversion. Result:" + result, ToastLength.Long).Show();
+                            }catch(Exception ex)
+                            {
+                                Toast.MakeText(Application.Context, "Video Conversion. FAIL:" + ex.Message, ToastLength.Long).Show();
+                            }
                         });
 
                     }

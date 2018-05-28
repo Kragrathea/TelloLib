@@ -118,6 +118,8 @@ namespace aTello
 
                     Tello.setEV(Preferences.exposure);
 
+                    Tello.setVideoBitRate(Preferences.videoBitRate);
+                    Tello.setVideoDynRate(1);
                 }
                 if (newState == Tello.ConnectionState.Disconnected)
                 {
@@ -204,6 +206,7 @@ namespace aTello
             //updateUI();//hide record light etc. 
 
             //subscribe to Tello video data
+            var vidCount = 0;
             Tello.onVideoData += (byte[] data) =>
             {
                 totalVideoBytesReceived += data.Length;
@@ -227,6 +230,7 @@ namespace aTello
                                 {
                                     videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("MMMM dd yyyy HH-mm-ss") + ".h264");
                                     startRecordingTime = DateTime.Now;
+//                                    Tello.setVideoRecord(vidCount++);
                                     CrossTextToSpeech.Current.Speak("Recording");
                                     updateUI();
                                 }

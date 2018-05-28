@@ -181,6 +181,32 @@ namespace TelloLib
 
             client.Send(packet);
         }
+        public static void setVideoDynRate(int rate)
+        {
+            //                                          crc    typ  cmdL  cmdH  seqL  seqH  rateL  crc   crc
+            var packet = new byte[] { 0xcc, 0x60, 0x00, 0x27, 0x68, 0x21, 0x00, 0x09, 0x00, 0x00, 0x5b, 0xc5 };
+
+            //payload
+            packet[9] = (byte)rate;
+
+            setPacketSequence(packet);
+            setPacketCRCs(packet);
+
+            client.Send(packet);
+        }
+        public static void setVideoRecord(int n)
+        {
+            //                                          crc    typ  cmdL  cmdH  seqL  seqH  nL  crc   crc
+            var packet = new byte[] { 0xcc, 0x60, 0x00, 0x27, 0x68, 0x32, 0x00, 0x09, 0x00, 0x00, 0x5b, 0xc5 };
+
+            //payload
+            packet[9] = (byte)n;
+
+            setPacketSequence(packet);
+            setPacketCRCs(packet);
+
+            client.Send(packet);
+        }
         /*TELLO_CMD_SWITCH_PICTURE_VIDEO
 	    49 0x31
 	    0x68
