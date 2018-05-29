@@ -78,6 +78,15 @@ namespace aTello
                 Preferences.save();
             };
 
+            var onScreenJoySwitch = FindViewById<Switch>(Resource.Id.onScreenJoySwitch);
+            onScreenJoySwitch.Checked = Preferences.onScreenJoy;
+            onScreenJoySwitch.CheckedChange += (sender, args) =>
+            {
+                Preferences.onScreenJoy = args.IsChecked;
+                Preferences.save();
+            };
+            
+
             var evItems = new List<double>() { -3.0, -2.7, -2.3, -2.0, -1.7, -1.3, -1.0, -0.7, -0.3, 0, 0.3, 0.7, 1.0, 1.3, 1.7, 2.0, 2.3, 2.7, 3.0 };
             var evAdapter = new ArrayAdapter<double>(this, Android.Resource.Layout.SimpleSpinnerItem, evItems);
             var evSpinner = FindViewById<Spinner>(Resource.Id.exposureSpinner);

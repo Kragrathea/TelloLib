@@ -28,6 +28,8 @@ namespace aTello
         public static int exposure = 9;
         public static int videoBitRate = 0;
         public static int joyType = 0;
+        public static bool onScreenJoy = false;
+       
         public static int iFrameRate = TelloLib.Tello.iFrameRate;//5 = 4x second.
         public static bool cacheVideo = true;
 
@@ -45,6 +47,8 @@ namespace aTello
             setJoyType(jtype);
 
             jpgQuality = prefs.GetInt("jpgQuality", jpgQuality);
+
+            onScreenJoy = prefs.GetBoolean("onScreenJoy", onScreenJoy);
 
             exposure = prefs.GetInt("exposure", exposure);
             videoBitRate = prefs.GetInt("videoBitRate", videoBitRate);
@@ -90,6 +94,7 @@ namespace aTello
             editor.PutInt("rxAxis", rxAxis);
             editor.PutInt("ryAxis", ryAxis);
             editor.PutInt("joyType", joyType);
+            editor.PutBoolean("onScreenJoy", onScreenJoy);
             editor.PutInt("jpgQuality", jpgQuality);
             editor.PutInt("exposure", exposure);
             editor.PutInt("videoBitRate", videoBitRate);

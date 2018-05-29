@@ -27,6 +27,7 @@ namespace TelloLib
 
         public static string picPath;//todo redo this. 
         public static string picFilePath;//todo redo this. 
+        public static int picMode = 0;//pic or vid aspect ratio.
 
         public static int iFrameRate = 5;//How often to ask for iFrames in 50ms. Ie 2=10x 5=4x 10=2xSecond 5 = 4xSecond
 
@@ -217,6 +218,8 @@ namespace TelloLib
         {
             //                                          crc    typ  cmdL  cmdH  seqL  seqH  modL  crc   crc
             var packet = new byte[] { 0xcc, 0x60, 0x00, 0x27, 0x68, 0x31, 0x00, 0x00, 0x00, 0x00, 0x5b, 0xc5 };
+
+            picMode = mode;
 
             //payload
             packet[9] = (byte)(mode & 0xff);

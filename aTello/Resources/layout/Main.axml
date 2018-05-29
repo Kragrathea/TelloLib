@@ -8,9 +8,9 @@
     android:background="@android:color/black">
     <SurfaceView
         android:id="@+id/surfaceView"
-        android:layout_width="480dp"
-        android:layout_height="360dp"
-        android:layout_centerInParent="true" />
+        android:layout_height="fill_parent"
+        android:layout_centerInParent="true"
+        android:layout_width="fill_parent" />
     <aTello.JoystickView
         android:id="@+id/joystickViewL"
         android:layout_width="220dp"
@@ -105,7 +105,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="#8888"
-        android:layout_alignBottom="@id/surfaceView">
+        android:layout_alignParentBottom="true">
         <TextView
             android:text="FM:00"
             android:textAppearance="?android:attr/textAppearanceSmall"

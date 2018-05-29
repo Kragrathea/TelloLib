@@ -51,6 +51,16 @@
             </LinearLayout>
             <Switch
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/onScreenJoySwitch"
+                android:text="Always show onscreen joystick"
+                android:showText="true"
+                android:textOff="Off"
+                android:textOn="On"
+                android:textSize="20dp"
+                android:layout_marginTop="10dp" />
+            <Switch
+                android:layout_width="match_parent"
                 android:id="@+id/photoQualitySwitch"
                 android:text="Photo Quality"
                 android:showText="true"

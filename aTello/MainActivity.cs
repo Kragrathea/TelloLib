@@ -115,6 +115,7 @@ namespace aTello
                     CrossTextToSpeech.Current.Speak("Connected");
                     
                     Tello.setPicVidMode(picMode);//0=picture(960x720)
+                    //updateVideoSize();
 
                     Tello.setEV(Preferences.exposure);
 
@@ -192,8 +193,12 @@ namespace aTello
 
             };
 
+
+
             var videoFrame = new byte[100 * 1024];
             var videoOffset = 0;
+
+            updateVideoSize();
             Video.Decoder.surface = FindViewById<SurfaceView>(Resource.Id.surfaceView).Holder.Surface;
 
             var path = "aTello/video/";
@@ -338,6 +343,7 @@ namespace aTello
                 //Toggle
                 picMode= picMode == 1?0:1;
                 Tello.setPicVidMode(picMode);
+                updateVideoSize();
                 aTello.Video.Decoder.reconfig();
             };
 
@@ -373,7 +379,38 @@ namespace aTello
             input_manager = (InputManager)GetSystemService(Context.InputService);
             CheckGameControllers();
         }
+        private void updateVideoSize()
+        {
+            int videoWidth = 960;
+            int videoHeight = 720;
+            if (Tello.picMode==1)//pic mode is also aspect ratio. 
+            {
+                videoWidth = 1280;
+            }
 
+            float videoProportion = (float)videoWidth / (float)videoHeight;
+
+            var size = new Android.Graphics.Point();
+            WindowManager.DefaultDisplay.GetSize(size);
+            int screenWidth = size.X;
+            int screenHeight = size.Y;
+            float screenProportion = (float)screenWidth / (float)screenHeight;
+
+            var surfaceView=FindViewById<SurfaceView>(Resource.Id.surfaceView);
+            var lp = surfaceView.LayoutParameters;
+            if (videoProportion > screenProportion)
+            {
+                lp.Width = screenWidth;
+                lp.Height = (int)((float)screenWidth / videoProportion);
+            }
+            else
+            {
+                lp.Width = (int)(videoProportion * (float)screenHeight);
+                lp.Height = screenHeight;
+            }
+            
+            surfaceView.LayoutParameters = lp;
+        }
         private void startUIUpdateThread()
         {
             Task.Factory.StartNew(async () =>
@@ -417,6 +454,8 @@ namespace aTello
                                     vbrTextView.Text =string.Format("Vbr:{0}k i:{1}",(perSec / 1024),Tello.iFrameRate);
                                 }
                                 videoBytesReceivedLastSecond = totalVideoBytesReceived;
+
+                                updateOnScreenJoyVisibility();
                             }
                         });
                         Thread.Sleep(250);//Often enough?
@@ -638,9 +677,9 @@ namespace aTello
         }
 
 
-        private void updateOnScreenJoyVisibility()
+        public void updateOnScreenJoyVisibility()
         {
-            if (current_device_id > -1)
+            if (current_device_id > -1 && !Preferences.onScreenJoy)
             {
                 RunOnUiThread(() =>
                 {
