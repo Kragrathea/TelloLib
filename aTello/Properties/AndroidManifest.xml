@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="0.9" package="aTello.aTello" android:installLocation="auto" android:versionCode="9">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="0.91" package="aTello.aTello" android:installLocation="auto" android:versionCode="10">
 	<uses-sdk android:minSdkVersion="16" android:targetSdkVersion="22" />
 	<application android:allowBackup="true" android:label="@string/app_name" android:icon="@drawable/aTelloLogo2"></application>
 	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
