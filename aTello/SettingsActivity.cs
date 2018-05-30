@@ -196,9 +196,16 @@ namespace aTello
                         System.Console.WriteLine("File name chosen: " + fileName);
                         //System.Console.WriteLine("File data: " + contents);
 
+
                         RunOnUiThread(async () => {
                             try
                             {
+                                if (!fileName.ToLower().EndsWith(".h264"))
+                                {
+                                    Toast.MakeText(Application.Context, "Error. Can only convert .h264 files", ToastLength.Long).Show();
+                                    return;
+                                }
+
                                 var videoConverter = new aTello.VideoConverter();
                                 var result = await videoConverter.ConvertFileAsync(this, new Java.IO.File(fileData.FilePath));
                                 Toast.MakeText(Application.Context, "Video Conversion. Result:" + result, ToastLength.Long).Show();

@@ -616,7 +616,6 @@ namespace aTello
                     if (keyCode == Preferences.pictureButtonCode && e.RepeatCount == 0)
                     {
                         Tello.takePicture();
-                        cameraShutterSound.Play();
                         return true;
                     };
                     if (keyCode == Preferences.recButtonCode && e.RepeatCount == 0)
