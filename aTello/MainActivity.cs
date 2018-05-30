@@ -158,37 +158,47 @@ namespace aTello
                 File.WriteAllText(logFilePath, "time," + Tello.state.getLogHeader());
             }
 
+            cameraShutterSound.Load("cameraShutterClick.mp3");
             //subscribe to Tello update events
-            Tello.onUpdate += (Tello.FlyData newState) =>
+            Tello.onUpdate += (int cmdId) =>
             {
                 if (doStateLogging)
                 {
                     //write update to log.
                     var elapsed = DateTime.Now - logStartTime;
-                    File.AppendAllText(logFilePath, elapsed.ToString(@"mm\:ss\:ff\,") + newState.getLogLine());
+                    File.AppendAllText(logFilePath, elapsed.ToString(@"mm\:ss\:ff\,") + Tello.state.getLogLine());
                 }
 
                 RunOnUiThread(() => {
-                    //Update state on screen
+                    if (cmdId == 86)//ac status update. 
+                    {
+                        //Update state on screen
+                        modeTextView.Text = "FM:" + Tello.state.flyMode;
+                        hSpeedTextView.Text = string.Format("HS:{0: 0.0;-0.0}m/s", (float)Tello.state.flySpeed / 10);
+                        vSpeedTextView.Text = string.Format("VS:{0: 0.0;-0.0}m/s", -(float)Tello.state.verticalSpeed / 10);//Note invert so negative means moving down. 
+                        heiTextView.Text = string.Format("Hei:{0: 0.0;-0.0}m", (float)Tello.state.height / 10);
 
-                    modeTextView.Text = "FM:" + newState.flyMode;
-                    hSpeedTextView.Text = string.Format("HS:{0: 0.0;-0.0}m/s", (float)newState.flySpeed / 10);
-                    vSpeedTextView.Text = string.Format("VS:{0: 0.0;-0.0}m/s", -(float)newState.verticalSpeed / 10);//Note invert so negative means moving down. 
-                    heiTextView.Text = string.Format("Hei:{0: 0.0;-0.0}m", (float)newState.height / 10);
+                        if (Tello.controllerState.speed > 0)
+                            hSpeedTextView.SetBackgroundColor(Android.Graphics.Color.IndianRed);
+                        else
+                            hSpeedTextView.SetBackgroundColor(Android.Graphics.Color.Transparent);
 
-                    if (Tello.controllerState.speed > 0)
-                        hSpeedTextView.SetBackgroundColor(Android.Graphics.Color.IndianRed);
-                    else
-                        hSpeedTextView.SetBackgroundColor(Android.Graphics.Color.Transparent);
+                        batTextView.Text = "Bat:" + Tello.state.batteryPercentage;
+                        wifiTextView.Text = "Wifi:" + Tello.state.wifiStrength;
 
-                    batTextView.Text = "Bat:" + newState.batteryPercentage;
-                    wifiTextView.Text = "Wifi:" + newState.wifiStrength;
-
-                    //acstat.Text = str;
-                    if (Tello.state.flying)
-                        takeoffButton.SetImageResource(Resource.Drawable.land);
-                    else if (!Tello.state.flying)
-                        takeoffButton.SetImageResource(Resource.Drawable.takeoff_white);
+                        //acstat.Text = str;
+                        if (Tello.state.flying)
+                            takeoffButton.SetImageResource(Resource.Drawable.land);
+                        else if (!Tello.state.flying)
+                            takeoffButton.SetImageResource(Resource.Drawable.takeoff_white);
+                    }
+                    if (cmdId == 48)//ack picture start. 
+                    {
+                        cameraShutterSound.Play();
+                    }
+                    if (cmdId == 98)//start picture download. 
+                    {
+                    }
                 });
 
             };
@@ -331,12 +341,9 @@ namespace aTello
             Tello.picPath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, "aTello/pics/");
             System.IO.Directory.CreateDirectory(Tello.picPath);
 
-
-            cameraShutterSound.Load("cameraShutterClick.mp3");
             pictureButton.Click += delegate
             {
                 Tello.takePicture();
-                cameraShutterSound.Play();
             };
             pictureButton.LongClick += delegate
             {

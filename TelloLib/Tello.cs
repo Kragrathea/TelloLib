@@ -18,7 +18,7 @@ namespace TelloLib
         private static int wifiStrength=0;
         public static bool connected = false;
 
-        public delegate void updateDeligate(FlyData state);
+        public delegate void updateDeligate(int cmdId);
         public static event updateDeligate onUpdate;
         public delegate void connectionDeligate(ConnectionState newState);
         public static event connectionDeligate onConnection;
@@ -128,6 +128,19 @@ namespace TelloLib
             client.Send(packet);
 
             Tello.queryAttAngle();//refresh
+        }
+        public static void setEis(int value)
+        {
+            //                                          crc    typ  cmdL  cmdH  seqL  seqH  valL  crc   crc
+            var packet = new byte[] { 0xcc, 0x60, 0x00, 0x27, 0x68, 0x24, 0x00, 0x09, 0x00, 0x00, 0x5b, 0xc5 };
+
+            //payload
+            packet[9] = (byte)(value & 0xff);
+
+            setPacketSequence(packet);
+            setPacketCRCs(packet);
+
+            client.Send(packet);
         }
         public static void doFlip(int dir)
         {
@@ -404,21 +417,8 @@ namespace TelloLib
                         if (cmdId == 86)//state command
                         {
                             //update
-                            var newState = new FlyData();
-                            newState.set(received.bytes.Skip(9).ToArray());
-                            try
-                            {
-                                //fire update event.
-                                onUpdate(newState);
-                            }
-                            catch (Exception ex)
-                            {
-                                //Fixed. Update errors do not cause disconnect.
-                                Console.WriteLine("onUpdate error:" + ex.Message);
-                                //break;
-                            }
-                            //update current state.
-                            state = newState;
+                            state.set(received.bytes.Skip(9).ToArray());
+
                         }
                         if (cmdId == 4185)//att angle response
                         {
@@ -534,6 +534,21 @@ namespace TelloLib
                         {
 
                         }
+
+                        //send command to listeners. 
+                        try
+                        {
+                            //fire update event.
+                            onUpdate(cmdId);
+                        }
+                        catch (Exception ex)
+                        {
+                            //Fixed. Update errors do not cause disconnect.
+                            Console.WriteLine("onUpdate error:" + ex.Message);
+                            //break;
+                        }
+
+
                     }
 
                     catch (Exception ex)

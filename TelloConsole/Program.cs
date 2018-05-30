@@ -38,15 +38,18 @@ namespace TelloConsole
             File.WriteAllText(logFilePath, "time,"+Tello.state.getLogHeader());
 
                 //subscribe to Tello update events.
-            Tello.onUpdate += (Tello.FlyData newState) =>
+            Tello.onUpdate += (cmdId) =>
             {
-                //write update to log.
-                var elapsed = DateTime.Now - logStartTime;
-                File.AppendAllText(logFilePath,elapsed.ToString(@"mm\:ss\:ff\,") + newState.getLogLine());
-                
-                //display state in console.
-                var outStr = newState.ToString();//ToString() = Formated state
-                printAt(0, 2, outStr);
+                if (cmdId == 86)//ac update
+                {
+                    //write update to log.
+                    var elapsed = DateTime.Now - logStartTime;
+                    File.AppendAllText(logFilePath, elapsed.ToString(@"mm\:ss\:ff\,") + Tello.state.getLogLine());
+
+                    //display state in console.
+                    var outStr = Tello.state.ToString();//ToString() = Formated state
+                    printAt(0, 2, outStr);
+                }
             };
 
             //subscribe to Joystick update events. Called ~10x second.

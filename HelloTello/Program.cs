@@ -24,9 +24,10 @@ namespace HelloTello
             };
 
             //subscribe to Tello update events. Called when update data arrives from drone.
-            Tello.onUpdate += (Tello.FlyData newState) =>
+            Tello.onUpdate += (int cmdId) =>
             {
-                Console.WriteLine("FlyMode:" + newState.flyMode +" Height:" + newState.height);
+                if(cmdId==86)//ac update
+                    Console.WriteLine("FlyMode:" + Tello.state.flyMode +" Height:" + Tello.state.height);
             };
 
             Tello.startConnecting();//Start trying to connect.

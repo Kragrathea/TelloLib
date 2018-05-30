@@ -40,9 +40,9 @@ namespace aTello
             cmd.Add("-i");
             cmd.Add("\""+inputFile.CanonicalPath+ "\"");
 
+            /*
             MediaMetadataRetriever m = new MediaMetadataRetriever();
             m.SetDataSource(inputFile.CanonicalPath);
-            /*
                         string rotate = m.ExtractMetadata(Android.Media.MetadataKey.VideoRotation);
 
                         int r = 0;
