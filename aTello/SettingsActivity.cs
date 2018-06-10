@@ -6,6 +6,7 @@ using System.Text;
 
 using Android.App;
 using Android.Content;
+using Android.Content.PM;
 using Android.OS;
 using Android.Preferences;
 using Android.Runtime;
@@ -18,7 +19,9 @@ using static Android.Views.ViewGroup;
 
 namespace aTello
 {
-    [Activity(Label = "Settings", Theme = "@android:style/Theme.DeviceDefault")]
+    [Activity(ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.KeyboardHidden | ConfigChanges.ScreenSize, Label = "Settings",
+    Theme = "@android:style/Theme.DeviceDefault", ScreenOrientation = ScreenOrientation.SensorLandscape)]
+
     public class SettingsActivity : Activity
     {
         protected override void OnCreate(Bundle savedInstanceState)

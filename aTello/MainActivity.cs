@@ -46,6 +46,8 @@ namespace aTello
         private DateTime startRecordingTime;
 
         private bool doStateLogging = false;
+
+        public bool isPaused = false;
         
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -332,7 +334,7 @@ namespace aTello
             };
 
             
-            takeoffButton.Click += delegate {
+            takeoffButton.LongClick += delegate {
                 if (Tello.connected && !Tello.state.flying)
                 {
                     Tello.takeOff();
@@ -342,7 +344,7 @@ namespace aTello
                     Tello.land();
                 }
             };
-            throwTakeoffButton.Click += delegate {
+            throwTakeoffButton.LongClick += delegate {
                 if (Tello.connected && !Tello.state.flying)
                 {
                     Tello.throwTakeOff();
@@ -522,7 +524,10 @@ namespace aTello
 
         public void OnTouchJoystickMoved(JoystickView joystickView )
         {
-            Tello.controllerState.setAxis(onScreenJoyL.normalizedX, -onScreenJoyL.normalizedY, onScreenJoyR.normalizedX, -onScreenJoyR.normalizedY );
+            if(isPaused)//Zero out any movement when paused.
+                Tello.controllerState.setAxis(0, 0, 0, 0);
+            else
+                Tello.controllerState.setAxis(onScreenJoyL.normalizedX, -onScreenJoyL.normalizedY, onScreenJoyR.normalizedX, -onScreenJoyR.normalizedY);
             Tello.sendControllerUpdate();
         }
         public float hatAxisX, hatAxisY;
@@ -542,8 +547,11 @@ namespace aTello
                     var rx = GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(Preferences.rxAxis));// axes[2];
                     var ry = -GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(Preferences.ryAxis));//-axes[3];
 
+                    if (isPaused)//Zero out any movement when paused.
+                        Tello.controllerState.setAxis(0, 0, 0, 0);
+                    else
+                        Tello.controllerState.setAxis(lx, ly, rx, ry);
 
-                    Tello.controllerState.setAxis(lx, ly, rx, ry);
                     Tello.sendControllerUpdate();
 
                     updateOnScreenJoyVisibility();
@@ -697,13 +705,27 @@ namespace aTello
 
         protected override void OnResume()
         {
+            isPaused = false;
             base.OnResume();
             input_manager.RegisterInputDeviceListener(this, null);
             updateOnScreenJoyVisibility();
+            //fix if joy was moved when paused.
+            onScreenJoyL.returnHandleToCenter();
+            onScreenJoyR.returnHandleToCenter();
+
         }
 
         protected override void OnPause()
         {
+            //fix if joy was moved when paused.
+            onScreenJoyL.returnHandleToCenter();
+            onScreenJoyR.returnHandleToCenter();
+
+            //Zero out Joy input so we don't keep flying.
+            Tello.controllerState.setAxis(0, 0, 0, 0);
+            Tello.sendControllerUpdate();
+
+            isPaused = true;
             base.OnPause();
             input_manager.UnregisterInputDeviceListener(this);
         }

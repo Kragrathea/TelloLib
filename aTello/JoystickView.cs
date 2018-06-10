@@ -143,11 +143,6 @@ namespace aTello
             }
             else if (actionType == MotionEventActions.Up)
             {
-
-                normalizedX = 0;
-                normalizedY = 0;
-                firstX = 0;
-                firstY = 0;
                 returnHandleToCenter();
                 onUpdate(this);
                 //Console.WriteLine("X:" + touchX + "|Y:" + touchY);
@@ -155,8 +150,14 @@ namespace aTello
             return true;
         }
 
-        private void returnHandleToCenter()
+        public void returnHandleToCenter()
         {
+
+            normalizedX = 0;
+            normalizedY = 0;
+            firstX = 0;
+            firstY = 0;
+
             Handler handler = new Handler();
             int numberOfFrames = 5;
             double intervalsX = (0 - touchX) / numberOfFrames;
