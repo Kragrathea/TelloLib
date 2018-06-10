@@ -199,6 +199,21 @@ namespace aTello
                     if (cmdId == 98)//start picture download. 
                     {
                     }
+                    if (cmdId == 100)//picture piece downloaded. 
+                    {
+                        if(Tello.picDownloading==false)//if done downloading.
+                        {
+                            if (remainingExposures >= 0)
+                            {
+                                var exposureSet = new int[]{0,-2,8};
+                                Tello.setEV(Preferences.exposure + exposureSet[remainingExposures]);
+                                remainingExposures--;
+                                Tello.takePicture();
+                            }
+                            if(remainingExposures==-1)//restore exposure. 
+                                Tello.setEV(Preferences.exposure);
+                        }
+                    }
                 });
 
             };
@@ -343,16 +358,17 @@ namespace aTello
 
             pictureButton.Click += delegate
             {
+                remainingExposures = -1;
                 Tello.takePicture();
             };
+            /*
+            * Multiple exposure. Not working yet.
             pictureButton.LongClick += delegate
             {
-                //Toggle
-                picMode= picMode == 1?0:1;
-                Tello.setPicVidMode(picMode);
-                updateVideoSize();
-                aTello.Video.Decoder.reconfig();
+                remainingExposures = 2;
+                Tello.takePicture();
             };
+            */
 
             var recordButton = FindViewById<ImageButton>(Resource.Id.recordButton);
             recordButton.Click += delegate
@@ -360,6 +376,14 @@ namespace aTello
                 toggleRecording = true;
             };
 
+            recordButton.LongClick += delegate
+            {
+                //Toggle
+                picMode = picMode == 1 ? 0 : 1;
+                Tello.setPicVidMode(picMode);
+                updateVideoSize();
+                aTello.Video.Decoder.reconfig();
+            };
             var galleryButton = FindViewById<ImageButton>(Resource.Id.galleryButton);
             galleryButton.Click += async delegate
             {
@@ -504,6 +528,8 @@ namespace aTello
         public float hatAxisX, hatAxisY;
         //Handle joystick axis events.
         private DateTime lastFlip;
+        private int remainingExposures;
+
         public override bool OnGenericMotionEvent(MotionEvent e)
         {
             InputDevice device = e.Device;

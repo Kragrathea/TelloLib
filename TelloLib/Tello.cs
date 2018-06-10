@@ -372,6 +372,7 @@ namespace TelloLib
         private static UInt32 picBytesRecived;
         private static UInt32 picBytesExpected;
         private static UInt32 picExtraPackets;
+        public static bool picDownloading;
         private static int maxPieceNum = 0;
         private static void startListeners()
         {
@@ -446,7 +447,7 @@ namespace TelloLib
                         if (cmdId == 53)//light str command
                         {
                         }
-                        if (cmdId == 98)
+                        if (cmdId == 98)//start jpeg.
                         {
                             picFilePath = picPath + DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + ".jpg";
 
@@ -463,6 +464,8 @@ namespace TelloLib
                             picChunkState = new bool[(picBytesExpected/1024)+1]; //calc based on size. 
                             picPieceState = new bool[(picChunkState.Length / 8)+1];
                             picExtraPackets = 0;//for debugging.
+                            picDownloading = true;
+
                             sendAckFileSize();
                         }
                         if(cmdId == 99)//jpeg
@@ -506,11 +509,20 @@ namespace TelloLib
                                 }
                                 if (picFilePath != null && picBytesRecived >= picBytesExpected)
                                 {
-
+                                    picDownloading = false;
 
                                     sendAckFilePiece(1, 0, (UInt32)maxPieceNum);//todo. Double check this. finalize
 
                                     sendAckFileDone((int)picBytesExpected);
+
+                                    //HACK.
+                                    //Send file done cmdId to the update listener so it knows the picture is done. 
+                                    //hack.
+                                    onUpdate(100);
+                                    //hack.
+                                    //This is a hack because it is faking a message. And not a very good fake.
+                                    //HACK.
+
                                     Console.WriteLine("\nDONE PN:" + pieceNum + " max: " + maxPieceNum);
 
                                     //Save raw data minus sequence.
