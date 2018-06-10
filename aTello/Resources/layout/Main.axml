@@ -40,7 +40,7 @@
         android:layout_width="50dp"
         android:layout_height="fill_parent"
         android:layout_marginLeft="5dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="20dp"
         android:layout_alignParentRight="true"
         android:layout_below="@id/connectButton">
         <ImageButton
@@ -73,7 +73,7 @@
         android:layout_width="50dp"
         android:layout_height="fill_parent"
         android:layout_marginLeft="5dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="20dp"
         android:layout_below="@id/connectButton">
         <ImageButton
             android:src="@drawable/takeoff_white2"
@@ -105,14 +105,15 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="#8888"
-        android:layout_alignParentBottom="true">
+        android:layout_below="@id/connectButton">
         <TextView
             android:text="FM:00"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:id="@+id/modeTextView"
             android:gravity="center"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_weight="0.15" />
         <TextView
             android:text="HS:00"
             android:textAppearance="?android:attr/textAppearanceSmall"
@@ -120,7 +121,8 @@
             android:gravity="center"
             android:layout_height="match_parent"
             android:layout_width="0dp"
-            android:layout_weight="0.25" />
+            android:layout_weight="0.25"
+            android:shadowColor="#00000000" />
         <TextView
             android:text="VS:00"
             android:textAppearance="?android:attr/textAppearanceSmall"
@@ -161,7 +163,7 @@
         android:id="@+id/linearLayout1"
         android:layout_toLeftOf="@id/linearLayoutRight"
         android:layout_below="@id/connectButton"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="20dp"
         android:layout_marginRight="10dp">
         <RadioButton
             android:text="Rec:00:00:00"
@@ -196,7 +198,7 @@
         android:text="Connect Joystick"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/statusLayout" />
+        android:layout_alignParentBottom="true" />
     <ImageButton
         android:src="@drawable/settings_gear"
         android:id="@+id/settingsButton"

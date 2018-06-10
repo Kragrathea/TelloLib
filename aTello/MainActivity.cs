@@ -34,6 +34,8 @@ namespace aTello
         JoystickView onScreenJoyL;
         JoystickView onScreenJoyR;
 
+        private bool forceSpeedMode = false;
+
         ImageButton takeoffButton;
         ImageButton throwTakeoffButton;
         string videoFilePath;//file to save raw h264 to. 
@@ -123,6 +125,12 @@ namespace aTello
 
                     Tello.setVideoBitRate(Preferences.videoBitRate);
                     Tello.setVideoDynRate(1);
+
+                    if (forceSpeedMode)
+                        Tello.controllerState.setSpeedMode(1);
+                    else
+                        Tello.controllerState.setSpeedMode(0);
+
                 }
                 if (newState == Tello.ConnectionState.Disconnected)
                 {
@@ -160,6 +168,15 @@ namespace aTello
                 File.WriteAllText(logFilePath, "time," + Tello.state.getLogHeader());
             }
 
+            //Long click vert speed to force fast mode. 
+            hSpeedTextView.LongClick += delegate {
+                forceSpeedMode = !forceSpeedMode;
+                if (forceSpeedMode)
+                    Tello.controllerState.setSpeedMode(1);
+                else
+                    Tello.controllerState.setSpeedMode(0);
+            };
+            
             cameraShutterSound.Load("cameraShutterClick.mp3");
             //subscribe to Tello update events
             Tello.onUpdate += (int cmdId) =>
@@ -183,7 +200,7 @@ namespace aTello
                         if (Tello.controllerState.speed > 0)
                             hSpeedTextView.SetBackgroundColor(Android.Graphics.Color.IndianRed);
                         else
-                            hSpeedTextView.SetBackgroundColor(Android.Graphics.Color.Transparent);
+                            hSpeedTextView.SetBackgroundColor(Android.Graphics.Color.DarkGreen);
 
                         batTextView.Text = "Bat:" + Tello.state.batteryPercentage;
                         wifiTextView.Text = "Wifi:" + Tello.state.wifiStrength;
@@ -527,7 +544,8 @@ namespace aTello
             if(isPaused)//Zero out any movement when paused.
                 Tello.controllerState.setAxis(0, 0, 0, 0);
             else
-                Tello.controllerState.setAxis(onScreenJoyL.normalizedX, -onScreenJoyL.normalizedY, onScreenJoyR.normalizedX, -onScreenJoyR.normalizedY);
+                Tello.controllerState.setAxis(onScreenJoyL.normalizedX, -onScreenJoyL.normalizedY, onScreenJoyR.normalizedX, -onScreenJoyR.normalizedY );
+
             Tello.sendControllerUpdate();
         }
         public float hatAxisX, hatAxisY;
@@ -614,7 +632,10 @@ namespace aTello
             {
                 if (keyCode == Preferences.speedButtonCode)
                 {
-                    Tello.controllerState.setSpeedMode(0);
+                    if(forceSpeedMode)
+                        Tello.controllerState.setSpeedMode(1);
+                    else
+                        Tello.controllerState.setSpeedMode(0);
                     Tello.sendControllerUpdate();
                     return true;
                 }
