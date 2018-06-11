@@ -185,6 +185,9 @@ namespace aTello
             Button convertVideoButton = FindViewById<Button>(Resource.Id.convertVideoButton);
             convertVideoButton.Click += async delegate
             {
+                if (Tello.connected && Tello.state.flying)
+                    return;//Don't allow convert when flying. 
+
                 if (true)
                 {
                     try
@@ -232,6 +235,9 @@ namespace aTello
             Button convertAllVideoButton = FindViewById<Button>(Resource.Id.convertAllVideoButton);
             convertAllVideoButton.Click += async delegate
             {
+                if (Tello.connected && Tello.state.flying)
+                    return;//Don't allow convert when flying. 
+
                 var path = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, "aTello/video/");
                 Java.IO.File f = new Java.IO.File(path);
                 var files = f.ListFiles().ToList();

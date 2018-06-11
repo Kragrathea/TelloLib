@@ -751,6 +751,26 @@ namespace aTello
             input_manager.UnregisterInputDeviceListener(this);
         }
 
+        bool doubleBackToExitPressedOnce = false;
+        public override void OnBackPressed()
+        {
+            if (doubleBackToExitPressedOnce)
+            {
+                base.OnBackPressed();
+                return;
+            }
+
+            this.doubleBackToExitPressedOnce = true;
+            Toast.MakeText(this, "Click BACK again to exit", ToastLength.Short).Show();
+
+            Handler h = new Handler();
+            Action myAction = () =>
+            {
+                doubleBackToExitPressedOnce = false;
+            };
+
+            h.PostDelayed(myAction, 2000);
+        }
 
         public void updateOnScreenJoyVisibility()
         {
