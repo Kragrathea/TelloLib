@@ -993,12 +993,13 @@ namespace TelloLib
                         //Console.WriteLine("SIZE OVERFLOW!!!");
                         break;
                     }
-                    var id = BitConverter.ToUInt16(data, pos + 3);
+                    var crc = data[pos + 3];
+                    var id = BitConverter.ToUInt16(data, pos + 4);
                     var xorBuf = new byte[256];
                     byte xorValue = data[pos + 6];
                     switch (id)
                     {
-                        case 0x1de1://new_mvo
+                        case 0x1d://29 new_mvo
                             for (var i = 0; i < len; i++)//Decrypt payload.
                                 xorBuf[i] = (byte)(data[pos + i] ^ xorValue);
                             var index = 10;//start of the velocity and pos data.
@@ -1011,7 +1012,7 @@ namespace TelloLib
                             posZ = BitConverter.ToSingle(xorBuf, index); index += 4;
                             //Console.WriteLine(observationCount + " " + posX + " " + posY + " " + posZ);
                             break;
-                        case 0x00cf://imu
+                        case 0x0800://2048 imu
                             for (var i = 0; i < len; i++)//Decrypt payload.
                                 xorBuf[i] = (byte)(data[pos + i] ^ xorValue);
                             var index2 = 10 + 44;//44 is the start of the quat data.
