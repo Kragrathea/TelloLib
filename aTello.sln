@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloTello", "HelloTello\He
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFMpeg.Xamarin", "xamarin-android-ffmpeg\FFMpeg.Xamarin\FFMpeg.Xamarin.csproj", "{1049745B-3D4C-4DFF-AD8B-DC46F460B5D4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatConToCsv", "DatConToCsv\DatConToCsv.csproj", "{36BFE91E-3F05-4A45-BF96-F5C00A907CA0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelloLogParser", "TelloLogParser\TelloLogParser.csproj", "{107DB5E3-F4F9-4C28-A16B-0DDEC8CCF801}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +45,14 @@ Global
 		{1049745B-3D4C-4DFF-AD8B-DC46F460B5D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1049745B-3D4C-4DFF-AD8B-DC46F460B5D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1049745B-3D4C-4DFF-AD8B-DC46F460B5D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36BFE91E-3F05-4A45-BF96-F5C00A907CA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36BFE91E-3F05-4A45-BF96-F5C00A907CA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36BFE91E-3F05-4A45-BF96-F5C00A907CA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36BFE91E-3F05-4A45-BF96-F5C00A907CA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{107DB5E3-F4F9-4C28-A16B-0DDEC8CCF801}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{107DB5E3-F4F9-4C28-A16B-0DDEC8CCF801}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{107DB5E3-F4F9-4C28-A16B-0DDEC8CCF801}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{107DB5E3-F4F9-4C28-A16B-0DDEC8CCF801}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
