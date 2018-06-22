@@ -25,7 +25,7 @@ namespace DatConToCsv
 
         static void Main(string[] args)
         {
-            var srcPath = "f:/temp/DatCon-master/DatCon/src/DatConRecs/";
+            var srcPath = "C:/Users/v-chph/Downloads/DatCon-master/DatCon/src/DatConRecs/";
             var fileNames = Directory.GetFiles(srcPath, "*.java", SearchOption.AllDirectories);
 
             var typeLookup = new Dictionary<string, string>
@@ -38,7 +38,8 @@ namespace DatConToCsv
                 { ".getShort(", "short" },
                 { ".getInt(", "int" },
                 { ".getDouble(", "double" },
-                { ".getString(", "string" }
+                { ".getString(", "string" },
+                { ".getCleanString(", "string" }
             };
             var specString = "new RecClassSpec(";
 
@@ -62,13 +63,13 @@ namespace DatConToCsv
                         var parts = l.Substring(ib).Split(new char[] { ',', ')' });
                         if (parts.Length < 3)
                             continue;
-                        var id = parts[1];
-                        var len = parts[2];
+                        var id = parts[1].Trim();
+                        var len = parts[2].Trim();
                         Console.WriteLine("{0},{1},{2}", name, id, len);
                         var cleanName = name.TrimEnd(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '_' });
-
+                        var dirName = Path.GetFileName(Directory.GetParent(fn).ToString());
                         recSpecs[name] = new RecordSpec { name = cleanName, id = id, len = len,
-                            definedIn = Path.GetFileName(Directory.GetParent(fn).ToString())
+                            definedIn = dirName
                             };
                     }
                 }
@@ -97,7 +98,11 @@ namespace DatConToCsv
 
                             var valid = true;
                             int off;
-                            if (!int.TryParse(offStr, out off))
+                            if(typeLookup[key]=="string")
+                            {
+                                off = 0;
+                            }
+                            else if (!int.TryParse(offStr, out off))
                             {
                                 valid = false;
                             }
@@ -115,7 +120,12 @@ namespace DatConToCsv
                             //groupName = groupName.TrimEnd(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '_' });
 
                             var outLine = String.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8}", Path.GetFileName(Directory.GetParent(fn).ToString()), recSpec.name, recSpec.id, recSpec.len, name, off, typeLookup[key], valid, l.Trim());
-                            
+
+                            if (recSpec.id == "65533")
+                            {
+
+                            }
+
                             if (valid)
                             {
                                 var field = new FieldSpec() { name = name, offset = off,type= typeLookup[key] };
@@ -130,10 +140,11 @@ namespace DatConToCsv
 
                 }
             }
-            File.WriteAllLines(srcPath + "parsedRecSpecs.csv", validLines.Concat(invalidLines).ToArray());
+            var destPath = "../../../TelloLib/";
+            File.WriteAllLines(destPath + "parsedRecSpecs.csv", validLines.Concat(invalidLines).ToArray());
 
             string json = JsonConvert.SerializeObject(recSpecs.Values.ToArray(),Formatting.Indented);
-            File.WriteAllText(srcPath + "parsedRecSpecs.json", json);
+            File.WriteAllText(destPath + "parsedRecSpecs.json", json);
 
             //var xx = JsonConvert.DeserializeObject(json);
 

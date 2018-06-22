@@ -38,13 +38,17 @@ namespace TelloLib
         static Dictionary<string, FieldSpec> fieldSpecLookup = new Dictionary<string, FieldSpec>();
         static TelloLog()
         {
-            var srcPath = "f:/temp/DatCon-master/DatCon/src/DatConRecs/";
+            var srcPath = "./";
             var json = System.IO.File.ReadAllText(srcPath + "parsedRecSpecs.json");
             recordSpecs = (RecordSpec[])Newtonsoft.Json.JsonConvert.DeserializeObject(json,typeof(RecordSpec[]));
             foreach(var r in recordSpecs)
             {
                 recordSpecLookup[/*r.len + "_" +*/ r.id.ToString()]=r;
-                foreach(var f in r.fields)
+                if (r.id == 65533)
+                {
+
+                }
+                foreach (var f in r.fields)
                     fieldSpecLookup[r.name + "." + f.name] = f;
 
             }
@@ -56,7 +60,7 @@ namespace TelloLib
 
             int pos = 0;
             //A packet can contain more than one record.
-            while (pos < data.Length - 200)//-2 for CRC bytes at end of packet.
+            while (pos < data.Length - 2)//-2 for CRC bytes at end of packet.
             {
                 if (data[pos] != 'U')//Check magic byte
                 {
@@ -78,17 +82,34 @@ namespace TelloLib
                 var xorBuf = new byte[256];
                 byte xorValue = data[pos + 6];
 
+
                 var recSpecId = /*len + "_" +*/ id.ToString();
-                Console.WriteLine(recSpecId);
+                //Console.WriteLine(recSpecId);
                 if (recordSpecLookup.Keys.Contains(recSpecId))
                 {
                     for (var i = 0; i < len; i++)//Decrypt payload.
                         xorBuf[i] = (byte)(data[pos + i] ^ xorValue);
                     int baseOffset = 10;
                     var record = recordSpecLookup[recSpecId];
+
+                    var newRecord = new RecordSpec()
+                    {
+                        name = record.name,
+                        id = record.id,
+                        definedIn = record.definedIn,
+                        len = record.len,
+                        fields = new List<FieldSpec>()
+                    };
+
                     var fields = record.fields;
                     foreach (var field in fields)
                     {
+                        var newField = new FieldSpec()
+                        {
+                            name = field.name,
+                            type = field.type,
+                            offset = field.offset,
+                        };
                         switch (field.type)
                         {
                             case "byte":
@@ -112,11 +133,16 @@ namespace TelloLib
                             case "double":
                                 field.value = BitConverter.ToDouble(xorBuf, baseOffset + field.offset);
                                 break;
+                            case "string":
+                                field.value = System.Text.Encoding.Default.GetString(xorBuf, baseOffset + field.offset,len-15);
+                                break;
                         }
+                        newField.value = field.value;
+                        newRecord.fields.Add(newField);
                     }
-                    Console.WriteLine(record.ToString());
+                    //Console.WriteLine(record.ToString());
 
-                    records.Add(record);
+                    records.Add(newRecord);
                 }
                 else
                 {
