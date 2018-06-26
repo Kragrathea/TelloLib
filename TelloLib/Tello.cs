@@ -1022,7 +1022,7 @@ namespace TelloLib
                             quatZ = BitConverter.ToSingle(xorBuf, index2); index2 += 4;
                             //Console.WriteLine("qx:" + qX + " qy:" + qY+ "qz:" + qZ);
 
-                            //var eular = toEuler(qX, qY, qZ, qW);
+                            //var eular = toEuler(quatX, quatY, quatZ, quatW);
                             //Console.WriteLine(" Pitch:"+eular[0] * (180 / 3.141592) + " Roll:" + eular[1] * (180 / 3.141592) + " Yaw:" + eular[2] * (180 / 3.141592));
 
                             index2 = 10 + 76;//Start of relative velocity
@@ -1037,7 +1037,49 @@ namespace TelloLib
                     pos += len;
                 }
             }
+            public double[] toEuler()
+            {
+                float qX = quatX;
+                float qY = quatY;
+                float qZ = quatZ;
+                float qW = quatW;
 
+                double sqW = qW * qW;
+                double sqX = qX * qX;
+                double sqY = qY * qY;
+                double sqZ = qZ * qZ;
+                double yaw = 0.0;
+                double roll = 0.0;
+                double pitch = 0.0;
+                double[] retv = new double[3];
+                double unit = sqX + sqY + sqZ + sqW; // if normalised is one, otherwise
+                                                     // is correction factor
+                double test = qW * qX + qY * qZ;
+                if (test > 0.499 * unit)
+                { // singularity at north pole
+                    yaw = 2 * Math.Atan2(qY, qW);
+                    pitch = Math.PI / 2;
+                    roll = 0;
+                }
+                else if (test < -0.499 * unit)
+                { // singularity at south pole
+                    yaw = -2 * Math.Atan2(qY, qW);
+                    pitch = -Math.PI / 2;
+                    roll = 0;
+                }
+                else
+                {
+                    yaw = Math.Atan2(2.0 * (qW * qZ - qX * qY),
+                            1.0 - 2.0 * (sqZ + sqX));
+                    roll = Math.Asin(2.0 * test / unit);
+                    pitch = Math.Atan2(2.0 * (qW * qY - qX * qZ),
+                            1.0 - 2.0 * (sqY + sqX));
+                }
+                retv[0] = pitch;
+                retv[1] = roll;
+                retv[2] = yaw;
+                return retv;
+            }
 
             //For saving out state info.
             public string getLogHeader()

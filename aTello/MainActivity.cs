@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using Plugin.FilePicker.Abstractions;
 using Plugin.FilePicker;
+using System.Drawing;
 
 namespace aTello
 {
@@ -235,6 +236,9 @@ namespace aTello
                     }
                 });
 
+                //Do autopilot input.
+                handleAutopilot();
+
             };
 
 
@@ -428,6 +432,56 @@ namespace aTello
             //Init joysticks.
             input_manager = (InputManager)GetSystemService(Context.InputService);
             CheckGameControllers();
+        }
+
+        private bool bAutopilot=false;
+        private Point autopilotTarget;
+
+        public void setAutopilotTarget(Point target)
+        {
+            if (Tello.state.flying)
+            {
+                autopilotTarget = target;
+                bAutopilot = true;
+            }
+        }
+        private void handleAutopilot()
+        {
+            if(bAutopilot && Tello.state.flying)
+            {
+                var eular = Tello.state.toEuler();
+                var yaw = eular[2];
+
+                var deltaPosX = autopilotTarget.X - Tello.state.posX;
+                var deltaPosY = autopilotTarget.Y - Tello.state.posY;
+                var dist = Math.Sqrt(deltaPosX * deltaPosX + deltaPosY * deltaPosY);
+                var normalizedX = deltaPosX / dist;
+                var normalizedY = deltaPosY / dist;
+
+                var targetYaw = Math.Atan2(normalizedX, normalizedY);
+                var deltaYaw = targetYaw - yaw;
+
+                double lx=0, ly = 0, rx = 0, ry = 0;
+
+                var yawEpsilon = 2;
+                var minDist = 0.25;
+                if (deltaYaw > yawEpsilon)
+                {
+                    lx = Math.Max(1.0, deltaYaw / 10.0);
+                } else if (deltaYaw < -yawEpsilon)
+                {
+                    lx = -Math.Max(1.0, deltaYaw / 10.0);
+                } else if (dist > minDist)
+                {
+                    ry = -Math.Max(0.5, dist / 10.0);
+                }
+                else
+                {
+                    bAutopilot = false;//arrived
+                }
+
+                Tello.controllerState.setAxis((float)lx, (float)ly, (float)rx, (float)ry);
+            }
         }
         private void updateVideoSize()
         {
