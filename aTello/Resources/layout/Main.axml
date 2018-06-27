@@ -11,6 +11,11 @@
         android:layout_height="fill_parent"
         android:layout_centerInParent="true"
         android:layout_width="fill_parent" />
+    <TextureView
+        android:id="@+id/textureView"
+        android:layout_width="320dp"
+        android:layout_height="200dp"
+        android:visibility="gone" />
     <aTello.JoystickView
         android:id="@+id/joystickViewL"
         android:layout_width="220dp"
@@ -174,8 +179,7 @@
             android:tint="#620078c8"
             android:alpha="0.5"
             android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:visibility="gone" />
+            android:layout_height="match_parent" />
         <RadioButton
             android:text="Rec:00:00:00"
             android:id="@+id/recLightButton"

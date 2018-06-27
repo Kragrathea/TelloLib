@@ -52,7 +52,22 @@ namespace aTello
         private bool doStateLogging = false;
 
         public bool isPaused = false;
-        
+
+
+        TextureView.ISurfaceTextureListener mSurfaceTextureListener;
+
+        public override View OnCreateView(String name, Context context, Android.Util.IAttributeSet attrs)
+        {
+            var result = base.OnCreateView(name,context,attrs);
+            //var textureView = result.FindViewById<TextureView>(Resource.Id.textureView);
+            //var st = new Surface(textureView.SurfaceTexture);
+            //textureView.SurfaceTextureListener = mSurfaceTextureListener;
+            //Video.Decoder.surface = st;
+
+            return result;
+        }
+
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -264,6 +279,16 @@ namespace aTello
             updateVideoSize();
             Video.Decoder.surface = FindViewById<SurfaceView>(Resource.Id.surfaceView).Holder.Surface;
 
+/*
+            var textureView = FindViewById<TextureView>(Resource.Id.textureView);
+            mSurfaceTextureListener = new SurfaceTextureListener(this);
+            textureView.SurfaceTextureListener = mSurfaceTextureListener;
+
+            //var st = new Surface(textureView.SurfaceTexture);
+            //Video.Decoder.surface = st;
+
+*/
+
             var path = "aTello/video/";
             System.IO.Directory.CreateDirectory(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path+"cache/"));
             videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path +"cache/"+ DateTime.Now.ToString("MMMM dd yyyy HH-mm-ss") + ".h264");
@@ -374,6 +399,9 @@ namespace aTello
             };
             rthButton.Click += delegate {
                 bAutopilot = false;
+                Tello.controllerState.setAxis(0,0,0,0);
+                Tello.sendControllerUpdate();
+
             };
 
             takeoffButton.LongClick += delegate {
@@ -481,27 +509,29 @@ namespace aTello
 
                 var targetYaw = Math.Atan2(normalizedX, normalizedY);
                 var deltaYaw = targetYaw - yaw;
-
+                Console.WriteLine("yaw {0} ty {1} dy {2}", yaw, targetYaw, deltaYaw);
                 double lx=0, ly = 0, rx = 0, ry = 0;
 
-                var yawEpsilon = 2;
+                var yawEpsilon = 0.8;
                 var minDist = 0.25;
                 if (deltaYaw > yawEpsilon)
                 {
-                    lx = Math.Max(1.0, deltaYaw / 10.0);
+                    lx = Math.Max(0.5, deltaYaw / 10.0);
                 } else if (deltaYaw < -yawEpsilon)
                 {
-                    lx = -Math.Max(1.0, deltaYaw / 10.0);
-                } else if (dist > minDist)
-                {
-//                    ry = -Math.Max(0.5, dist / 10.0);
+                    lx = -Math.Max(0.5, deltaYaw / 10.0);
                 }
+                //else if (dist > minDist)
+                //{
+//                    ry = -Math.Max(0.5, dist / 10.0);
+                //}
                 else
                 {
                     bAutopilot = false;//arrived
                 }
 
                 Tello.controllerState.setAxis((float)lx, (float)ly, (float)rx, (float)ry);
+                Tello.sendControllerUpdate();
             }
         }
         private void updateVideoSize()
