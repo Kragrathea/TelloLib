@@ -104,12 +104,6 @@ namespace TelloLib
                     var fields = record.fields;
                     foreach (var field in fields)
                     {
-                        var newField = new FieldSpec()
-                        {
-                            name = field.name,
-                            type = field.type,
-                            offset = field.offset,
-                        };
                         switch (field.type)
                         {
                             case "byte":
@@ -137,6 +131,12 @@ namespace TelloLib
                                 field.value = System.Text.Encoding.Default.GetString(xorBuf, baseOffset + field.offset,len-15);
                                 break;
                         }
+                        var newField = new FieldSpec()
+                        {
+                            name = field.name,
+                            type = field.type,
+                            offset = field.offset,
+                        };
                         newField.value = field.value;
                         newRecord.fields.Add(newField);
                     }

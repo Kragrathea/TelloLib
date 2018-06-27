@@ -11,7 +11,6 @@ namespace TelloLib
     public class Tello
     {
         private static UdpUser client;
-//        private static float[] joyAxis = new float[] { 0, 0, 0, 0, 0 };
         private static DateTime lastMessageTime;//for connection timeouts.
 
         public static FlyData state = new FlyData();
@@ -37,7 +36,9 @@ namespace TelloLib
         {
             Disconnected,
             Connecting,
-            Connected
+            Connected,
+            Paused,//used to keep from disconnecting when starved for input.
+            UnPausing//Transition. Never stays in this state. 
         }
         public static ConnectionState connectionState = ConnectionState.Disconnected;
 
@@ -417,6 +418,25 @@ namespace TelloLib
             client.Send(connectPacket);
         }
 
+        //Pause connections. Used by aTello when app paused.
+        public static void connectionSetPause(bool bPause)
+        {
+            //NOTE only pause if connected and only unpause (connect) when paused.
+            if (bPause && connectionState == ConnectionState.Connected)
+            {
+                connectionState = ConnectionState.Paused;
+                //send event
+                onConnection(connectionState);
+            }
+            else if (bPause ==false && connectionState == ConnectionState.Paused)
+            {
+                //NOTE:send unpause and not connection event
+                onConnection(ConnectionState.UnPausing);
+
+                connectionState = ConnectionState.Connected;
+            }
+        }
+
         private static byte[] picbuffer=new byte[3000*1024];
         private static bool[] picChunkState;
         private static bool[] picPieceState;
@@ -704,19 +724,36 @@ namespace TelloLib
                     {
                         if (token.IsCancellationRequested)
                             break;
-                        sendControllerUpdate();
 
-                        tick++;
-                        if ((tick % iFrameRate) == 0)
-                            requestIframe();
+                        if (connectionState == ConnectionState.Connected)//only send if not paused
+                        {
+                            sendControllerUpdate();
 
+                            tick++;
+                            if ((tick % iFrameRate) == 0)
+                                requestIframe();
+                        }
                         Thread.Sleep(50);//Often enough?
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine("Heatbeat error:" + ex.Message);
-                        disconnect();
-                        break;
+                        if (ex.Message.StartsWith("Access denied") //Denied means app paused
+                            && connectionState != ConnectionState.Paused)
+                        {
+                            //Can this happen?
+                            Console.WriteLine("Heatbeat: access denied and not paused:" + ex.Message);
+
+                            disconnect();
+                            break;
+                        }
+
+
+                        if (!ex.Message.StartsWith("Access denied"))//Denied means app paused
+                        {
+                            disconnect();
+                            break;
+                        }
                     }
                 }
             }, token);
@@ -744,11 +781,14 @@ namespace TelloLib
                             case ConnectionState.Connecting:
                             case ConnectionState.Connected:
                                 var elapsed = DateTime.Now - lastMessageTime;
-                                if (elapsed.Seconds > 1)
+                                if (elapsed.Seconds > 1)//1 second timeout.
                                 {
                                     Console.WriteLine("Connection timeout :");
                                     disconnect();
                                 }
+                                break;
+                            case ConnectionState.Paused:
+                                lastMessageTime = DateTime.Now;//reset timeout so we have time to recover if enabled. 
                                 break;
                         }
                         Thread.Sleep(500);

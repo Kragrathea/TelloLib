@@ -165,6 +165,17 @@
         android:layout_below="@id/connectButton"
         android:layout_marginTop="20dp"
         android:layout_marginRight="10dp">
+        <ImageButton
+            android:src="@drawable/takeoff_white2"
+            android:id="@+id/rthButton"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:background="@android:drawable/screen_background_light_transparent"
+            android:tint="#620078c8"
+            android:alpha="0.5"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
         <RadioButton
             android:text="Rec:00:00:00"
             android:id="@+id/recLightButton"

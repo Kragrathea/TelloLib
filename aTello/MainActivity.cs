@@ -39,6 +39,7 @@ namespace aTello
 
         ImageButton takeoffButton;
         ImageButton throwTakeoffButton;
+        ImageButton rthButton;
         string videoFilePath;//file to save raw h264 to. 
         private long totalVideoBytesReceived = 0;//used to calc video bit rate display.
 
@@ -81,7 +82,9 @@ namespace aTello
 
             takeoffButton = FindViewById<ImageButton>(Resource.Id.takeoffButton);
             throwTakeoffButton = FindViewById<ImageButton>(Resource.Id.throwTakeoffButton);
-           
+
+            rthButton = FindViewById<ImageButton>(Resource.Id.rthButton);
+
             //subscribe to Tello connection events
             Tello.onConnection += (Tello.ConnectionState newState) =>
             {
@@ -89,7 +92,8 @@ namespace aTello
                 Button cbutton = FindViewById<Button>(Resource.Id.connectButton);
 
                 //If not connected check to see if connected to tello network.
-                if (newState != Tello.ConnectionState.Connected)
+                if (newState != Tello.ConnectionState.Connected 
+                    && newState != Tello.ConnectionState.Paused)
                 {
                     WifiManager wifiManager = (WifiManager)Application.Context.GetSystemService(Context.WifiService);
                     string ip = Formatter.FormatIpAddress(wifiManager.ConnectionInfo.IpAddress);
@@ -103,6 +107,12 @@ namespace aTello
                         });
                         return;
                     }
+                }
+                if (newState == Tello.ConnectionState.Paused)
+                {
+                }
+                if (newState == Tello.ConnectionState.UnPausing)
+                {
                 }
                 if (newState == Tello.ConnectionState.Connected)
                 {
@@ -141,8 +151,13 @@ namespace aTello
                 }
                 //update connection state button.
                 RunOnUiThread(() => {
-                    cbutton.Text = newState.ToString();
-                    if (newState == Tello.ConnectionState.Connected)
+
+                    if (newState == Tello.ConnectionState.UnPausing)//Fix. Don't show "unpausing" string.
+                        cbutton.Text = Tello.ConnectionState.Connected.ToString();
+                    else
+                        cbutton.Text = newState.ToString();
+
+                    if (newState == Tello.ConnectionState.Connected || newState == Tello.ConnectionState.UnPausing)
                         cbutton.SetBackgroundColor(Android.Graphics.Color.ParseColor("#6090ee90"));//transparent light green.
                     else
                         cbutton.SetBackgroundColor(Android.Graphics.Color.ParseColor("#ffff00"));//yellow
@@ -354,7 +369,13 @@ namespace aTello
 
             };
 
-            
+            rthButton.LongClick += delegate {
+                setAutopilotTarget(new Point(0, 0));
+            };
+            rthButton.Click += delegate {
+                bAutopilot = false;
+            };
+
             takeoffButton.LongClick += delegate {
                 if (Tello.connected && !Tello.state.flying)
                 {
@@ -473,7 +494,7 @@ namespace aTello
                     lx = -Math.Max(1.0, deltaYaw / 10.0);
                 } else if (dist > minDist)
                 {
-                    ry = -Math.Max(0.5, dist / 10.0);
+//                    ry = -Math.Max(0.5, dist / 10.0);
                 }
                 else
                 {
@@ -788,6 +809,7 @@ namespace aTello
             onScreenJoyL.returnHandleToCenter();
             onScreenJoyR.returnHandleToCenter();
 
+            Tello.connectionSetPause(false);//reanable connections if paused. 
         }
 
         protected override void OnPause()
@@ -801,6 +823,9 @@ namespace aTello
             Tello.sendControllerUpdate();
 
             isPaused = true;
+
+            Tello.connectionSetPause(true);//pause connections (if connected). 
+          
             base.OnPause();
             input_manager.UnregisterInputDeviceListener(this);
         }
