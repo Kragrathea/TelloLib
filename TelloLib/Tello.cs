@@ -1055,7 +1055,7 @@ namespace TelloLib
                         case 0x0800://2048 imu
                             for (var i = 0; i < len; i++)//Decrypt payload.
                                 xorBuf[i] = (byte)(data[pos + i] ^ xorValue);
-                            var index2 = 10 + 44;//44 is the start of the quat data.
+                            var index2 = 10 + 48;//44 is the start of the quat data.
                             quatW = BitConverter.ToSingle(xorBuf, index2); index2 += 4;
                             quatX = BitConverter.ToSingle(xorBuf, index2); index2 += 4;
                             quatY = BitConverter.ToSingle(xorBuf, index2); index2 += 4;

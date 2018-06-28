@@ -236,6 +236,34 @@ namespace aTello
                         batTextView.Text = "Bat:" + Tello.state.batteryPercentage;
                         wifiTextView.Text = "Wifi:" + Tello.state.wifiStrength;
 
+                        //Autopilot debugging.
+                        if (/*!bAutopilot &&*/ Tello.state.flying)
+                        {
+                            RunOnUiThread(() =>
+                            {
+                                var eular = Tello.state.toEuler();
+                                var yaw = eular[2];
+
+                                var deltaPosX = autopilotTarget.X - Tello.state.posX;
+                                var deltaPosY = autopilotTarget.Y - Tello.state.posY;
+                                var dist = Math.Sqrt(deltaPosX * deltaPosX + deltaPosY * deltaPosY);
+                                var normalizedX = deltaPosX / dist;
+                                var normalizedY = deltaPosY / dist;
+
+                                var targetYaw = Math.Atan2(normalizedY, normalizedX);
+                                var deltaYaw = targetYaw - yaw;
+
+                                var str = string.Format("x {0:0.00; -0.00} y {1:0.00; -0.00} yaw {2:0.00; -0.00} targetYaw {3:0.00; -0.00} targetDist {4:0.00; -0.00} ",
+                                    Tello.state.posX, Tello.state.posY,
+                                    (((yaw * (180.0 / Math.PI)) + 360.0) % 360.0),
+                                    (((targetYaw * (180.0 / Math.PI)) + 360.0) % 360.0), dist);
+                                TextView joystat = FindViewById<TextView>(Resource.Id.joystick_state);
+                                joystat.Text = str;
+                            });
+                        }
+
+
+
                         //acstat.Text = str;
                         if (Tello.state.flying)
                             takeoffButton.SetImageResource(Resource.Drawable.land);
@@ -395,13 +423,15 @@ namespace aTello
             };
 
             rthButton.LongClick += delegate {
-                setAutopilotTarget(new Point(0, 0));
+                bAutopilot = !bAutopilot;//Toggle autopilot
             };
             rthButton.Click += delegate {
-                bAutopilot = false;
-                Tello.controllerState.setAxis(0,0,0,0);
+                bAutopilot = false;//Stop if going.
+                Tello.controllerState.setAxis(0, 0, 0, 0);
                 Tello.sendControllerUpdate();
 
+                //set new home point
+                setAutopilotTarget(new PointF(Tello.state.posX, Tello.state.posY));
             };
 
             takeoffButton.LongClick += delegate {
@@ -484,19 +514,18 @@ namespace aTello
         }
 
         private bool bAutopilot=false;
-        private Point autopilotTarget;
+        private PointF autopilotTarget=new PointF(0,0);
 
-        public void setAutopilotTarget(Point target)
+        public void setAutopilotTarget(PointF target)
         {
             if (Tello.state.flying)
             {
                 autopilotTarget = target;
-                bAutopilot = true;
             }
         }
         private void handleAutopilot()
         {
-            if(bAutopilot && Tello.state.flying)
+            if (bAutopilot && Tello.state.flying)
             {
                 var eular = Tello.state.toEuler();
                 var yaw = eular[2];
@@ -507,24 +536,31 @@ namespace aTello
                 var normalizedX = deltaPosX / dist;
                 var normalizedY = deltaPosY / dist;
 
-                var targetYaw = Math.Atan2(normalizedX, normalizedY);
+                var targetYaw = Math.Atan2(normalizedY, normalizedX);
                 var deltaYaw = targetYaw - yaw;
-                Console.WriteLine("yaw {0} ty {1} dy {2}", yaw, targetYaw, deltaYaw);
-                double lx=0, ly = 0, rx = 0, ry = 0;
 
-                var yawEpsilon = 0.8;
-                var minDist = 0.25;
-                if (deltaYaw > yawEpsilon)
+                double lx =0, ly = 0, rx = 0, ry = 0;
+
+                var minYaw = 0.1;//Radians
+                var minDist = 0.05;//Meters (I think)
+                if (deltaYaw > minYaw)
                 {
-                    lx = Math.Max(0.5, deltaYaw / 10.0);
-                } else if (deltaYaw < -yawEpsilon)
+//                    lx = Math.Max(0.7, deltaYaw / 10.0); 
+                } else if (deltaYaw < -minYaw)
                 {
-                    lx = -Math.Max(0.5, deltaYaw / 10.0);
+//                    lx = -Math.Max(0.7, deltaYaw / 10.0);
                 }
-                //else if (dist > minDist)
-                //{
-//                    ry = -Math.Max(0.5, dist / 10.0);
-                //}
+                //else 
+                if (dist > minDist)
+                {
+                    //nx = x * cos(radians) - y * sin(radians); 
+                    //ny = x * sin(radians) + y * cos(radians);
+                    var speed = Math.Max(0.1, dist / 3.0);//0.5 limits max throttle for safety.
+                    rx = speed * Math.Sin(deltaYaw);
+                    ry = speed * Math.Cos(deltaYaw);
+
+                    //ry = Math.Max(0.5, dist / 15.0);//0.5 limits max throttle for safety.
+                }
                 else
                 {
                     bAutopilot = false;//arrived
