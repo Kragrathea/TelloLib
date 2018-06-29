@@ -253,10 +253,12 @@ namespace aTello
                                 var targetYaw = Math.Atan2(normalizedY, normalizedX);
                                 var deltaYaw = targetYaw - yaw;
 
-                                var str = string.Format("x {0:0.00; -0.00} y {1:0.00; -0.00} yaw {2:0.00; -0.00} targetYaw {3:0.00; -0.00} targetDist {4:0.00; -0.00} ",
-                                    Tello.state.posX, Tello.state.posY,
-                                    (((yaw * (180.0 / Math.PI)) + 360.0) % 360.0),
-                                    (((targetYaw * (180.0 / Math.PI)) + 360.0) % 360.0), dist);
+                                var str = string.Format("x {0:0.00; -0.00} y {1:0.00; -0.00} yaw {2:0.00; -0.00} targetYaw {3:0.00; -0.00} targetDist {4:0.00; -0.00} On:{5}",
+                                        Tello.state.posX, Tello.state.posY,
+                                        (((yaw * (180.0 / Math.PI)) + 360.0) % 360.0),
+                                        (((targetYaw * (180.0 / Math.PI)) + 360.0) % 360.0), dist,
+                                        bAutopilot.ToString());
+
                                 TextView joystat = FindViewById<TextView>(Resource.Id.joystick_state);
                                 joystat.Text = str;
                             });
@@ -515,6 +517,7 @@ namespace aTello
 
         private bool bAutopilot=false;
         private PointF autopilotTarget=new PointF(0,0);
+        //private PointF autopilotLookTarget = null;
 
         public void setAutopilotTarget(PointF target)
         {
@@ -542,24 +545,20 @@ namespace aTello
                 double lx =0, ly = 0, rx = 0, ry = 0;
 
                 var minYaw = 0.1;//Radians
-                var minDist = 0.05;//Meters (I think)
+                var minDist = 0.125;//Meters (I think)
                 if (deltaYaw > minYaw)
                 {
-//                    lx = Math.Max(0.7, deltaYaw / 10.0); 
+                    lx = Math.Max(0.7, deltaYaw / 10.0); 
                 } else if (deltaYaw < -minYaw)
                 {
-//                    lx = -Math.Max(0.7, deltaYaw / 10.0);
+                    lx = -Math.Max(0.7, deltaYaw / 10.0);
                 }
                 //else 
                 if (dist > minDist)
                 {
-                    //nx = x * cos(radians) - y * sin(radians); 
-                    //ny = x * sin(radians) + y * cos(radians);
-                    var speed = Math.Max(0.1, dist / 3.0);//0.5 limits max throttle for safety.
+                    var speed = Math.Min(0.2, dist / 3.0);//0.5 limits max throttle for safety.
                     rx = speed * Math.Sin(deltaYaw);
                     ry = speed * Math.Cos(deltaYaw);
-
-                    //ry = Math.Max(0.5, dist / 15.0);//0.5 limits max throttle for safety.
                 }
                 else
                 {
