@@ -548,15 +548,15 @@ namespace aTello
                 var minDist = 0.125;//Meters (I think)
                 if (deltaYaw > minYaw)
                 {
-                    lx = Math.Max(0.7, deltaYaw / 10.0); 
+                    //lx = Math.Max(0.7, deltaYaw / 10.0); 
                 } else if (deltaYaw < -minYaw)
                 {
-                    lx = -Math.Max(0.7, deltaYaw / 10.0);
+                    //lx = -Math.Max(0.7, deltaYaw / 10.0);
                 }
                 //else 
                 if (dist > minDist)
                 {
-                    var speed = Math.Min(0.2, dist / 3.0);//0.5 limits max throttle for safety.
+                    var speed = Math.Min(0.3, dist*2);//0.2 limits max throttle for safety.
                     rx = speed * Math.Sin(deltaYaw);
                     ry = speed * Math.Cos(deltaYaw);
                 }

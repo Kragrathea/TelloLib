@@ -501,7 +501,13 @@ namespace TelloLib
                         }
                         if (cmdId == 4177)//log data
                         {
-                            state.parseLog(received.bytes.Skip(10).ToArray());
+                            try
+                            {
+                                state.parseLog(received.bytes.Skip(10).ToArray());
+                            }catch (Exception pex)
+                            {
+                                Console.WriteLine("parseLog error:" + pex.Message);
+                            }
                         }
                         if (cmdId == 4178)//log config
                         {
@@ -658,9 +664,9 @@ namespace TelloLib
 
                     }
 
-                    catch (Exception ex)
+                    catch (Exception eex)
                     {
-                        Console.WriteLine("Receive thread error:" + ex.Message);
+                        Console.WriteLine("Receive thread error:" + eex.Message);
                         disconnect();
                         break;
                     }
