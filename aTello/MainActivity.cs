@@ -142,8 +142,8 @@ namespace aTello
 
                     Tello.setJpgQuality(Preferences.jpgQuality);
 
-                    CrossTextToSpeech.Current.Speak("Connected");
-                    
+                    notifyUser("Connected");
+
                     Tello.setPicVidMode(picMode);//0=picture(960x720)
                     //updateVideoSize();
 
@@ -162,7 +162,7 @@ namespace aTello
                 {
                     //if was connected then warn.
                     if(Tello.connectionState== Tello.ConnectionState.Connected)
-                        CrossTextToSpeech.Current.Speak("Disconnected");
+                        notifyUser("Disconnected");
                 }
                 //update connection state button.
                 RunOnUiThread(() => {
@@ -253,11 +253,13 @@ namespace aTello
                                 var targetYaw = Math.Atan2(normalizedY, normalizedX);
                                 var deltaYaw = targetYaw - yaw;
 
-                                var str = string.Format("x {0:0.00; -0.00} y {1:0.00; -0.00} yaw {2:0.00; -0.00}",// targetYaw {3:0.00; -0.00} targetDist {4:0.00; -0.00} On:{5}",
+                                var str = string.Format("x {0:0.00; -0.00} y {1:0.00; -0.00} yaw {2:0.00; -0.00} Unc:{3:0.00; -0.00} tDist {4:0.00; -0.00} On:{5}",// targetYaw {3:0.00; -0.00} ",
                                         Tello.state.posX, Tello.state.posY,
-                                        (((yaw * (180.0 / Math.PI)) + 360.0) % 360.0)
-                                        //,(((targetYaw * (180.0 / Math.PI)) + 360.0) % 360.0), dist,
-                                        //bAutopilot.ToString()
+                                        (((yaw * (180.0 / Math.PI)) + 360.0) % 360.0),
+                                        Tello.state.posUncertainty
+                                        //,(((targetYaw * (180.0 / Math.PI)) + 360.0) % 360.0), 
+                                        ,dist,
+                                        bAutopilot.ToString()
                                         );
 
                                 TextView joystat = FindViewById<TextView>(Resource.Id.joystick_state);
@@ -354,14 +356,14 @@ namespace aTello
                                 {
                                     videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + DateTime.Now.ToString("MMMM dd yyyy HH-mm-ss") + ".h264");
                                     startRecordingTime = DateTime.Now;
-//                                    Tello.setVideoRecord(vidCount++);
-                                    CrossTextToSpeech.Current.Speak("Recording");
+                                    //                                    Tello.setVideoRecord(vidCount++);
+                                    notifyUser("Recording");
                                     updateUI();
                                 }
                                 else
                                 {
                                     videoFilePath = Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path + "cache/" + DateTime.Now.ToString("MMMM dd yyyy HH-mm-ss") + ".h264");
-                                    CrossTextToSpeech.Current.Speak("Recording stopped");
+                                    notifyUser("Recording stopped");
                                     updateUI();
                                 }
                             }
@@ -426,15 +428,21 @@ namespace aTello
             };
 
             rthButton.LongClick += delegate {
-                bAutopilot = !bAutopilot;//Toggle autopilot
+                if (bAutopilot)
+                    cancelAutopilot();
+                else if(bHomepointSet)
+                {
+                    bAutopilot = true;
+                    notifyUser("Autopilot engaged");
+                }
             };
             rthButton.Click += delegate {
-                bAutopilot = false;//Stop if going.
+                cancelAutopilot();//Stop if going.
                 Tello.controllerState.setAxis(0, 0, 0, 0);
                 Tello.sendControllerUpdate();
 
-                //set new home point
-                setAutopilotTarget(new PointF(Tello.state.posX, Tello.state.posY));
+                //force set of new home point. 
+                bHomepointSet = false;
             };
 
             takeoffButton.LongClick += delegate {
@@ -516,9 +524,19 @@ namespace aTello
             CheckGameControllers();
         }
 
+        public void notifyUser(string message)
+        {
+            CrossTextToSpeech.Current.Speak(message);
+            RunOnUiThread(async () =>
+            {
+                Toast.MakeText(Application.Context, message, ToastLength.Long).Show();
+            });
+        }
+
         private bool bAutopilot=false;
         private PointF autopilotTarget=new PointF(0,0);
         //private PointF autopilotLookTarget = null;
+        private bool bHomepointSet = false;
 
         public void setAutopilotTarget(PointF target)
         {
@@ -527,9 +545,33 @@ namespace aTello
                 autopilotTarget = target;
             }
         }
+        public void cancelAutopilot()
+        {
+            if(bAutopilot)
+                notifyUser("Autopilot disengaged");
+            bAutopilot = false;
+
+        }
         private void handleAutopilot()
         {
-            if (bAutopilot && Tello.state.flying)
+            if(!Tello.state.flying)
+            {
+                bHomepointSet = false;
+                return;
+            }
+
+            if (!bHomepointSet)
+            {
+                if(Tello.state.posUncertainty>0.03)
+                {
+                    //set new home point
+                    setAutopilotTarget(new PointF(Tello.state.posX, Tello.state.posY));
+                    notifyUser("Homepoint set");
+                    bHomepointSet = true;
+                }
+            }
+
+            if (bAutopilot && bHomepointSet)
             {
                 var eular = Tello.state.toEuler();
                 var yaw = eular[2];
@@ -563,7 +605,7 @@ namespace aTello
                 }
                 else
                 {
-                    bAutopilot = false;//arrived
+                    cancelAutopilot();//arrived
                 }
 
                 Tello.controllerState.setAxis((float)lx, (float)ly, (float)rx, (float)ry);
@@ -682,11 +724,16 @@ namespace aTello
 
         public void OnTouchJoystickMoved(JoystickView joystickView )
         {
-            if(isPaused)//Zero out any movement when paused.
+            //Right stick movement cancels autopilot.
+            if (bAutopilot && (Math.Abs(onScreenJoyR.normalizedX) > 0.1 || Math.Abs(onScreenJoyR.normalizedY) > 0.1))
+                cancelAutopilot();
+
+            if (isPaused)//Zero out any movement when paused.
                 Tello.controllerState.setAxis(0, 0, 0, 0);
             else
-                Tello.controllerState.setAxis(onScreenJoyL.normalizedX, -onScreenJoyL.normalizedY, onScreenJoyR.normalizedX, -onScreenJoyR.normalizedY );
-
+            {
+                Tello.controllerState.setAxis(onScreenJoyL.normalizedX, -onScreenJoyL.normalizedY, onScreenJoyR.normalizedX, -onScreenJoyR.normalizedY);
+            }
             Tello.sendControllerUpdate();
         }
         public float hatAxisX, hatAxisY;
@@ -705,6 +752,10 @@ namespace aTello
                     var ly = -GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(Preferences.lyAxis));//-axes[1];
                     var rx = GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(Preferences.rxAxis));// axes[2];
                     var ry = -GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(Preferences.ryAxis));//-axes[3];
+
+                    //Right stick movement cancels autopilot.
+                    if (bAutopilot && (Math.Abs(rx) > 0.1 || Math.Abs(ry) > 0.1))
+                        cancelAutopilot();
 
                     if (isPaused)//Zero out any movement when paused.
                         Tello.controllerState.setAxis(0, 0, 0, 0);
@@ -887,6 +938,8 @@ namespace aTello
             //Zero out Joy input so we don't keep flying.
             Tello.controllerState.setAxis(0, 0, 0, 0);
             Tello.sendControllerUpdate();
+
+            cancelAutopilot();
 
             isPaused = true;
 

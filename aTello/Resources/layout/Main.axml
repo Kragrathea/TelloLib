@@ -179,8 +179,7 @@
             android:tint="#620078c8"
             android:alpha="0.5"
             android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:visibility="gone" />
+            android:layout_height="match_parent" />
         <RadioButton
             android:text="Rec:00:00:00"
             android:id="@+id/recLightButton"

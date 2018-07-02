@@ -957,6 +957,7 @@ namespace TelloLib
             public float posX;
             public float posY;
             public float posZ;
+            public float posUncertainty;
 
             public float velN;
             public float velE;
@@ -1056,6 +1057,7 @@ namespace TelloLib
                             posX = BitConverter.ToSingle(xorBuf, index); index += 4;
                             posY = BitConverter.ToSingle(xorBuf, index); index += 4;
                             posZ = BitConverter.ToSingle(xorBuf, index); index += 4;
+                            posUncertainty = BitConverter.ToSingle(xorBuf, index)*10000.0f; index += 4;
                             //Console.WriteLine(observationCount + " " + posX + " " + posY + " " + posZ);
                             break;
                         case 0x0800://2048 imu
