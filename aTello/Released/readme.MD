@@ -2,7 +2,11 @@
 aTello for Android
 ======
 
-Be very careful when flying! Especially the first time. Make sure the controls are what you expect and not inverted.
+## About aTello
+aTello is an alternative to the stock Tello android app.
+
+## Homepage
+https://tellopilots.com/threads/atello-android-development-thread.530/
 
 ## Installing the APK.
 https://www.wikihow.tech/Install-APK-Files-on-Android
