@@ -253,11 +253,12 @@ namespace aTello
                                 var targetYaw = Math.Atan2(normalizedY, normalizedX);
                                 var deltaYaw = targetYaw - yaw;
 
-                                var str = string.Format("x {0:0.00; -0.00} y {1:0.00; -0.00} yaw {2:0.00; -0.00} targetYaw {3:0.00; -0.00} targetDist {4:0.00; -0.00} On:{5}",
+                                var str = string.Format("x {0:0.00; -0.00} y {1:0.00; -0.00} yaw {2:0.00; -0.00}",// targetYaw {3:0.00; -0.00} targetDist {4:0.00; -0.00} On:{5}",
                                         Tello.state.posX, Tello.state.posY,
-                                        (((yaw * (180.0 / Math.PI)) + 360.0) % 360.0),
-                                        (((targetYaw * (180.0 / Math.PI)) + 360.0) % 360.0), dist,
-                                        bAutopilot.ToString());
+                                        (((yaw * (180.0 / Math.PI)) + 360.0) % 360.0)
+                                        //,(((targetYaw * (180.0 / Math.PI)) + 360.0) % 360.0), dist,
+                                        //bAutopilot.ToString()
+                                        );
 
                                 TextView joystat = FindViewById<TextView>(Resource.Id.joystick_state);
                                 joystat.Text = str;
