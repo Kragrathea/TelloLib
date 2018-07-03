@@ -438,8 +438,6 @@ namespace aTello
             };
             rthButton.Click += delegate {
                 cancelAutopilot();//Stop if going.
-                Tello.controllerState.setAxis(0, 0, 0, 0);
-                Tello.sendControllerUpdate();
 
                 //force set of new home point. 
                 bHomepointSet = false;
@@ -549,6 +547,8 @@ namespace aTello
         {
             if(bAutopilot)
                 notifyUser("Autopilot disengaged");
+            Tello.autoPilotControllerState.setAxis(0, 0, 0, 0);
+            Tello.sendControllerUpdate();
             bAutopilot = false;
 
         }
@@ -599,7 +599,7 @@ namespace aTello
                 //else 
                 if (dist > minDist)
                 {
-                    var speed = Math.Min(0.3, dist*2);//0.2 limits max throttle for safety.
+                    var speed = Math.Min(0.4, dist*2);//0.2 limits max throttle for safety.
                     rx = speed * Math.Sin(deltaYaw);
                     ry = speed * Math.Cos(deltaYaw);
                 }
@@ -608,7 +608,7 @@ namespace aTello
                     cancelAutopilot();//arrived
                 }
 
-                Tello.controllerState.setAxis((float)lx, (float)ly, (float)rx, (float)ry);
+                Tello.autoPilotControllerState.setAxis((float)lx, (float)ly, (float)rx, (float)ry);
                 Tello.sendControllerUpdate();
             }
         }

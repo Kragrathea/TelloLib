@@ -830,6 +830,12 @@ namespace TelloLib
             }
         }
         public static ControllerState controllerState=new ControllerState();
+        public static ControllerState autoPilotControllerState = new ControllerState();
+
+        public static float Clamp(float value, float min, float max)
+        {
+            return (value < min) ? min : (value > max) ? max : value;
+        }
 
         public static void sendControllerUpdate()
         {
@@ -843,9 +849,19 @@ namespace TelloLib
             //var limit = 1.0f;//Slow down while testing.
             //rx = rx * limit;
             //ry = ry * limit;
-
+            var rx =controllerState.rx;
+            var ry =controllerState.ry;
+            var lx =controllerState.lx;
+            var ly =controllerState.ly;
+            if (true)//Combine autopilot sticks.
+            {
+                rx = Clamp(rx + autoPilotControllerState.rx, -1.0f, 1.0f);
+                ry = Clamp(ry + autoPilotControllerState.ry, -1.0f, 1.0f);
+                lx = Clamp(lx + autoPilotControllerState.lx, -1.0f, 1.0f);
+                ly = Clamp(ly + autoPilotControllerState.ly, -1.0f, 1.0f);
+            }
             //Console.WriteLine(controllerState.rx + " " + controllerState.ry + " " + controllerState.lx + " " + controllerState.ly + " SP:"+boost);
-            var packet = createJoyPacket(controllerState.rx, controllerState.ry, controllerState.lx, controllerState.ly, boost);
+            var packet = createJoyPacket(rx, ry, lx, ly, boost);
             try
             {
                 client.Send(packet);
