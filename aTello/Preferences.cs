@@ -23,6 +23,7 @@ namespace aTello
         public static Keycode takeoffButtonCode = Keycode.ButtonStart;
         public static Keycode pictureButtonCode = Keycode.ButtonR1;
         public static Keycode recButtonCode = Keycode.ButtonL1;
+        public static Keycode homeButtonCode = Keycode.ButtonMode;
 
         public static int jpgQuality = 1;
         public static int exposure = 9;
@@ -71,6 +72,7 @@ namespace aTello
                     takeoffButtonCode = Keycode.ButtonStart;
                     pictureButtonCode = Keycode.ButtonR1;
                     recButtonCode = Keycode.ButtonL1;
+                    //homeButtonCode = Keycode.ButtonMode;
                     joyType = type;
                     break;
                 case 1://ps3
@@ -80,6 +82,7 @@ namespace aTello
                     takeoffButtonCode = Keycode.ButtonR2;
                     pictureButtonCode = Keycode.ButtonZ;
                     recButtonCode = Keycode.ButtonY;
+                    homeButtonCode = Keycode.ButtonMode;
                     joyType = type;
                     break;
             }

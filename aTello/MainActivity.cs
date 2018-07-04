@@ -40,6 +40,7 @@ namespace aTello
         ImageButton takeoffButton;
         ImageButton throwTakeoffButton;
         ImageButton rthButton;
+        private int rthButtonClickCount = 0;
         string videoFilePath;//file to save raw h264 to. 
         private long totalVideoBytesReceived = 0;//used to calc video bit rate display.
 
@@ -236,35 +237,39 @@ namespace aTello
                         batTextView.Text = "Bat:" + Tello.state.batteryPercentage;
                         wifiTextView.Text = "Wifi:" + Tello.state.wifiStrength;
 
+                        /*if (bAutopilot)
+                            rthButton.SetBackgroundColor(Android.Graphics.Color.DarkGreen);
+                        else
+                            rthButton.SetBackgroundColor(Android.Graphics.Color.White);
+                            
+                         */
+
                         //Autopilot debugging.
                         if (/*!bAutopilot &&*/ Tello.state.flying)
                         {
-                            RunOnUiThread(() =>
-                            {
-                                var eular = Tello.state.toEuler();
-                                var yaw = eular[2];
+                            var eular = Tello.state.toEuler();
+                            var yaw = eular[2];
 
-                                var deltaPosX = autopilotTarget.X - Tello.state.posX;
-                                var deltaPosY = autopilotTarget.Y - Tello.state.posY;
-                                var dist = Math.Sqrt(deltaPosX * deltaPosX + deltaPosY * deltaPosY);
-                                var normalizedX = deltaPosX / dist;
-                                var normalizedY = deltaPosY / dist;
+                            var deltaPosX = autopilotTarget.X - Tello.state.posX;
+                            var deltaPosY = autopilotTarget.Y - Tello.state.posY;
+                            var dist = Math.Sqrt(deltaPosX * deltaPosX + deltaPosY * deltaPosY);
+                            var normalizedX = deltaPosX / dist;
+                            var normalizedY = deltaPosY / dist;
 
-                                var targetYaw = Math.Atan2(normalizedY, normalizedX);
-                                var deltaYaw = targetYaw - yaw;
+                            var targetYaw = Math.Atan2(normalizedY, normalizedX);
+                            var deltaYaw = targetYaw - yaw;
 
-                                var str = string.Format("x {0:0.00; -0.00} y {1:0.00; -0.00} yaw {2:0.00; -0.00} Unc:{3:0.00; -0.00} tDist {4:0.00; -0.00} On:{5}",// targetYaw {3:0.00; -0.00} ",
-                                        Tello.state.posX, Tello.state.posY,
-                                        (((yaw * (180.0 / Math.PI)) + 360.0) % 360.0),
-                                        Tello.state.posUncertainty
-                                        //,(((targetYaw * (180.0 / Math.PI)) + 360.0) % 360.0), 
-                                        ,dist,
-                                        bAutopilot.ToString()
-                                        );
+                            var str = string.Format("x {0:0.00; -0.00} y {1:0.00; -0.00} yaw {2:0.00; -0.00} Unc:{3:0.00; -0.00} tDist {4:0.00; -0.00} On:{5}",// targetYaw {3:0.00; -0.00} ",
+                                    Tello.state.posX, Tello.state.posY,
+                                    (((yaw * (180.0 / Math.PI)) + 360.0) % 360.0),
+                                    Tello.state.posUncertainty
+                                    //,(((targetYaw * (180.0 / Math.PI)) + 360.0) % 360.0), 
+                                    ,dist,
+                                    bAutopilot.ToString()
+                                    );
 
-                                TextView joystat = FindViewById<TextView>(Resource.Id.joystick_state);
-                                joystat.Text = str;
-                            });
+                            TextView joystat = FindViewById<TextView>(Resource.Id.joystick_state);
+                            joystat.Text = str;
                         }
 
 
@@ -436,11 +441,26 @@ namespace aTello
                     notifyUser("Autopilot engaged");
                 }
             };
+
             rthButton.Click += delegate {
                 cancelAutopilot();//Stop if going.
+                if (rthButtonClickCount == 0)
+                {
+                    notifyUser("Press again to set home point. Long press to fly to home.", false);
+                }
 
-                //force set of new home point. 
-                bHomepointSet = false;
+                if (rthButtonClickCount == 1)
+                {//force set of new home point. 
+                    bHomepointSet = false;
+                }
+                rthButtonClickCount++;
+                Handler h = new Handler();
+                Action myAction = () =>
+                {
+                    rthButtonClickCount = 0;
+                };
+
+                h.PostDelayed(myAction, 750);//750=3/4 of a second
             };
 
             takeoffButton.LongClick += delegate {
@@ -522,9 +542,11 @@ namespace aTello
             CheckGameControllers();
         }
 
-        public void notifyUser(string message)
+        public void notifyUser(string message,bool bSpeak=true)
         {
-            CrossTextToSpeech.Current.Speak(message);
+            if(bSpeak)
+                CrossTextToSpeech.Current.Speak(message);
+
             RunOnUiThread(async () =>
             {
                 Toast.MakeText(Application.Context, message, ToastLength.Long).Show();
@@ -732,7 +754,13 @@ namespace aTello
                 Tello.controllerState.setAxis(0, 0, 0, 0);
             else
             {
-                Tello.controllerState.setAxis(onScreenJoyL.normalizedX, -onScreenJoyL.normalizedY, onScreenJoyR.normalizedX, -onScreenJoyR.normalizedY);
+                var deadBand = 0.15f;
+                var rx = Math.Abs(onScreenJoyR.normalizedX) < deadBand ? 0.0f : onScreenJoyR.normalizedX;
+                var ry = Math.Abs(onScreenJoyR.normalizedY) < deadBand ? 0.0f : onScreenJoyR.normalizedY;
+                var lx = Math.Abs(onScreenJoyL.normalizedX) < deadBand ? 0.0f : onScreenJoyL.normalizedX;
+                var ly = Math.Abs(onScreenJoyL.normalizedY) < deadBand ? 0.0f : onScreenJoyL.normalizedY;
+
+                Tello.controllerState.setAxis(lx, -ly, rx, -ry);
             }
             Tello.sendControllerUpdate();
         }
@@ -756,6 +784,12 @@ namespace aTello
                     //Right stick movement cancels autopilot.
                     if (bAutopilot && (Math.Abs(rx) > 0.1 || Math.Abs(ry) > 0.1))
                         cancelAutopilot();
+
+                    var deadBand = 0.15f;
+                    rx = Math.Abs(rx) < deadBand ? 0.0f : rx;
+                    ry = Math.Abs(ry) < deadBand ? 0.0f : ry;
+                    lx = Math.Abs(lx) < deadBand ? 0.0f : lx;
+                    ly = Math.Abs(ly) < deadBand ? 0.0f : ly;
 
                     if (isPaused)//Zero out any movement when paused.
                         Tello.controllerState.setAxis(0, 0, 0, 0);
@@ -794,21 +828,22 @@ namespace aTello
                         }
                     }
 
-
-                    RunOnUiThread(() =>
+                    if (false)//debug joystick
                     {
-                        TextView joystat = FindViewById<TextView>(Resource.Id.joystick_state);
+                        RunOnUiThread(() =>
+                        {
+                            TextView joystat = FindViewById<TextView>(Resource.Id.joystick_state);
 
                         //var dataStr = string.Join(" ", buttons);
                         joystat.Text = string.Format("JOY 0:{0: 0.00;-0.00} 1:{1: 0.00;-0.00} 2:{2: 0.00;-0.00} 3:{3: 0.00;-0.00} 4:{4: 0.00;-0.00} ",// BTN: " + dataStr,
-                            GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(0)),
-                            GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(1)),
-                            GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(2)),
-                            GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(3)),
-                            GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(4))
-                            );
-                    });
- 
+                                GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(0)),
+                                GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(1)),
+                                GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(2)),
+                                GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(3)),
+                                GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(4))
+                                );
+                        });
+                    }
 
                     //controller_view.Invalidate();
                     return true;
@@ -831,11 +866,38 @@ namespace aTello
                     Tello.sendControllerUpdate();
                     return true;
                 }
+                if (keyCode == Preferences.homeButtonCode)
+                {
+                    if (rthPressCount < 7)
+                    {
+                        cancelAutopilot();
+                        if (rthDoublePress)
+                        {
+                            bHomepointSet = false;
+                            rthDoublePress = false;
+                        }
+                        else
+                        {
+                            rthDoublePress = true;
+                            //notifyUser("Press again to set home point. Long press to fly to home.", false);
+                            Handler h = new Handler();
+                            Action myAction = () =>
+                            {
+                                rthDoublePress = false;
+                            };
+
+                            h.PostDelayed(myAction, 750);
+                        }
+                    }
+                    return true;
+                }
 
             }
             return base.OnKeyUp(keyCode, e);
         }
 
+        private int rthPressCount = 0;
+        private bool rthDoublePress = false;
         public override bool OnKeyDown(Keycode keyCode, KeyEvent e)
         {
             InputDevice device = e.Device;
@@ -858,6 +920,21 @@ namespace aTello
                     if (keyCode == Preferences.landButtonCode && e.RepeatCount == 7)
                     {
                         Tello.land();
+                        return true;
+                    }
+                    if (keyCode == Preferences.homeButtonCode)
+                    {
+                        rthPressCount = e.RepeatCount;
+                        if (e.RepeatCount == 7)
+                        {
+                            if (bAutopilot)
+                                cancelAutopilot();
+                            else if (bHomepointSet)
+                            {
+                                bAutopilot = true;
+                                notifyUser("Autopilot engaged");
+                            }
+                        }
                         return true;
                     }
                     if (keyCode == Preferences.pictureButtonCode && e.RepeatCount == 0)

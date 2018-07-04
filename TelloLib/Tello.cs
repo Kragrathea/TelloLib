@@ -808,17 +808,23 @@ namespace TelloLib
 
         }
 
-        public struct ControllerState
+        public class ControllerState
         {
             public float rx, ry, lx, ly;
             public int speed;
+            public double deadBand = 0.15;
             public void setAxis(float lx, float ly,float rx, float ry)
             {
-                var deadBand = 0.15f;
-                this.rx = Math.Abs(rx) < deadBand ? 0.0f : rx;
-                this.ry = Math.Abs(ry) < deadBand ? 0.0f : ry;
-                this.lx = Math.Abs(lx) < deadBand ? 0.0f : lx;
-                this.ly = Math.Abs(ly) < deadBand ? 0.0f : ly;
+                //var deadBand = 0.15f;
+                //this.rx = Math.Abs(rx) < deadBand ? 0.0f : rx;
+                //this.ry = Math.Abs(ry) < deadBand ? 0.0f : ry;
+                //this.lx = Math.Abs(lx) < deadBand ? 0.0f : lx;
+                //this.ly = Math.Abs(ly) < deadBand ? 0.0f : ly;
+
+                this.rx = rx;
+                this.ry = ry;
+                this.lx = lx;
+                this.ly = ly;
 
                 //Console.WriteLine(rx + " " + ry + " " + lx + " " + ly + " SP:" + speed);
             }

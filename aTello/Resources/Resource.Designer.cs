@@ -79,6 +79,12 @@ namespace aTello
 			// aapt resource value: 0x7f02000a
 			public const int takepicture = 2130837514;
 			
+			// aapt resource value: 0x7f02000b
+			public const int xnewrth = 2130837515;
+			
+			// aapt resource value: 0x7f02000c
+			public const int xnewrth2 = 2130837516;
+			
 			static Drawable()
 			{
 				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
@@ -137,8 +143,8 @@ namespace aTello
 			// aapt resource value: 0x7f060018
 			public const int joystick_state = 2131099672;
 			
-			// aapt resource value: 0x7f060013
-			public const int linearLayout1 = 2131099667;
+			// aapt resource value: 0x7f060014
+			public const int linearLayout1 = 2131099668;
 			
 			// aapt resource value: 0x7f06001b
 			public const int linearLayout3 = 2131099675;
@@ -179,8 +185,8 @@ namespace aTello
 			// aapt resource value: 0x7f060000
 			public const int relativeLayout1 = 2131099648;
 			
-			// aapt resource value: 0x7f060014
-			public const int rthButton = 2131099668;
+			// aapt resource value: 0x7f060013
+			public const int rthButton = 2131099667;
 			
 			// aapt resource value: 0x7f06002c
 			public const int rxSpinner = 2131099692;
