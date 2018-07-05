@@ -72,7 +72,7 @@ namespace aTello
                     takeoffButtonCode = Keycode.ButtonStart;
                     pictureButtonCode = Keycode.ButtonR1;
                     recButtonCode = Keycode.ButtonL1;
-                    //homeButtonCode = Keycode.ButtonMode;
+                    homeButtonCode = Keycode.ButtonA;
                     joyType = type;
                     break;
                 case 1://ps3

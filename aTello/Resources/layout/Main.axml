@@ -6,16 +6,12 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@android:color/black">
-    <SurfaceView
-        android:id="@+id/surfaceView"
-        android:layout_height="fill_parent"
-        android:layout_centerInParent="true"
-        android:layout_width="fill_parent" />
-    <TextureView
-        android:id="@+id/textureView"
-        android:layout_width="320dp"
-        android:layout_height="200dp"
-        android:visibility="gone" />
+    <aTello.DecoderView
+        android:id="@+id/DecoderView"
+        android:layout_width="960dp"
+        android:layout_height="720dp"
+        android:layout_centerHorizontal="true"
+        android:visibility="visible" />
     <aTello.JoystickView
         android:id="@+id/joystickViewL"
         android:layout_width="220dp"

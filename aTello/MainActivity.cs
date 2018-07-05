@@ -54,16 +54,15 @@ namespace aTello
 
         public bool isPaused = false;
 
-
-        TextureView.ISurfaceTextureListener mSurfaceTextureListener;
+        private static MainActivity _mainActivity;
+        public static MainActivity getActivity()
+        {
+            return _mainActivity;
+        }
 
         public override View OnCreateView(String name, Context context, Android.Util.IAttributeSet attrs)
         {
             var result = base.OnCreateView(name,context,attrs);
-            //var textureView = result.FindViewById<TextureView>(Resource.Id.textureView);
-            //var st = new Surface(textureView.SurfaceTexture);
-            //textureView.SurfaceTextureListener = mSurfaceTextureListener;
-            //Video.Decoder.surface = st;
 
             return result;
         }
@@ -73,6 +72,8 @@ namespace aTello
         {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.Main);
+
+            _mainActivity = this;
 
             //force max brightness on screen.
             Window.Attributes.ScreenBrightness = 1f;
@@ -146,7 +147,6 @@ namespace aTello
                     notifyUser("Connected");
 
                     Tello.setPicVidMode(picMode);//0=picture(960x720)
-                    //updateVideoSize();
 
                     Tello.setEV(Preferences.exposure);
 
@@ -272,7 +272,17 @@ namespace aTello
                             joystat.Text = str;
                         }
 
+                        if (!Tello.state.flying)//debug joystick
+                        {
+                            TextView joystat = FindViewById<TextView>(Resource.Id.joystick_state);
 
+                            //var dataStr = string.Join(" ", buttons);
+                            joystat.Text = string.Format("JOY lx:{0: 0.00;-0.00} ly:{1: 0.00;-0.00} rx:{2: 0.00;-0.00} ry:{3: 0.00;-0.00}  ",
+                                Tello.controllerState.lx,
+                                Tello.controllerState.ly,
+                                Tello.controllerState.rx,
+                                Tello.controllerState.ry);
+                        }
 
                         //acstat.Text = str;
                         if (Tello.state.flying)
@@ -310,22 +320,8 @@ namespace aTello
             };
 
 
-
             var videoFrame = new byte[100 * 1024];
             var videoOffset = 0;
-
-            updateVideoSize();
-            Video.Decoder.surface = FindViewById<SurfaceView>(Resource.Id.surfaceView).Holder.Surface;
-
-/*
-            var textureView = FindViewById<TextureView>(Resource.Id.textureView);
-            mSurfaceTextureListener = new SurfaceTextureListener(this);
-            textureView.SurfaceTextureListener = mSurfaceTextureListener;
-
-            //var st = new Surface(textureView.SurfaceTexture);
-            //Video.Decoder.surface = st;
-
-*/
 
             var path = "aTello/video/";
             System.IO.Directory.CreateDirectory(Path.Combine(Android.OS.Environment.ExternalStorageDirectory.Path, path+"cache/"));
@@ -334,7 +330,6 @@ namespace aTello
             FileStream videoStream = null;
 
             startUIUpdateThread();
-            //updateUI();//hide record light etc. 
 
             //subscribe to Tello video data
             var vidCount = 0;
@@ -402,7 +397,14 @@ namespace aTello
                         }
                         if (videoOffset > 0)
                         {
-                            aTello.Video.Decoder.decode(videoFrame.Take(videoOffset).ToArray());
+                            if (!isPaused)//surfaces are lost when paused.
+                            {
+                                //aTello.Video.Decoder.decode(videoFrame.Take(videoOffset).ToArray());
+
+                                //todo. get rid of buffer copy.
+                                var decoderView = FindViewById<DecoderView>(Resource.Id.DecoderView);
+                                decoderView.decode(videoFrame.Take(videoOffset).ToArray());
+                            }
                             videoOffset = 0;
                         }
                         //var nal = (received.bytes[6] & 0x1f);
@@ -512,14 +514,10 @@ namespace aTello
                 //Toggle
                 picMode = picMode == 1 ? 0 : 1;
                 Tello.setPicVidMode(picMode);
-                updateVideoSize();
-                aTello.Video.Decoder.reconfig();
             };
             var galleryButton = FindViewById<ImageButton>(Resource.Id.galleryButton);
             galleryButton.Click += async delegate
             {
-
-
                 //var uri = Android.Net.Uri.FromFile(new Java.IO.File(Tello.picPath));
                 //shareImage(uri);
                 //return;
@@ -610,7 +608,7 @@ namespace aTello
                 double lx =0, ly = 0, rx = 0, ry = 0;
 
                 var minYaw = 0.1;//Radians
-                var minDist = 0.125;//Meters (I think)
+                var minDist = 0.25;//Meters (I think)
                 if (deltaYaw > minYaw)
                 {
                     //lx = Math.Max(0.7, deltaYaw / 10.0); 
@@ -634,38 +632,7 @@ namespace aTello
                 Tello.sendControllerUpdate();
             }
         }
-        private void updateVideoSize()
-        {
-            int videoWidth = 960;
-            int videoHeight = 720;
-            if (Tello.picMode==1)//pic mode is also aspect ratio. 
-            {
-                videoWidth = 1280;
-            }
 
-            float videoProportion = (float)videoWidth / (float)videoHeight;
-
-            var size = new Android.Graphics.Point();
-            WindowManager.DefaultDisplay.GetSize(size);
-            int screenWidth = size.X;
-            int screenHeight = size.Y;
-            float screenProportion = (float)screenWidth / (float)screenHeight;
-
-            var surfaceView=FindViewById<SurfaceView>(Resource.Id.surfaceView);
-            var lp = surfaceView.LayoutParameters;
-            if (videoProportion > screenProportion)
-            {
-                lp.Width = screenWidth;
-                lp.Height = (int)((float)screenWidth / videoProportion);
-            }
-            else
-            {
-                lp.Width = (int)(videoProportion * (float)screenHeight);
-                lp.Height = screenHeight;
-            }
-            
-            surfaceView.LayoutParameters = lp;
-        }
         private void startUIUpdateThread()
         {
             Task.Factory.StartNew(async () =>
@@ -828,23 +795,6 @@ namespace aTello
                         }
                     }
 
-                    if (false)//debug joystick
-                    {
-                        RunOnUiThread(() =>
-                        {
-                            TextView joystat = FindViewById<TextView>(Resource.Id.joystick_state);
-
-                        //var dataStr = string.Join(" ", buttons);
-                        joystat.Text = string.Format("JOY 0:{0: 0.00;-0.00} 1:{1: 0.00;-0.00} 2:{2: 0.00;-0.00} 3:{3: 0.00;-0.00} 4:{4: 0.00;-0.00} ",// BTN: " + dataStr,
-                                GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(0)),
-                                GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(1)),
-                                GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(2)),
-                                GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(3)),
-                                GetCenteredAxis(e, device, AxesMapping.OrdinalValueAxis(4))
-                                );
-                        });
-                    }
-
                     //controller_view.Invalidate();
                     return true;
                 }
@@ -995,8 +945,9 @@ namespace aTello
 
         protected override void OnResume()
         {
-            isPaused = false;
             base.OnResume();
+
+            isPaused = false;
             input_manager.RegisterInputDeviceListener(this, null);
             updateOnScreenJoyVisibility();
             //fix if joy was moved when paused.
@@ -1021,7 +972,7 @@ namespace aTello
             isPaused = true;
 
             Tello.connectionSetPause(true);//pause connections (if connected). 
-          
+         
             base.OnPause();
             input_manager.UnregisterInputDeviceListener(this);
         }

@@ -455,7 +455,7 @@ namespace TelloLib
             {
                 while (true)
                 {
-                    try
+                   try
                     {
                         if (token.IsCancellationRequested)//handle canceling thread.
                             break;
@@ -705,7 +705,7 @@ namespace TelloLib
                         Console.WriteLine("Video receive thread error:" + ex.Message);
                         
                         //dont disconnect();
-                        break;
+//                        break;
                     }
                 }
             }, token);
@@ -787,7 +787,7 @@ namespace TelloLib
                             case ConnectionState.Connecting:
                             case ConnectionState.Connected:
                                 var elapsed = DateTime.Now - lastMessageTime;
-                                if (elapsed.Seconds > 1)//1 second timeout.
+                                if (elapsed.Seconds > 2)//1 second timeout.
                                 {
                                     Console.WriteLine("Connection timeout :");
                                     disconnect();
