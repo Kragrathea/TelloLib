@@ -12,7 +12,7 @@
         android:layout_height="720dp"
         android:layout_centerHorizontal="true"
         android:visibility="visible" />
-    <LinearLayout
+    <RelativeLayout
         android:minWidth="25px"
         android:minHeight="25px"
         android:id="@+id/SBSLayout"
@@ -21,15 +21,17 @@
         android:layout_height="320dp">
         <aTello.DecoderView
             android:id="@+id/decoderViewL"
-            android:layout_width="0dp"
-            android:layout_weight=".50"
-            android:layout_height="match_parent" />
+            android:layout_width="180"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:translationX="0dp" />
         <aTello.DecoderView
             android:id="@+id/decoderViewR"
-            android:layout_width="0dp"
-            android:layout_weight=".50"
-            android:layout_height="match_parent" />
-    </LinearLayout>
+            android:layout_width="180"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:translationX="0dp" />
+    </RelativeLayout>
     <aTello.JoystickView
         android:id="@+id/joystickViewL"
         android:layout_width="220dp"
