@@ -41,6 +41,8 @@ namespace aTello
         ImageButton throwTakeoffButton;
         ImageButton rthButton;
         private int rthButtonClickCount = 0;
+        ImageButton lookAtButton;
+        private int lookAtButtonClickCount = 0;
         string videoFilePath;//file to save raw h264 to. 
         private long totalVideoBytesReceived = 0;//used to calc video bit rate display.
 
@@ -101,6 +103,7 @@ namespace aTello
             throwTakeoffButton = FindViewById<ImageButton>(Resource.Id.throwTakeoffButton);
 
             rthButton = FindViewById<ImageButton>(Resource.Id.rthButton);
+            lookAtButton = FindViewById<ImageButton>(Resource.Id.lookAtButton);
 
             //subscribe to Tello connection events
             Tello.onConnection += (Tello.ConnectionState newState) =>
@@ -256,16 +259,31 @@ namespace aTello
                             var normalizedX = deltaPosX / dist;
                             var normalizedY = deltaPosY / dist;
 
-                            var targetYaw = Math.Atan2(normalizedY, normalizedX);
-                            var deltaYaw = targetYaw - yaw;
+                            var ldeltaPosX = lookAtTarget.X - Tello.state.posX;
+                            var ldeltaPosY = lookAtTarget.Y - Tello.state.posY;
+                            var ldist = Math.Sqrt(ldeltaPosX * ldeltaPosX + ldeltaPosY * ldeltaPosY);
+                            var lnormalizedX = ldeltaPosX / ldist;
+                            var lnormalizedY = ldeltaPosY / ldist;
 
-                            var str = string.Format("x {0:0.00; -0.00} y {1:0.00; -0.00} yaw {2:0.00; -0.00} Unc:{3:0.00; -0.00} tDist {4:0.00; -0.00} On:{5}",// targetYaw {3:0.00; -0.00} ",
+                            var targetYaw = Math.Atan2(lnormalizedY, lnormalizedX);
+
+                            double deltaYaw = 0.0;
+                            if (Math.Abs(targetYaw - yaw) < Math.PI)
+                                deltaYaw= targetYaw - yaw;
+                            else if (targetYaw > yaw)
+                                deltaYaw = targetYaw - yaw - Math.PI * 2.0f;
+                            else
+                                deltaYaw = targetYaw - yaw + Math.PI * 2.0f;
+
+                            var str = string.Format("x {0:0.00; -0.00} y {1:0.00; -0.00} yaw {2:0.00; -0.00} Unc:{3:0.00; -0.00} tDist {4:0.00; -0.00} On:{5} targetYaw {6:0.00; -0.00} ",
                                     Tello.state.posX, Tello.state.posY,
-                                    (((yaw * (180.0 / Math.PI)) + 360.0) % 360.0),
+                                    (((yaw * (180.0 / Math.PI)) ) ),
+//                                    (((yaw * (180.0 / Math.PI)) + 360.0) % 360.0),
                                     Tello.state.posUncertainty
-                                    //,(((targetYaw * (180.0 / Math.PI)) + 360.0) % 360.0), 
                                     ,dist,
                                     bAutopilot.ToString()
+                                    , (((deltaYaw * (180.0 / Math.PI)) ) )
+//                                    , (((targetYaw * (180.0 / Math.PI)) + 360.0) % 360.0)
                                     );
 
                             TextView joystat = FindViewById<TextView>(Resource.Id.joystick_state);
@@ -464,7 +482,36 @@ namespace aTello
 
                 h.PostDelayed(myAction, 750);//750=3/4 of a second
             };
+            lookAtButton.LongClick += delegate {
+                if (bLookAt)
+                    cancelLookAt();
+                else if (bLookAtTargetSet)
+                {
+                    bLookAt = true;
+                    notifyUser("Look at engaged");
+                }
+            };
 
+            lookAtButton.Click += delegate {
+                cancelLookAt();//Stop if going.
+                if (lookAtButtonClickCount == 0)
+                {
+                    notifyUser("Press again to set look target. Long press to lock on target.", false);
+                }
+
+                if (lookAtButtonClickCount == 1)
+                {//force set of new home point. 
+                    bLookAtTargetSet = false;
+                }
+                lookAtButtonClickCount++;
+                Handler h = new Handler();
+                Action myAction = () =>
+                {
+                    lookAtButtonClickCount = 0;
+                };
+
+                h.PostDelayed(myAction, 750);//750=3/4 of a second
+            };
             takeoffButton.LongClick += delegate {
                 if (Tello.connected && !Tello.state.flying)
                 {
@@ -556,6 +603,12 @@ namespace aTello
         //private PointF autopilotLookTarget = null;
         private bool bHomepointSet = false;
 
+        private bool bLookAt = false;
+        private PointF lookAtTarget = new PointF(0, 0);
+        //private PointF autopilotLookTarget = null;
+        private bool bLookAtTargetSet = false;
+
+
         public void setAutopilotTarget(PointF target)
         {
             if (Tello.state.flying)
@@ -572,11 +625,30 @@ namespace aTello
             bAutopilot = false;
 
         }
+
+        public void setLookAtTarget(PointF target)
+        {
+            if (Tello.state.flying)
+            {
+                lookAtTarget = target;
+            }
+        }
+        public void cancelLookAt()
+        {
+            if (bLookAt)
+                notifyUser("Look at disengaged");
+            Tello.autoPilotControllerState.setAxis(0, 0, 0, 0);
+            Tello.sendControllerUpdate();
+            bLookAt = false;
+
+        }
+  
         private void handleAutopilot()
         {
             if(!Tello.state.flying)
             {
                 bHomepointSet = false;
+                bLookAtTargetSet = false;
                 return;
             }
 
@@ -591,6 +663,53 @@ namespace aTello
                 }
             }
 
+            if (!bLookAtTargetSet)
+            {
+                if(Tello.state.posUncertainty>0.03)
+                {
+                    //set new home point
+                    setLookAtTarget(new PointF(Tello.state.posX, Tello.state.posY));
+                    notifyUser("Look at set");
+                    bLookAtTargetSet = true;
+                }
+            }
+
+            double lx = 0, ly = 0, rx = 0, ry = 0;
+            bool updated = false;
+            if (bLookAt && bLookAtTargetSet)
+            {
+                var eular = Tello.state.toEuler();
+                var yaw = eular[2];
+
+                var deltaPosX = lookAtTarget.X - Tello.state.posX;
+                var deltaPosY = lookAtTarget.Y - Tello.state.posY;
+                var dist = Math.Sqrt(deltaPosX * deltaPosX + deltaPosY * deltaPosY);
+                var normalizedX = deltaPosX / dist;
+                var normalizedY = deltaPosY / dist;
+
+                var targetYaw = Math.Atan2(normalizedY, normalizedX);
+
+                double deltaYaw = 0.0;
+                if (Math.Abs(targetYaw - yaw) < Math.PI)
+                    deltaYaw = targetYaw - yaw;
+                else if (targetYaw > yaw)
+                    deltaYaw = targetYaw - yaw - Math.PI * 2.0f;
+                else
+                    deltaYaw = targetYaw - yaw + Math.PI * 2.0f;
+
+
+                var minYaw = 0.1;//Radians
+                if (Math.Abs(deltaYaw) > minYaw)
+                {
+                    lx = Math.Min(0.7, deltaYaw * 1.0);
+                    updated = true;
+                }
+                else if (deltaYaw < -minYaw)
+                {
+                    lx = -Math.Min(0.7, deltaYaw * 1.0);
+                    updated = true;
+                }
+            }
             if (bAutopilot && bHomepointSet)
             {
                 var eular = Tello.state.toEuler();
@@ -605,29 +724,23 @@ namespace aTello
                 var targetYaw = Math.Atan2(normalizedY, normalizedX);
                 var deltaYaw = targetYaw - yaw;
 
-                double lx =0, ly = 0, rx = 0, ry = 0;
-
-                var minYaw = 0.1;//Radians
                 var minDist = 0.25;//Meters (I think)
-                if (deltaYaw > minYaw)
-                {
-                    //lx = Math.Max(0.7, deltaYaw / 10.0); 
-                } else if (deltaYaw < -minYaw)
-                {
-                    //lx = -Math.Max(0.7, deltaYaw / 10.0);
-                }
-                //else 
+
                 if (dist > minDist)
                 {
                     var speed = Math.Min(0.4, dist*2);//0.2 limits max throttle for safety.
                     rx = speed * Math.Sin(deltaYaw);
                     ry = speed * Math.Cos(deltaYaw);
+                    updated = true;
                 }
                 else
                 {
                     cancelAutopilot();//arrived
+                    updated = true;
                 }
-
+            }
+            if (updated)
+            {
                 Tello.autoPilotControllerState.setAxis((float)lx, (float)ly, (float)rx, (float)ry);
                 Tello.sendControllerUpdate();
             }
@@ -717,6 +830,10 @@ namespace aTello
             if (bAutopilot && (Math.Abs(onScreenJoyR.normalizedX) > 0.1 || Math.Abs(onScreenJoyR.normalizedY) > 0.1))
                 cancelAutopilot();
 
+            //Left stick movement cancels autopilot.
+            if (bLookAt && (Math.Abs(onScreenJoyL.normalizedX) > 0.1 || Math.Abs(onScreenJoyL.normalizedY) > 0.1))
+                cancelLookAt();
+
             if (isPaused)//Zero out any movement when paused.
                 Tello.controllerState.setAxis(0, 0, 0, 0);
             else
@@ -751,6 +868,10 @@ namespace aTello
                     //Right stick movement cancels autopilot.
                     if (bAutopilot && (Math.Abs(rx) > 0.1 || Math.Abs(ry) > 0.1))
                         cancelAutopilot();
+
+                    //Left stick movement cancels autopilot.
+                    if (bLookAt && (Math.Abs(lx) > 0.1 || Math.Abs(ly) > 0.1))
+                        cancelLookAt();
 
                     var deadBand = 0.15f;
                     rx = Math.Abs(rx) < deadBand ? 0.0f : rx;

@@ -12,26 +12,25 @@
         android:layout_height="720dp"
         android:layout_centerHorizontal="true"
         android:visibility="visible" />
-    <RelativeLayout
+    <LinearLayout
         android:minWidth="25px"
         android:minHeight="25px"
         android:id="@+id/SBSLayout"
         android:layout_centerHorizontal="true"
         android:layout_width="640dp"
-        android:layout_height="320dp">
+        android:layout_height="320dp"
+        android:visibility="gone">
         <aTello.DecoderView
             android:id="@+id/decoderViewL"
-            android:layout_width="180"
-            android:layout_height="match_parent"
-            android:layout_alignParentLeft="true"
-            android:translationX="0dp" />
+            android:layout_width="0dp"
+            android:layout_weight=".50"
+            android:layout_height="match_parent" />
         <aTello.DecoderView
             android:id="@+id/decoderViewR"
-            android:layout_width="180"
-            android:layout_height="match_parent"
-            android:layout_alignParentRight="true"
-            android:translationX="0dp" />
-    </RelativeLayout>
+            android:layout_width="0dp"
+            android:layout_weight=".50"
+            android:layout_height="match_parent" />
+    </LinearLayout>
     <aTello.JoystickView
         android:id="@+id/joystickViewL"
         android:layout_width="220dp"
@@ -190,6 +189,21 @@
         android:layout_centerHorizontal="false"
         android:layout_below="@id/statusLayout"
         android:layout_toRightOf="@id/linearLayoutLeft"
+        android:layout_marginLeft="25dp"
+        android:layout_alignTop="@id/linearLayoutLeft" />
+    <ImageButton
+        android:src="@drawable/xnewrth2"
+        android:id="@+id/lookAtButton"
+        android:adjustViewBounds="true"
+        android:scaleType="centerInside"
+        android:background="@android:drawable/screen_background_light_transparent"
+        android:tint="#620078c8"
+        android:alpha="0.5"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="false"
+        android:layout_below="@id/statusLayout"
+        android:layout_toRightOf="@id/rthButton"
         android:layout_marginLeft="25dp"
         android:layout_alignTop="@id/linearLayoutLeft" />
     <LinearLayout
