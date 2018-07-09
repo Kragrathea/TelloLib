@@ -701,12 +701,12 @@ namespace aTello
                 var minYaw = 0.1;//Radians
                 if (Math.Abs(deltaYaw) > minYaw)
                 {
-                    lx = Math.Min(0.7, deltaYaw * 1.0);
+                    lx = Math.Min(1.0, deltaYaw * 1.0);
                     updated = true;
                 }
                 else if (deltaYaw < -minYaw)
                 {
-                    lx = -Math.Min(0.7, deltaYaw * 1.0);
+                    lx = -Math.Min(1.0, deltaYaw * 1.0);
                     updated = true;
                 }
             }
@@ -728,7 +728,7 @@ namespace aTello
 
                 if (dist > minDist)
                 {
-                    var speed = Math.Min(0.4, dist*2);//0.2 limits max throttle for safety.
+                    var speed = Math.Min(0.45, dist*2);//0.2 limits max throttle for safety.
                     rx = speed * Math.Sin(deltaYaw);
                     ry = speed * Math.Cos(deltaYaw);
                     updated = true;

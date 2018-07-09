@@ -192,7 +192,7 @@
         android:layout_marginLeft="25dp"
         android:layout_alignTop="@id/linearLayoutLeft" />
     <ImageButton
-        android:src="@drawable/xnewrth2"
+        android:src="@drawable/DroneEye"
         android:id="@+id/lookAtButton"
         android:adjustViewBounds="true"
         android:scaleType="centerInside"
@@ -200,7 +200,7 @@
         android:tint="#620078c8"
         android:alpha="0.5"
         android:layout_width="50dp"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_centerHorizontal="false"
         android:layout_below="@id/statusLayout"
         android:layout_toRightOf="@id/rthButton"
