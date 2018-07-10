@@ -122,8 +122,8 @@ namespace aTello
 			// aapt resource value: 0x7f060002
 			public const int SBSLayout = 2131099650;
 			
-			// aapt resource value: 0x7f060013
-			public const int batTextView = 2131099667;
+			// aapt resource value: 0x7f06000d
+			public const int batTextView = 2131099661;
 			
 			// aapt resource value: 0x7f060027
 			public const int cacheVideoSwitch = 2131099687;
@@ -146,14 +146,14 @@ namespace aTello
 			// aapt resource value: 0x7f060026
 			public const int exposureSpinner = 2131099686;
 			
+			// aapt resource value: 0x7f060011
+			public const int galleryButton = 2131099665;
+			
 			// aapt resource value: 0x7f06000a
-			public const int galleryButton = 2131099658;
+			public const int hSpeedTextView = 2131099658;
 			
-			// aapt resource value: 0x7f060010
-			public const int hSpeedTextView = 2131099664;
-			
-			// aapt resource value: 0x7f060012
-			public const int heiTextView = 2131099666;
+			// aapt resource value: 0x7f06000c
+			public const int heiTextView = 2131099660;
 			
 			// aapt resource value: 0x7f060029
 			public const int iframeRateSpinner = 2131099689;
@@ -179,11 +179,11 @@ namespace aTello
 			// aapt resource value: 0x7f06001e
 			public const int linearLayout3 = 2131099678;
 			
-			// aapt resource value: 0x7f06000b
-			public const int linearLayoutLeft = 2131099659;
+			// aapt resource value: 0x7f060012
+			public const int linearLayoutLeft = 2131099666;
 			
-			// aapt resource value: 0x7f060008
-			public const int linearLayoutRight = 2131099656;
+			// aapt resource value: 0x7f06000f
+			public const int linearLayoutRight = 2131099663;
 			
 			// aapt resource value: 0x7f060016
 			public const int lookAtButton = 2131099670;
@@ -194,8 +194,8 @@ namespace aTello
 			// aapt resource value: 0x7f06002c
 			public const int lySpinner = 2131099692;
 			
-			// aapt resource value: 0x7f06000f
-			public const int modeTextView = 2131099663;
+			// aapt resource value: 0x7f060009
+			public const int modeTextView = 2131099657;
 			
 			// aapt resource value: 0x7f060023
 			public const int onScreenJoySwitch = 2131099683;
@@ -206,8 +206,8 @@ namespace aTello
 			// aapt resource value: 0x7f060025
 			public const int picLayout = 2131099685;
 			
-			// aapt resource value: 0x7f060009
-			public const int pictureButton = 2131099657;
+			// aapt resource value: 0x7f060010
+			public const int pictureButton = 2131099664;
 			
 			// aapt resource value: 0x7f060018
 			public const int recLightButton = 2131099672;
@@ -239,11 +239,11 @@ namespace aTello
 			// aapt resource value: 0x7f060021
 			public const int space1 = 2131099681;
 			
-			// aapt resource value: 0x7f06000e
-			public const int statusLayout = 2131099662;
+			// aapt resource value: 0x7f060008
+			public const int statusLayout = 2131099656;
 			
-			// aapt resource value: 0x7f06000c
-			public const int takeoffButton = 2131099660;
+			// aapt resource value: 0x7f060013
+			public const int takeoffButton = 2131099667;
 			
 			// aapt resource value: 0x7f06002a
 			public const int textView1 = 2131099690;
@@ -251,11 +251,11 @@ namespace aTello
 			// aapt resource value: 0x7f060020
 			public const int textView2 = 2131099680;
 			
-			// aapt resource value: 0x7f06000d
-			public const int throwTakeoffButton = 2131099661;
+			// aapt resource value: 0x7f060014
+			public const int throwTakeoffButton = 2131099668;
 			
-			// aapt resource value: 0x7f060011
-			public const int vSpeedTextView = 2131099665;
+			// aapt resource value: 0x7f06000b
+			public const int vSpeedTextView = 2131099659;
 			
 			// aapt resource value: 0x7f060028
 			public const int vbrSpinner = 2131099688;
@@ -263,8 +263,8 @@ namespace aTello
 			// aapt resource value: 0x7f06001a
 			public const int vbrTextView = 2131099674;
 			
-			// aapt resource value: 0x7f060014
-			public const int wifiTextView = 2131099668;
+			// aapt resource value: 0x7f06000e
+			public const int wifiTextView = 2131099662;
 			
 			static Id()
 			{

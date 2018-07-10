@@ -53,72 +53,6 @@
         android:textColor="@android:color/black"
         android:background="#55ff3333" />
     <LinearLayout
-        android:orientation="vertical"
-        android:minWidth="25px"
-        android:minHeight="25px"
-        android:id="@+id/linearLayoutRight"
-        android:layout_width="50dp"
-        android:layout_height="fill_parent"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="20dp"
-        android:layout_alignParentRight="true"
-        android:layout_below="@id/connectButton">
-        <ImageButton
-            android:src="@drawable/camera"
-            android:id="@+id/pictureButton"
-            android:adjustViewBounds="true"
-            android:scaleType="centerInside"
-            android:background="@android:drawable/screen_background_light_transparent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:tint="#620078c8"
-            android:alpha="0.5" />
-        <ImageButton
-            android:src="@drawable/photogallery"
-            android:id="@+id/galleryButton"
-            android:adjustViewBounds="true"
-            android:scaleType="centerInside"
-            android:background="@android:drawable/screen_background_light_transparent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:tint="#620078c8"
-            android:alpha="0.5"
-            android:visibility="gone" />
-    </LinearLayout>
-    <LinearLayout
-        android:orientation="vertical"
-        android:minWidth="25px"
-        android:minHeight="25px"
-        android:id="@+id/linearLayoutLeft"
-        android:layout_width="50dp"
-        android:layout_height="fill_parent"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="20dp"
-        android:layout_below="@id/connectButton">
-        <ImageButton
-            android:src="@drawable/takeoff"
-            android:id="@+id/takeoffButton"
-            android:adjustViewBounds="true"
-            android:scaleType="centerInside"
-            android:layout_width="wrap_content"
-            android:background="@android:drawable/screen_background_light_transparent"
-            android:layout_height="wrap_content"
-            android:tint="#620078c8"
-            android:alpha="0.5" />
-        <ImageButton
-            android:src="@drawable/handlaunch"
-            android:id="@+id/throwTakeoffButton"
-            android:adjustViewBounds="true"
-            android:scaleType="centerInside"
-            android:layout_width="wrap_content"
-            android:background="@android:drawable/screen_background_light_transparent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:tint="#620078c8"
-            android:alpha="0.5" />
-    </LinearLayout>
-    <LinearLayout
         android:orientation="horizontal"
         android:minWidth="25px"
         android:minHeight="25px"
@@ -177,36 +111,97 @@
             android:layout_width="0dp"
             android:layout_weight="0.25" />
     </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:id="@+id/linearLayoutRight"
+        android:layout_width="50dp"
+        android:layout_height="fill_parent"
+        android:layout_marginLeft="5dp"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/statusLayout"
+        android:layout_marginTop="10dp">
+        <ImageButton
+            android:src="@drawable/camera"
+            android:id="@+id/pictureButton"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:background="@android:drawable/screen_background_light_transparent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:tint="#00000000" />
+        <ImageButton
+            android:src="@drawable/photogallery"
+            android:id="@+id/galleryButton"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:background="@android:drawable/screen_background_light_transparent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:tint="#620078c8"
+            android:alpha="0.5"
+            android:visibility="gone" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:id="@+id/linearLayoutLeft"
+        android:layout_width="50dp"
+        android:layout_height="fill_parent"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/statusLayout">
+        <ImageButton
+            android:src="@drawable/takeoff"
+            android:id="@+id/takeoffButton"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tint="#00000000"
+            android:background="@android:drawable/screen_background_light_transparent" />
+        <ImageButton
+            android:src="@drawable/handlaunch"
+            android:id="@+id/throwTakeoffButton"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            android:layout_width="wrap_content"
+            android:background="@android:drawable/screen_background_light_transparent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:tint="#00000000" />
+    </LinearLayout>
     <ImageButton
         android:src="@drawable/placeholder"
         android:id="@+id/rthButton"
         android:adjustViewBounds="true"
         android:scaleType="centerInside"
-        android:background="@android:drawable/screen_background_light_transparent"
-        android:tint="#620078c8"
-        android:alpha="0.5"
+        android:tint="#00000000"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="false"
         android:layout_below="@id/statusLayout"
         android:layout_toRightOf="@id/linearLayoutLeft"
         android:layout_marginLeft="25dp"
-        android:layout_alignTop="@id/linearLayoutLeft" />
+        android:layout_alignTop="@id/linearLayoutLeft"
+        android:background="@android:drawable/screen_background_light_transparent" />
     <ImageButton
         android:src="@drawable/eye"
         android:id="@+id/lookAtButton"
         android:adjustViewBounds="true"
         android:scaleType="centerInside"
-        android:background="@android:drawable/screen_background_light_transparent"
-        android:tint="#620078c8"
-        android:alpha="0.5"
+        android:tint="#00000000"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_centerHorizontal="false"
         android:layout_below="@id/statusLayout"
         android:layout_toRightOf="@id/rthButton"
         android:layout_marginLeft="25dp"
-        android:layout_alignTop="@id/linearLayoutLeft" />
+        android:layout_alignTop="@id/linearLayoutLeft"
+        android:background="@android:drawable/screen_background_light_transparent" />
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="wrap_content"
@@ -214,8 +209,8 @@
         android:id="@+id/linearLayout1"
         android:layout_toLeftOf="@id/linearLayoutRight"
         android:layout_below="@id/connectButton"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="10dp">
+        android:layout_marginRight="10dp"
+        android:layout_alignTop="@id/lookAtButton">
         <RadioButton
             android:text="Rec:00:00:00"
             android:id="@+id/recLightButton"
@@ -230,11 +225,10 @@
             android:id="@+id/recordButton"
             android:adjustViewBounds="true"
             android:background="@android:drawable/screen_background_light_transparent"
-            android:tint="#620078c8"
+            android:tint="#00000000"
             android:scaleType="centerInside"
             android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:alpha="0.5" />
+            android:layout_height="50dp" />
     </LinearLayout>
     <TextView
         android:text="Vbr:0k"
