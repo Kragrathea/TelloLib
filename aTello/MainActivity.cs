@@ -306,7 +306,7 @@ namespace aTello
                         if (Tello.state.flying)
                             takeoffButton.SetImageResource(Resource.Drawable.land);
                         else if (!Tello.state.flying)
-                            takeoffButton.SetImageResource(Resource.Drawable.takeoff_white);
+                            takeoffButton.SetImageResource(Resource.Drawable.takeoff);
                     }
                     if (cmdId == 48)//ack picture start. 
                     {
@@ -572,7 +572,7 @@ namespace aTello
                 intent.PutExtra(Intent.ActionView, Tello.picPath);
                 intent.SetType("image/*");
                 intent.SetAction(Intent.ActionGetContent);
-                StartActivityForResult(Intent.CreateChooser(intent,"Select Picture"), 1);
+                StartActivityForResult(Intent.CreateChooser(intent,"Select Picture"),1);
             };
             //Settings button
             ImageButton settingsButton = FindViewById<ImageButton>(Resource.Id.settingsButton);
@@ -774,12 +774,12 @@ namespace aTello
                             if (bFlying)
                             {
                                 throwButton.Visibility = ViewStates.Gone;
-                                galleryButton.Visibility = ViewStates.Gone;
+                                //galleryButton.Visibility = ViewStates.Gone;
                             }
                             else
                             {
                                 throwButton.Visibility = ViewStates.Visible;
-                                galleryButton.Visibility = ViewStates.Visible;
+                                //galleryButton.Visibility = ViewStates.Visible;
                             }
                             if((tick%4)==0)//Every second.
                             {
@@ -814,15 +814,7 @@ namespace aTello
                     recLight.Visibility = ViewStates.Gone;
             });
         }
-        // Share image
-        private void shareImage(Android.Net.Uri imagePath)
-        {
-            Intent sharingIntent = new Intent(Intent.ActionSend);
-            sharingIntent.AddFlags(ActivityFlags.ClearWhenTaskReset);
-            sharingIntent.SetType("image/*");
-            sharingIntent.PutExtra(Intent.ExtraStream, imagePath);
-            StartActivity(Intent.CreateChooser(sharingIntent, "Share Image Using"));
-        }
+
 
         public void OnTouchJoystickMoved(JoystickView joystickView )
         {

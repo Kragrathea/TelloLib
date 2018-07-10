@@ -16,16 +16,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/linearLayout3">
-            <Button
-                android:text="Convert ALL Video"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/convertAllVideoButton" />
-            <Button
-                android:text="Convert Single Video"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/convertVideoButton" />
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
@@ -212,6 +202,21 @@
                         android:layout_height="match_parent" />
                 </LinearLayout>
             </LinearLayout>
+            <Button
+                android:text="Share Photo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/sharePhotoButton" />
+            <Button
+                android:text="Convert ALL Video"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/convertAllVideoButton" />
+            <Button
+                android:text="Convert Single Video"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/convertVideoButton" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

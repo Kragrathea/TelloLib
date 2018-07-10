@@ -64,7 +64,7 @@
         android:layout_alignParentRight="true"
         android:layout_below="@id/connectButton">
         <ImageButton
-            android:src="@drawable/takepicture"
+            android:src="@drawable/camera"
             android:id="@+id/pictureButton"
             android:adjustViewBounds="true"
             android:scaleType="centerInside"
@@ -83,7 +83,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:tint="#620078c8"
-            android:alpha="0.5" />
+            android:alpha="0.5"
+            android:visibility="gone" />
     </LinearLayout>
     <LinearLayout
         android:orientation="vertical"
@@ -96,7 +97,7 @@
         android:layout_marginTop="20dp"
         android:layout_below="@id/connectButton">
         <ImageButton
-            android:src="@drawable/takeoff_white2"
+            android:src="@drawable/takeoff"
             android:id="@+id/takeoffButton"
             android:adjustViewBounds="true"
             android:scaleType="centerInside"
@@ -106,7 +107,7 @@
             android:tint="#620078c8"
             android:alpha="0.5" />
         <ImageButton
-            android:src="@drawable/takeoff_hand"
+            android:src="@drawable/handlaunch"
             android:id="@+id/throwTakeoffButton"
             android:adjustViewBounds="true"
             android:scaleType="centerInside"
@@ -177,7 +178,7 @@
             android:layout_weight="0.25" />
     </LinearLayout>
     <ImageButton
-        android:src="@drawable/xnewrth"
+        android:src="@drawable/placeholder"
         android:id="@+id/rthButton"
         android:adjustViewBounds="true"
         android:scaleType="centerInside"
@@ -192,7 +193,7 @@
         android:layout_marginLeft="25dp"
         android:layout_alignTop="@id/linearLayoutLeft" />
     <ImageButton
-        android:src="@drawable/DroneEye"
+        android:src="@drawable/eye"
         android:id="@+id/lookAtButton"
         android:adjustViewBounds="true"
         android:scaleType="centerInside"
@@ -225,7 +226,7 @@
             android:layout_marginRight="5dp"
             android:textSize="12dp" />
         <ImageButton
-            android:src="@drawable/record"
+            android:src="@drawable/rec"
             android:id="@+id/recordButton"
             android:adjustViewBounds="true"
             android:background="@android:drawable/screen_background_light_transparent"
@@ -241,8 +242,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_above="@+id/statusLayout"
-        android:textSize="13dp" />
+        android:textSize="13dp"
+        android:layout_alignParentBottom="true" />
     <TextView
         android:id="@+id/joystick_state"
         android:text="Connect Joystick"

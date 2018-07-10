@@ -265,6 +265,18 @@ namespace aTello
                     }
                 }
             };
+
+            Button sharePhotoButton = FindViewById<Button>(Resource.Id.sharePhotoButton);
+            sharePhotoButton.Click += async delegate
+            {
+                if (Tello.connected && Tello.state.flying)
+                    return;//Don't allow convert when flying. 
+
+                var uri = Android.Net.Uri.FromFile(new Java.IO.File(Tello.picPath));
+                shareImage(uri);
+                return;
+
+            };
             //EditText text = FindViewById<EditText>(Resource.Id.maxHeightText);
             //text.AfterTextChanged += delegate {
             //    Tello.setMaxHeight(int.Parse(text.Text));
@@ -281,6 +293,40 @@ namespace aTello
             //text.AfterTextChanged += delegate {
             //    Tello.setEIS(int.Parse(text.Text));
             //};
+        }
+        // Share image
+        private void shareImage(Android.Net.Uri imagePath)
+        {
+            Intent intent = new Intent();
+            intent.PutExtra(Intent.ActionView, Tello.picPath);
+            intent.SetType("image/*");
+            intent.SetAction(Intent.ActionGetContent);
+            StartActivityForResult(Intent.CreateChooser(intent, "Select Picture"), 0);
+        }
+        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        {
+            switch (requestCode)
+            {
+                case 0:
+                    if (resultCode == Result.Ok)
+                    {
+                        var selectedImage = data.Data;
+                        Intent sharingIntent = new Intent(Intent.ActionSend);
+                        sharingIntent.AddFlags(ActivityFlags.ClearWhenTaskReset);
+                        sharingIntent.SetType("image/*");
+                        sharingIntent.PutExtra(Intent.ExtraStream, selectedImage);
+                        StartActivity(Intent.CreateChooser(sharingIntent, "Share Image Using"));
+                        //imageview.setImageUri(selectedImage);
+                    }
+                    break;
+                case 1:
+                    if (resultCode == Result.Ok)
+                    {
+                        var selectedImage = data.Data;
+                        //imageview.setImageUri(selectedImage);
+                    }
+                    break;
+            }
         }
     }
 }
