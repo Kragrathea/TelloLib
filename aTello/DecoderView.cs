@@ -55,7 +55,8 @@ namespace aTello
             }
             catch (Exception ex)
             {
-//handle
+                //handle
+                MainActivity.getActivity().notifyUser("VideoDecoder Init exception " + ex.Message,false);
             }
 
             bConfigured = true;
@@ -157,7 +158,13 @@ namespace aTello
                 }
                 catch (Exception ex)
                 {
+                    MainActivity.getActivity().notifyUser("VideoDecoder decode exception " + ex.Message, false);
+
                     //attempt to recover.
+                    //codec.Release();
+                    //codec = null;
+                    //bConfigured = false;
+
                     stop();
                 }
             }
@@ -171,11 +178,12 @@ namespace aTello
             {
                 try
                 {
-                    codec.Stop();
-                    //codec.Release();
+                    //codec.Stop();
+                    codec.Release();
                 }
-                catch
+                catch (Exception ex)
                 {
+                    MainActivity.getActivity().notifyUser("VideoDecoder stop exception " + ex.Message, false);
                 }
             }
             codec = null;

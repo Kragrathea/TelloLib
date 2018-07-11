@@ -1085,7 +1085,10 @@ namespace aTello
             isPaused = true;
 
             Tello.connectionSetPause(true);//pause connections (if connected). 
-         
+
+            var decoderView = FindViewById<DecoderView>(Resource.Id.DecoderView);
+            decoderView.stop();
+
             base.OnPause();
             input_manager.UnregisterInputDeviceListener(this);
         }
@@ -1165,54 +1168,75 @@ namespace aTello
 
         public void OnInputDeviceAdded(int deviceId)
         {
-            //Log.Debug(TAG, "OnInputDeviceAdded: " + deviceId);
-            if (!connected_devices.Contains(deviceId))
+            try
             {
-                connected_devices.Add(deviceId);
-            }
-            if (current_device_id == -1)
-            {
-                current_device_id = deviceId;
-                InputDevice dev = InputDevice.GetDevice(current_device_id);
-                if (dev != null)
+                //Log.Debug(TAG, "OnInputDeviceAdded: " + deviceId);
+                if (!connected_devices.Contains(deviceId))
                 {
-                    //controller_view.SetCurrentControllerNumber(dev.ControllerNumber);
-                    //controller_view.Invalidate();
+                    connected_devices.Add(deviceId);
                 }
+                if (current_device_id == -1)
+                {
+                    current_device_id = deviceId;
+                    InputDevice dev = InputDevice.GetDevice(current_device_id);
+                    if (dev != null)
+                    {
+                        //controller_view.SetCurrentControllerNumber(dev.ControllerNumber);
+                        //controller_view.Invalidate();
+                    }
+                }
+                updateOnScreenJoyVisibility();
+            }catch(Exception ex)
+            {//trying to figure out why this might crash video decoder.
+                notifyUser("Joystick exception OnInputDeviceAdded " + ex.Message, false);
             }
-            updateOnScreenJoyVisibility();
         }
 
         public void OnInputDeviceRemoved(int deviceId)
         {
-            //Log.Debug(TAG, "OnInputDeviceRemoved: ", deviceId);
-            connected_devices.Remove(deviceId);
-            if (current_device_id == deviceId)
-                current_device_id = -1;
+            try
+            {
+                //Log.Debug(TAG, "OnInputDeviceRemoved: ", deviceId);
+                connected_devices.Remove(deviceId);
+                if (current_device_id == deviceId)
+                    current_device_id = -1;
 
-            if (connected_devices.Count == 0)
-            {
-                //controller_view.SetCurrentControllerNumber(-1);
-                //controller_view.Invalidate();
-            }
-            else
-            {
-                current_device_id = connected_devices[0];
-                InputDevice dev = InputDevice.GetDevice(current_device_id);
-                if (dev != null)
+                if (connected_devices.Count == 0)
                 {
-                    //controller_view.SetCurrentControllerNumber(dev.ControllerNumber);
+                    //controller_view.SetCurrentControllerNumber(-1);
                     //controller_view.Invalidate();
                 }
+                else
+                {
+                    current_device_id = connected_devices[0];
+                    InputDevice dev = InputDevice.GetDevice(current_device_id);
+                    if (dev != null)
+                    {
+                        //controller_view.SetCurrentControllerNumber(dev.ControllerNumber);
+                        //controller_view.Invalidate();
+                    }
+                }
+                updateOnScreenJoyVisibility();
             }
-            updateOnScreenJoyVisibility();
+            catch (Exception ex)
+            {//trying to figure out why this might crash video decoder.
+                notifyUser("Joystick exception OnInputDeviceRemoved " + ex.Message, false);
+            }
+
         }
 
         public void OnInputDeviceChanged(int deviceId)
         {
-            //Log.Debug(TAG, "OnInputDeviceChanged: " + deviceId);
-            //controller_view.Invalidate();
-            updateOnScreenJoyVisibility();
+            try
+            {
+                //Log.Debug(TAG, "OnInputDeviceChanged: " + deviceId);
+                //controller_view.Invalidate();
+                updateOnScreenJoyVisibility();
+            }
+            catch (Exception ex)
+            {//trying to figure out why this might crash video decoder.
+                notifyUser("Joystick exception OnInputDeviceChanged " + ex.Message, false);
+            }
         }
 
 
