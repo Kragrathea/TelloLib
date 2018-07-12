@@ -20,10 +20,10 @@ namespace aTello
         byte[] buffer;
         private MediaCodec codec;
 
-
         private bool bConfigured;
         //pic mode sps
         private byte[] sps = new byte[] { 0, 0, 0, 1, 103, 77, 64, 40, 149, 160, 60, 5, 185 };
+        private bool bWaitForKeyframe = true;
 
         //vid mode sps
         private byte[] vidSps = new byte[] { 0, 0, 0, 1, 103, 77, 64, 40, 149, 160, 20, 1, 110, 64 };
@@ -31,6 +31,55 @@ namespace aTello
         private byte[] pps = new byte[] { 0, 0, 0, 1, 104, 238, 56, 128 };
         private int decoderWidth = 960;
         private int decoderHeight = 720;
+
+        /*
+         * 
+         -            Video.Decoder.surface = FindViewById<SurfaceView>(Resource.Id.surfaceView).Holder.Surface;
+-
+-/*
+-            var textureView = FindViewById<TextureView>(Resource.Id.textureView);
+-            mSurfaceTextureListener = new SurfaceTextureListener(this);
+-            textureView.SurfaceTextureListener = mSurfaceTextureListener;
+-
+-            //var st = new Surface(textureView.SurfaceTexture);
+-            //Video.Decoder.surface = st;
+-
+-*/
+            
+         //       mSurfaceTextureListener = new SurfaceTextureListener(Activity);
+
+    //TextureView.ISurfaceTextureListener mSurfaceTextureListener;
+    class SurfaceTextureListener : Java.Lang.Object, TextureView.ISurfaceTextureListener
+        {
+            DecoderView view { get; set; }
+
+            public SurfaceTextureListener(DecoderView view)
+            {
+                this.view = view;
+                //Activity = activity;
+            }
+
+            public void OnSurfaceTextureAvailable(Android.Graphics.SurfaceTexture surfaceTexture, int width, int height)
+            {
+                //var st = new Surface(surfaceTexture);
+                //view.surface = st;
+
+            }
+
+            public bool OnSurfaceTextureDestroyed(Android.Graphics.SurfaceTexture surface)
+            {
+                return true;
+            }
+
+            public void OnSurfaceTextureSizeChanged(Android.Graphics.SurfaceTexture surface, int width, int height)
+            {
+            }
+
+            public void OnSurfaceTextureUpdated(Android.Graphics.SurfaceTexture surface)
+            {
+            }
+        }
+
 
         private void Init()
         {
@@ -52,15 +101,15 @@ namespace aTello
                 cdx.Start();
 
                 codec = cdx;
+                bWaitForKeyframe = true;
+                bConfigured = true;
             }
             catch (Exception ex)
             {
                 //handle
                 MainActivity.getActivity().notifyUser("VideoDecoder Init exception " + ex.Message,false);
             }
-
-            bConfigured = true;
-
+ return;
             //set surface aspect ratio
             MainActivity.getActivity().RunOnUiThread(() =>
             {
@@ -97,6 +146,7 @@ namespace aTello
             }
 
             var nalType = array[4] & 0x1f;
+//Console.WriteLine("nal:" + nalType);
             if (nalType == 7)
             {
                 //sps = array.ToArray();
@@ -117,6 +167,16 @@ namespace aTello
             {
                 return;
             }
+
+            //Make sure keyframe is first. 
+            if (nalType == 5)
+            {
+                bWaitForKeyframe = false;
+                //pps = array.ToArray();
+                //return;
+            }
+            if (bWaitForKeyframe)
+                return;
 
             if (bConfigured)
             {
